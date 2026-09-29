@@ -1,0 +1,4 @@
+requests>=2.31
+urllib3>=2
+# opcional, solo para --pdf:
+# playwright>=1.45
