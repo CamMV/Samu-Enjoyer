@@ -22,9 +22,10 @@ python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 
 - `--profundidad 0` es obligatorio: el nivel 1 (documentos enlazados) ya está
   listado en el JSON. Con profundidad 1 el scraper seguiría enlaces de nuevo y
   bajaría miles de documentos que se descartaron a propósito.
-- Tamaño esperado: __TAMANO__ y __ARCHIVOS__ archivos. Revisa el espacio libre
-  antes de empezar.
-- Duración esperada: varias horas. Córrelo en segundo plano. **Se puede cortar
+- Tamaño esperado: **~1,8 GB** en **~5.900 archivos** (4.696 documentos). Es un
+  estimado (promedio medido de ~0,3 MB por página); revisa que haya al menos
+  3 GB libres antes de empezar.
+- Duración esperada: 2 a 4 horas (~12.000 peticiones: cada página más su `.js`). Córrelo en segundo plano. **Se puede cortar
   y relanzar con el mismo comando**: lo ya descargado (según
   `corpus/raw/corpus_manifest.json` y los archivos en disco) se salta.
 - `--hilos 4` es deliberado: el Senado corta conexiones si se le pega fuerte.
@@ -35,7 +36,8 @@ python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 
 ### Verificación al terminar
 
 1. Conteo de estados en `corpus/raw/corpus_manifest.json`: esperamos
-   `ok` ≈ __DOCS__ y muy pocas `falla`. Lista las fallas con su `error`.
+   `ok` ≈ 4.696 y muy pocas `falla` (unas decenas por red
+   o enlaces rotos del propio Senado son normales). Lista las fallas con su `error`.
 2. Relanza el mismo comando una vez más: los errores de red transitorios
    suelen resolverse en el segundo intento.
 3. Revisa al azar 3 normas multipágina (por ejemplo `constitucion`,
@@ -65,10 +67,12 @@ python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 
 |---|---|
 | `data/seed_targets.json` | Seed oficial del reto (186 normas). Sus enlaces `?q=` no sirven: el scraper arma la URL real. |
 | `data/corpus_nuevos_documentos.json` | Lista de enriquecimiento (384 documentos) armada por el equipo. |
+| `data/sample_50.jsonl` | Las 50 preguntas de muestra del reto. |
+| `data/refuerzo_muestra.json` | Normas citadas en el `legal_basis` de la muestra que faltaban, más el Decreto 663 de 1993 unificado con el EOSF del Senado. |
 | `data/corpus_targets.json` | **Lista maestra**: todo lo que entra al corpus, con URL real verificada. Es la que se descarga. |
 | `data/urls_manuales.json` | URLs puestas a mano para normas que no se resuelven solas (`{doc_id: url}`). |
 | `scraper/scrape_corpus.py` | Descargador. |
-| `scraper/construir_targets.py` | Regenera `corpus_targets.json` a partir del seed y la lista de enriquecimiento. No hace falta correrlo para descargar. |
+| `scraper/construir_targets.py` | Regenera `corpus_targets.json` (~1 h, no descarga a disco). No hace falta correrlo para descargar; ver "Regenerar la lista maestra". |
 | `corpus/raw/` | Salida: `<doc_id>/<doc_id>[_pNNN].html|htm|pdf|doc` + `corpus_manifest.json`. |
 
 ### `data/corpus_targets.json`
@@ -102,6 +106,18 @@ python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 
   "no_encontrados": [...]        // no existen en ninguna fuente probada, con motivo
 }
 ```
+
+### Regenerar la lista maestra (solo si cambian las listas de entrada)
+
+```bash
+cd scraper
+python construir_targets.py --seed ../data/seed_targets.json ../data/corpus_nuevos_documentos.json
+python construir_targets.py --agregar ../data/refuerzo_muestra.json --origen muestra
+```
+
+`--agregar` suma documentos al nivel 0 sin repetir la corrida completa, y
+`--refiltrar` solo reaplica filtros y marcas. Los dos se pueden repetir sin
+cambiar el resultado.
 
 ## Cómo funciona el scraper
 
@@ -151,11 +167,15 @@ python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 
 1. Una norma o sentencia = un documento. Las páginas quedan separadas en
    `raw`, se unen en un `.md` por norma y luego se segmenta por artículo con
    ID `ley_1564_2012/art_42`.
-2. Nivel 0: seed + lista de enriquecimiento, **sin derecho ambiental** (el
+2. Nivel 0: seed + lista de enriquecimiento + refuerzo de la muestra,
+   **sin derecho ambiental** (el
    enunciado dice que el banco no lo cubre). Los 7 excluidos están en
    `excluidos`.
-3. Nivel 1: normas y sentencias enlazadas desde el nivel 0 **citadas 3 o más
-   veces**. Ya están listadas; no se sigue expandiendo.
+3. Nivel 1: documentos enlazados desde el nivel 0 **citados 3 o más veces**,
+   **solo normas y sentencias** (1.898 normas y 2.247 sentencias). Se dejaron
+   fuera 392 documentos de doctrina y actos administrativos: oficios y
+   conceptos DIAN, resoluciones, circulares y conceptos del Consejo de Estado.
+   Ya están listados; no se sigue expandiendo.
 4. Derogadas, transitorias y normas muy pesadas se descargan, pero marcadas
    con `vigencia` y/o `prioridad: "baja"`, para que el pipeline no las cite
    como vigentes.
@@ -174,6 +194,9 @@ Conversión a Markdown, pendiente de implementar:
 - Hay que quitar el menú del selector, el CSS incrustado y, en los PDF, los
   encabezados y pies de página repetidos. También normalizar las ligaduras
   (`ﬁ` → `fi`).
+- Hay una sentencia en `.doc` (SP-1945 de 2019, Corte Suprema): para
+  convertirla hace falta LibreOffice (`soffice --headless --convert-to`) o
+  similar.
 - `corpus_manifest.json` debe quedar en la raíz del corpus procesado, con
   `doc_id`, `titulo`, `fuente`, `url`, `fecha_consulta` y `areas`, como pide
   el enunciado.

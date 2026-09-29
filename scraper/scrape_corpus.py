@@ -102,6 +102,8 @@ SENADO_CODIGOS = {
     "codigo_disciplinario_abogado": "ley_1123_2007",
     "codigo_minas": "ley_0685_2001",
     "codigo_regimen_municipal": "decreto_1333_1986",  # solo en Colpensiones
+    # Al revés: normas que el seed nombra por número y el Senado publica con nombre propio.
+    "decreto_663_1993": "estatuto_organico_sistema_financiero",
 }
 PDF_DIRECTOS = {
     "decision_andina_486": ("Comunidad Andina",
@@ -158,11 +160,17 @@ def doc_id(canonico: list) -> str:
     return "_".join(_num(str(p)) for p in canonico if p).lower()
 
 
+def _anio_sentencia(anio: str) -> int:
+    # El Senado tiene archivos con el siglo errado: c-497a_2094.html es la C-497A de 1994.
+    a = int(anio)
+    return a - 100 if a > dt.date.today().year + 1 else a
+
+
 def doc_id_senado(stem: str) -> str:
-    """ley_0080_1993 -> ley_80_1993 ; c-055_2022 -> jurisprudencia_c-55_2022."""
+    """ley_0080_1993 -> ley_80_1993 ; c-055_2022 -> jurisprudencia_c-55_2022 ; c-497a_2094 -> ..._c-497a_1994."""
     stem = stem.lower()
-    if m := re.fullmatch(r"(c|t|su)-0*(\d+)_(\d{4})", stem):
-        return f"jurisprudencia_{m[1]}-{int(m[2])}_{m[3]}"
+    if m := re.fullmatch(r"(c|t|su)-0*(\d+)([a-z]?)_(\d{4})", stem):
+        return f"jurisprudencia_{m[1]}-{int(m[2])}{m[3]}_{_anio_sentencia(m[4])}"
     if m := re.fullmatch(r"([a-z_]+?)_0*(\d+)_(\d{4})", stem):
         return f"{m[1]}_{int(m[2])}_{m[3]}"
     return stem
@@ -178,15 +186,15 @@ def canonico(did: str) -> str:
 
 def titulo_senado(stem: str) -> str:
     stem = stem.lower()
-    if m := re.fullmatch(r"(c|t|su)-0*(\d+)_(\d{4})", stem):
-        return f"Sentencia {m[1].upper()}-{int(m[2])} de {m[3]}"
+    if m := re.fullmatch(r"(c|t|su)-0*(\d+)([a-z]?)_(\d{4})", stem):
+        return f"Sentencia {m[1].upper()}-{int(m[2])}{m[3].upper()} de {_anio_sentencia(m[4])}"
     if m := re.fullmatch(r"([a-z_]+?)_0*(\d+)_(\d{4})", stem):
         return f"{m[1].replace('_', ' ').capitalize()} {int(m[2])} de {m[3]}"
     return stem.replace("_", " ").capitalize()
 
 
 def es_sentencia(stem: str) -> bool:
-    return bool(re.match(r"(c|t|su)-\d", stem, re.I))
+    return bool(re.match(r"(c|t|su)-\d|csj_|s[ctu]\d+_\d{2}$", stem, re.I))
 
 
 # --------------------------------------------------------------- resolvers
@@ -387,8 +395,8 @@ def resolver(doc: dict, manuales: dict):
     if t in PDF_DIRECTOS:
         fuente, url = PDF_DIRECTOS[t]
         return fuente, [(url, get(url).content, "pdf")], collections.Counter()
-    if t in SENADO_CODIGOS:
-        return senado_o_colpensiones(SENADO_CODIGOS[t])
+    if (stem := SENADO_CODIGOS.get(t) or SENADO_CODIGOS.get(doc_id(doc["canonico"]))):
+        return senado_o_colpensiones(stem)
     if t == "jurisprudencia":
         tipo, n = num.split("-", 1)
         if tipo in ("C", "T", "SU", "A"):
