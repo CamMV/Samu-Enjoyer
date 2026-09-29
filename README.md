@@ -1,4 +1,4 @@
-# Samu-Enjoyer — Hackathon 2026 · AI Week · Universidad de los Andes
+# Samu-Enjoyer · AI Week 
 
 **¿Puede un modelo pequeño responder derecho colombiano?**
 
