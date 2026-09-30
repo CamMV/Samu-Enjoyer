@@ -190,3 +190,52 @@ def test_docx(tmp_path: Path):
     assert "## I. ANTECEDENTES" in md or "ANTECEDENTES" in md
     assert "~~texto declarado inexequible~~" in md
     assert "| Año | Valor |" in md
+
+
+def test_unir_spans_separa_palabras_de_capas_ocr():
+    from src.ingest.conversores.pdf import _unir_spans
+    spans = [{"text": "audiencia", "bbox": (10, 0, 60, 10), "size": 10},
+             {"text": "de", "bbox": (63, 0, 73, 10), "size": 10},
+             {"text": "acusación", "bbox": (76, 0, 120, 10), "size": 10},
+             {"text": ",", "bbox": (120.2, 0, 122, 10), "size": 10}]
+    assert _unir_spans(spans) == "audiencia de acusación,"
+
+
+def test_capa_mala_de_ocr_ajeno():
+    from src.ingest.conversores.pdf import Linea, _capa_mala
+    mala = [Linea(0, 0, 1, "Rep正博ぐadeCoIomhia Corte Suprema de Justicia", False)]
+    buena = [Linea(0, 0, 1, "En el mes de mayo de 2011, en horas de la noche y cuando se hallaba dedicado " * 3, False)]
+    assert _capa_mala(mala) and not _capa_mala(buena)
+
+
+# --- Recuperación: tokenización BM25, fusión y chunking --------------------------------
+
+def test_tokens_bm25_identificadores_y_tildes():
+    from src.knowledge.tokenization import tokens
+    t = tokens("Sentencia C-355 de 2006, artículo 240-1 del Decreto 1.625; artículo 5")
+    assert "c_355" in t and "240_1" in t and "1625" in t and "5" in t and "2006" in t
+    assert tokens("C-748-11") == tokens("C-748 de 2011") == tokens("c-748/11") == ["c_748", "2011"]
+    assert tokens("T-025 de 2004")[:1] == ["t_25"] and tokens("SU-214/16") == ["su_214", "2016"]
+    assert tokens("CONSTITUCIÓN") == tokens("constitucion")
+
+
+def test_rrf_desempata_por_id():
+    from src.knowledge.hybrid_search import rrf
+    assert [c for c, _ in rrf([["b", "a"], ["a", "b"]])] == ["a", "b"]
+    assert rrf([["x", "y"], ["y"]])[0][0] == "y"
+
+
+def test_chunker_articulo_con_ruta_y_notas(tmp_path: Path):
+    from src.knowledge.chunking import chunks_de
+    md = tmp_path / "ley_1_2000.md"
+    md.write_text('---\ndoc_id: "ley_1_2000"\ntipo_documento: "norma"\ntipo_norma: "ley"\nnumero: "1"\n'
+                  'anio: "2000"\nnombre_citable: "Ley 1 de 2000"\n---\n\n# Ley 1 de 2000\n\nPor la cual...\n\n'
+                  '## TÍTULO I. DISPOSICIONES\n\n### Artículo 1. OBJETO\n\nTexto del artículo.\n\n'
+                  '> **Notas de Vigencia:**\n>\n> Modificado por la Ley 2 de 2001.\n\n'
+                  '> **Legislación Anterior:**\n>\n> Texto viejo.\n', encoding="utf-8")
+    cs = {c["chunk_id"]: c for c in chunks_de(md)}
+    art = cs["ley_1_2000/art_1"]
+    assert art["texto"].startswith("Ley 1 de 2000 › TÍTULO I. DISPOSICIONES\nArtículo 1. OBJETO")
+    assert "Modificado por la Ley 2 de 2001" in art["texto"] and "Texto viejo" not in art["texto"]
+    assert "Texto viejo" in cs["ley_1_2000/art_1/notas"]["texto"]
+    assert "ley_1_2000/preambulo#1" in cs

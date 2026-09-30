@@ -242,6 +242,7 @@ def main():
     ap.add_argument("--raw", type=Path, default=ROOT / "corpus" / "raw")
     ap.add_argument("--salida", type=Path, default=ROOT / "corpus" / "md")
     ap.add_argument("--solo", nargs="+", help="doc_id a convertir")
+    ap.add_argument("--lista", type=Path, help="archivo con doc_id a convertir, uno por línea")
     ap.add_argument("--forzar", action="store_true", help="reconvierte aunque el origen no haya cambiado")
     ap.add_argument("--hilos", type=int, default=max(2, (os.cpu_count() or 4) - 2), help="procesos en paralelo")
     ap.add_argument("--sin-ocr", action="store_true", help="no pasa por OCR los PDF escaneados")
@@ -262,7 +263,8 @@ def main():
         os.environ["INGEST_SIN_OCR"] = "1"
 
     registros = json.loads((args.raw / "corpus_manifest.json").read_text(encoding="utf-8"))
-    docs = [r for r in registros if r.get("estado") == "ok" and (not args.solo or r["doc_id"] in args.solo)]
+    solo = set(args.solo or []) | (set(args.lista.read_text(encoding="utf-8").split()) if args.lista else set())
+    docs = [r for r in registros if r.get("estado") == "ok" and (not solo or r["doc_id"] in solo)]
     objetivos = {d["doc_id"]: d for d in json.loads(TARGETS.read_text(encoding="utf-8"))["documentos"]} \
         if TARGETS.exists() else {}
     manifest_path = args.salida / "corpus_manifest.json"
@@ -292,7 +294,8 @@ def main():
             return e
 
         for i, fut in enumerate(cf.as_completed(futuros), 1):
-            e = registrar(fut.result())
+            crudo = fut.result()
+            e = registrar(crudo)
             if parada.exists():
                 ex.shutdown(wait=True, cancel_futures=True)  # termina los que están en curso
                 for f in futuros:
@@ -300,7 +303,7 @@ def main():
                         registrar(f.result())
                 print("== parada pedida: se guardó lo convertido", flush=True)
                 break
-            marca = {"ok": "OK ", "sin_cambios": "== ", "requiere_ocr": "OCR"}.get(e["estado_conversion"], "XX ")
+            marca = {"ok": "OK ", "sin_cambios": "== ", "requiere_ocr": "OCR"}.get(crudo["estado_conversion"], "XX ")
             if marca != "== ":
                 detalle = e.get("error") or "; ".join(e.get("advertencias", [])) or \
                     f"{e.get('n_articulos', 0)} artículos, {e.get('n_secciones', 0)} secciones"

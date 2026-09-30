@@ -29,6 +29,21 @@ class Linea:
     negrita: bool
 
 
+def _unir_spans(spans: list[dict]) -> str:
+    """Une los fragmentos de una línea. Las capas de texto hechas por OCR (Tesseract y los
+    escaneos de la Corte Suprema) no traen el espacio entre palabras: las separan por
+    posición. Sin esto salía "audienciadeformulacióndeacusación"."""
+    out, previo = "", None
+    for s in spans:
+        t = s["text"]
+        if previo is not None and out and not out.endswith(" ") and not t.startswith(" "):
+            if s["bbox"][0] - previo["bbox"][2] > 0.15 * s["size"]:
+                out += " "
+        out += t
+        previo = s
+    return out
+
+
 def _lineas_pagina(n: int, page: pymupdf.Page, tp: pymupdf.TextPage | None = None) -> list[Linea]:
     """Líneas visuales: PyMuPDF parte en varias "lines" lo que está a la misma altura
     (texto justificado, "I." + "ANTECEDENTES"); aquí se vuelven a unir. `tp` es la
@@ -41,7 +56,7 @@ def _lineas_pagina(n: int, page: pymupdf.Page, tp: pymupdf.TextPage | None = Non
                 continue
             bold = all(s["flags"] & 16 or "bold" in s["font"].lower() for s in spans)
             x0, y0, _, y1 = ln["bbox"]
-            crudas.append((y0, y1, x0, "".join(s["text"] for s in spans), bold))
+            crudas.append((y0, y1, x0, _unir_spans(spans), bold))
     crudas.sort(key=lambda c: (round(c[0]), c[2]))
     lineas: list[Linea] = []
     for y0, y1, _, t, bold in crudas:
@@ -68,6 +83,20 @@ def _ruido(t: str) -> bool:
         return False
     malos = sum(1 for x in tokens if _TOKEN_RUIDO.search(x))
     return malos >= 2 and malos / len(tokens) > 0.4
+
+
+# Capa de texto de mala calidad hecha por el OCR de la propia Corte Suprema: caracteres de
+# otros alfabetos ("Rep正博ぐadeCoIomhia") o muchas palabras pegadas. Esas páginas se releen.
+_OTROS_ALFABETOS = re.compile(r"[Ѐ-ӿ぀-ヿ㐀-鿿가-힯]")
+
+
+def _capa_mala(lineas: list[Linea]) -> bool:
+    t = " ".join(ln.texto for ln in lineas)
+    if len(_OTROS_ALFABETOS.findall(t)) >= 3:
+        return True
+    palabras = t.split()
+    pegadas = sum(1 for p in palabras if len(p) >= 16 and p.isalpha())
+    return len(palabras) >= 30 and pegadas / len(palabras) > 0.08
 
 
 def _clave(t: str) -> str:
@@ -131,7 +160,8 @@ class Pdf:
                 for page in doc:
                     lineas = _lineas_pagina(len(paginas), page)
                     n = sum(len(ln.texto) for ln in lineas)
-                    if n < ocr.MIN_CARACTERES_POR_PAGINA and hay_ocr:  # página escaneada
+                    if hay_ocr and (n < ocr.MIN_CARACTERES_POR_PAGINA or _capa_mala(lineas)):
+                        # página escaneada, o con una capa de texto ilegible: se lee con OCR
                         lineas = _lineas_pagina(len(paginas), page, ocr.textpage(page))
                         n = sum(len(ln.texto) for ln in lineas)
                         con_ocr += 1

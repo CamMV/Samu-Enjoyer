@@ -105,3 +105,9 @@ C:/Users/santi/anaconda3/envs/IA/python.exe -m src.ingest.convertir --fondo --hi
 
 | Fecha y hora | Evento | .md | Nota |
 |---|---|---|---|
+| 2026-09-30 03:42 | Lanzamiento (14 procesos) | 0 | Tras pruebas: 48 docs de muestra, auditoría 43 OK / 5 revisar / 0 falla |
+| 2026-09-30 06:44 | Parada limpia (el usuario mueve el PC) | 19.846 | Manifest completo; retomar con --fondo --hilos 14 |
+| 2026-09-30 11:35 | Reanudación (--fondo --hilos 14) | 19.846 | |
+| 2026-09-30 11:58 | Conversión completa: 31.037 .md. Reconversión de los 10.788 PDF (--forzar --lista) | 31.037 | Palabras pegadas en capas OCR (propia y de la Corte) |
+| 2026-09-30 15:13 | Reconversión de PDF terminada (palabras pegadas: ~1.580 -> 490 docs). Relectura con OCR de 588 docs con capa de texto ilegible de la Corte | 31.037 | |
+| 2026-09-30 17:07 | Relectura con OCR terminada (588 docs). Palabras pegadas: 0 en todos los PDF; 64 docs de la Corte Suprema con restos de otros alfabetos. Auditoría de 100 (estratificada): 91 OK, 8 revisar, 1 falla (ley aprobatoria de tratado) | 31.037 | Conversión cerrada |
