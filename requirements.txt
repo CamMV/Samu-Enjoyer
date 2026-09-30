@@ -4,8 +4,11 @@ urllib3>=2
 beautifulsoup4>=4.12
 lxml>=5
 pymupdf>=1.24
+python-docx>=1.1
 # tests
 pytest>=8
 # opcional, solo para --pdf:
 # playwright>=1.45
-# .doc -> Markdown necesita LibreOffice (soffice) instalado en el sistema.
+# Fuera de pip (ver CLAUDE.md, "Conversión a Markdown"):
+# - .doc -> Markdown necesita LibreOffice (soffice).
+# - PDF escaneados necesitan Tesseract con el modelo spa (conda install -c conda-forge tesseract).

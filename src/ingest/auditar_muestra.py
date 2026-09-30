@@ -58,7 +58,9 @@ RESIDUOS = {
 }
 ANCLA = re.compile(r"<a\b[^>]*\bname\s*=\s*[\"']?([^\"'>]+)[\"']?[^>]*>(.*?)</a>", re.I | re.S)
 TACHADO = re.compile(r"<(?:s|strike|del)\b", re.I)
-ARTICULO_PDF = re.compile(r"^\s*ART[ÍI]CULO\s+\d", re.M)
+# "ARTÍCULO 1", "Artículo 1.-" (Presidencia, CAN) y "ARTÍCULO PRIMERO".
+ARTICULO_PDF = re.compile(r"^\s*ART[ÍI]CULO\s+(?:\d|[ÚU]NICO|PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO|SEXTO|"
+                          r"S[ÉE]PTIMO|OCTAVO|NOVENO|D[ÉE]CIMO)", re.M | re.I)
 
 
 # --------------------------------------------------------------- lectura

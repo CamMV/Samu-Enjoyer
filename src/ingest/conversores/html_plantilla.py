@@ -21,8 +21,8 @@ from pathlib import Path
 from bs4 import Tag
 
 from .. import jerarquia as jq
-from ._html import leer, limpio, sopa, tabla_a_lineas
-from .base import CAJA, PARRAFO, Bloque, Resultado
+from ._html import leer, limpio, sopa, tabla_filas
+from .base import CAJA, PARRAFO, TABLA, Bloque, Resultado
 
 INICIO, FIN = "<!--Inicio documento-->", "<!--Fin documento-->"
 # Si una página no trae las marcas, se quitan estos contenedores del <body>.
@@ -41,6 +41,9 @@ def _contenido(html: str) -> Tag:
         fin = html.find(FIN, ini)
         return sopa(html[ini: fin if fin > 0 else None]).body or sopa("<body></body>").body
     s = sopa(html)
+    # Visor nuevo de la DIAN: sin marcas de inicio y fin, el texto está en div.panel-documento.
+    if (panel := s.find("div", class_="panel-documento")) is not None:
+        return panel
     for id_ in RELLENO:
         for el in s.find_all(id=id_):
             el.decompose()
@@ -54,8 +57,8 @@ def _elementos(el: Tag):
             continue
         if c.name in ("p", "table", "h1", "h2", "h3", "h4", "h5", "h6"):
             yield c
-        elif c.name == "div" and c.find("a", class_=CAJA_RE):
-            yield c
+        elif c.name == "div" and c.find("a", class_=CAJA_RE) and not c.find(["p", "table"]):
+            yield c  # rótulo de caja; un div que además trae párrafos es un contenedor y se recorre
         else:
             yield from _elementos(c)
 
@@ -83,8 +86,8 @@ class HtmlPlantilla:
                         lineas = [ln for ln in lineas if ln]
                         if lineas:
                             b.append(Bloque(CAJA, "\n".join(lineas), rotulo))
-                    else:
-                        b.extend(Bloque(PARRAFO, f) for f in tabla_a_lineas(el))
+                    elif filas := tabla_filas(el):
+                        b.append(Bloque(TABLA, "", filas=filas))
                     rotulo = ""
                     continue
                 if el.find("a", class_="antsig"):  # Anterior | Siguiente
@@ -150,6 +153,6 @@ class HtmlPlantilla:
         res.stats = {"paginas": len(archivos), "articulos_fuente": len(anclas_articulo)}
         if anexos:
             res.stats["encabezados_anexos_como_parrafo"] = len(anexos)
-        if not anclas_articulo:
+        if not anclas_articulo and not sentencia:
             res.advertencias.append("sin anclas de artículo en la fuente")
         return res

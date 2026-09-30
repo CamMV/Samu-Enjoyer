@@ -5,7 +5,7 @@ import collections
 import json
 import re
 
-from .conversores.base import CAJA, PARRAFO, Bloque
+from .conversores.base import CAJA, PARRAFO, TABLA, Bloque
 from .jerarquia import ARTICULO, ESTRUCTURA, SECCION_SENTENCIA
 
 # Orden de anidamiento para asignar niveles de encabezado.
@@ -44,6 +44,15 @@ def _escapar(s: str) -> str:
     return re.sub(r"^([#>])", r"\\\1", s)
 
 
+def _tabla(filas: list[list[str]]) -> str:
+    """Tabla Markdown: la primera fila hace de encabezado; las filas cortas se rellenan."""
+    ancho = max(len(f) for f in filas)
+    celda = lambda c: c.replace("|", "\\|") or " "  # noqa: E731
+    lineas = ["| " + " | ".join(celda(c) for c in f + [""] * (ancho - len(f))) + " |" for f in filas]
+    lineas.insert(1, "|" + "---|" * ancho)
+    return "\n".join(lineas)
+
+
 def a_markdown(meta: dict, titulo: str, bloques: list[Bloque]) -> str:
     nivel = niveles(bloques)
     partes = [_yaml(meta), "", f"# {titulo}", ""]
@@ -57,6 +66,10 @@ def a_markdown(meta: dict, titulo: str, bloques: list[Bloque]) -> str:
             lineas = [ln for ln in b.texto.split("\n") if ln.strip()]
             cuerpo = "\n>\n".join(f"> {_escapar(ln)}" for ln in lineas)
             partes.append(f"> **{b.etiqueta}:**\n>\n{cuerpo}" if b.etiqueta else cuerpo)
+        elif b.tipo == TABLA:
+            ancho = max(len(f) for f in b.filas)
+            # Una tabla de una sola columna es maquetación: se escribe como párrafos.
+            partes.append(_tabla(b.filas) if ancho > 1 else "\n\n".join(_escapar(f[0]) for f in b.filas))
         elif b.tipo == PARRAFO:
             partes.append(_escapar(b.texto))
         partes.append("")

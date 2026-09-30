@@ -1,0 +1,107 @@
+{
+ "descripcion": "Tratados de DDHH que solo publica el normograma de Cancillería.",
+ "documentos": [
+  {
+   "norma": "Ley 74 de 1968",
+   "canonico": [
+    "ley",
+    "74",
+    "1968"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0074_1968.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): Pactos Internacionales de Derechos Civiles y Políticos y de Derechos Económicos, Sociales y Culturales."
+  },
+  {
+   "norma": "Ley 51 de 1981",
+   "canonico": [
+    "ley",
+    "51",
+    "1981"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho de familia",
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0051_1981.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): CEDAW."
+  },
+  {
+   "norma": "Ley 22 de 1981",
+   "canonico": [
+    "ley",
+    "22",
+    "1981"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0022_1981.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): Convención contra la discriminación racial."
+  },
+  {
+   "norma": "Ley 70 de 1986",
+   "canonico": [
+    "ley",
+    "70",
+    "1986"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho penal",
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0070_1986.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): Convención contra la Tortura (ONU)."
+  },
+  {
+   "norma": "Ley 12 de 1991",
+   "canonico": [
+    "ley",
+    "12",
+    "1991"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0012_1991.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): Convención sobre los Derechos del Niño."
+  },
+  {
+   "norma": "Ley 5 de 1960",
+   "canonico": [
+    "ley",
+    "5",
+    "1960"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho penal",
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0005_1960.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): Convenios de Ginebra."
+  },
+  {
+   "norma": "Ley 22 de 1967",
+   "canonico": [
+    "ley",
+    "22",
+    "1967"
+   ],
+   "items_del_banco": 0,
+   "areas": [
+    "Derecho laboral",
+    "Derecho constitucional"
+   ],
+   "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/ley_0022_1967.htm",
+   "nota": "Ley aprobatoria de tratado de derechos humanos (bloque de constitucionalidad): Convenio 111 OIT, discriminación."
+  }
+ ]
+}

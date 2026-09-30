@@ -124,3 +124,69 @@ def test_plantilla_senado(tmp_path: Path):
     assert "#### Artículo 2. FINES" in md
     assert "> **Concordancias:**" in md
     assert "menu" not in md and "Derechos de autor" not in md
+
+
+# --- Formatos y metadatos agregados al convertir el corpus completo -----------------
+
+def test_leer_html_mezcla_utf8_y_cp1252(tmp_path: Path):
+    from src.ingest.conversores._html import leer
+    f = tmp_path / "mixto.htm"
+    # "artículo" en UTF-8 y "país" en windows-1252 en el mismo archivo, con charset declarado.
+    f.write_bytes('<meta charset="windows-1252"><p>artículo '.encode("utf-8") + "país</p>".encode("cp1252"))
+    t = leer(f)
+    assert "artículo" in t and "país" in t and "charset" not in t
+
+
+def test_segmentar_numeracion_decimal_ignora_articulo_citado():
+    ps = [Parrafo(t) for t in ("Artículo 1.2.1.22.5. Texto", "Artículo 206E. Citado del Estatuto",
+                               "Artículo 1.2.1.22.6. Texto", "Artículo 1.311.8.1.3. Número mal extraído",
+                               "Artículo 1.2.1.23.1. Texto")]
+    bloques, _ = segmentar(ps, sentencia=False)
+    assert [b.etiqueta for b in bloques if b.tipo == jq.ARTICULO] == ["1.2.1.22.5", "1.2.1.22.6", "1.2.1.23.1"]
+
+
+def test_tabla_markdown():
+    from src.ingest.conversores.base import TABLA
+    md = a_markdown({"doc_id": "x"}, "X", [Bloque(TABLA, "", filas=[["Código", "Tarifa"], ["8462", "5 %"], ["a|b"]])])
+    assert "| Código | Tarifa |\n|---|---|\n| 8462 | 5 % |\n" + r"| a\|b |   |" in md
+
+
+def test_clave_encabezado_ignora_orden_y_numeros():
+    from src.ingest.conversores.pdf import _clave, _ruido
+    assert _clave("107 del Hoja No. 2 .. Decreto No.") == _clave("Hoja No. 4 del Decreto No. 107")
+    assert _ruido("REPÚBLICA DE COLOMBIA .. t~SIOtNLII m e· :: ,·utsuG ~ SECRfTAH//.'")
+    assert not _ruido("ARTÍCULO 2. Vigencia. El presente decreto rige a partir de su publicación.")
+
+
+@pytest.mark.parametrize("did,esperado", [
+    ("ley_1581_2012", {"tipo_norma": "ley", "numero": "1581", "anio": "2012", "organo_emisor": "Congreso de la República"}),
+    ("codigo_general_proceso", {"tipo_norma": "ley", "numero": "1564", "nombre_citable": "Código General del Proceso"}),
+    ("estatuto_tributario", {"tipo_norma": "decreto", "numero": "624", "anio": "1989"}),
+    ("jurisprudencia_c-355_2006", {"numero": "C-355", "organo_emisor": "Corte Constitucional"}),
+    ("jurisprudencia_sl-4283_2021", {"organo_emisor": "Corte Suprema de Justicia", "sala": "Sala de Casación Laboral"}),
+    ("jurisprudencia_ce-05001-23-26-000-1994-02321-01_2012", {"organo_emisor": "Consejo de Estado", "anio": "2012"}),
+])
+def test_metadatos(did, esperado):
+    from src.ingest.metadatos import metadatos
+    m = metadatos(did, {}, {"vigencia": None})
+    assert {k: m.get(k) for k in esperado} == esperado and m["vigencia"] == "sin_marca"
+
+
+def test_docx(tmp_path: Path):
+    import docx
+    from src.ingest.conversores.docx import Docx
+    d = docx.Document()
+    d.add_paragraph("I. ANTECEDENTES")
+    p = d.add_paragraph("Texto vigente y ")
+    p.add_run("texto declarado inexequible").font.strike = True
+    t = d.add_table(rows=2, cols=2)
+    for i, fila in enumerate([["Año", "Valor"], ["2024", "47.065"]]):
+        for j, v in enumerate(fila):
+            t.cell(i, j).text = v
+    f = tmp_path / "s.docx"
+    d.save(f)
+    res = Docx().convertir([f], sentencia=True)
+    md = a_markdown({"doc_id": "s"}, "S", res.bloques)
+    assert "## I. ANTECEDENTES" in md or "ANTECEDENTES" in md
+    assert "~~texto declarado inexequible~~" in md
+    assert "| Año | Valor |" in md

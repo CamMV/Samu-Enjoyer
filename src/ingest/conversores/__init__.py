@@ -6,6 +6,7 @@ from pathlib import Path
 from ._html import leer
 from .base import Bloque, Conversor, Resultado
 from .doc import Doc
+from .docx import Docx
 from .html_generico import HtmlGenerico
 from .html_plantilla import HtmlPlantilla, es_plantilla
 from .pdf import Pdf
@@ -21,4 +22,6 @@ def elegir(archivos: list[Path]) -> Conversor:
         return Pdf()
     if ext == ".doc":
         return Doc()
+    if ext == ".docx":
+        return Docx()
     raise ValueError(f"formato no soportado: {ext}")

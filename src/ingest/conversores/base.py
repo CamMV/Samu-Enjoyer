@@ -8,6 +8,7 @@ from typing import Protocol
 # Tipos de bloque. Los estructurales están en jerarquia.ESTRUCTURA.
 PARRAFO = "parrafo"
 CAJA = "caja"  # Concordancias, Notas de vigencia, etc. de la plantilla del Senado
+TABLA = "tabla"  # tabla de datos (no de maquetación); sus celdas van en `filas`
 
 
 @dataclass
@@ -16,6 +17,7 @@ class Bloque:
     texto: str
     # articulo: número normalizado ("42", "240-1", "12A"); caja: su rótulo.
     etiqueta: str = ""
+    filas: list[list[str]] | None = None  # solo TABLA
 
 
 @dataclass

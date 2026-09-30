@@ -18,6 +18,7 @@ def texto(s: str) -> str:
     s = unicodedata.normalize("NFC", s)
     s = _LIGADURAS.sub(lambda m: LIGADURAS[m[0]], s)
     s = _INVISIBLES.sub("", s)
+    s = s.replace("�", "")  # carácter perdido en la propia fuente (Cancillería): no se recupera
     s = s.replace("\r", " ").replace("\n", " ")
     return _ESPACIOS.sub(" ", s).strip()
 

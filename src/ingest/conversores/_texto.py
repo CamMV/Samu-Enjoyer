@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass
 
 from .. import jerarquia as jq
-from .base import PARRAFO, Bloque
+from .base import PARRAFO, TABLA, Bloque
 
 MAX_ENCABEZADO = 150   # un encabezado nunca es un párrafo largo
 MAX_SALTO = 20         # "ARTÍCULO 48" -> "ARTÍCULO 369" es una cita, no el siguiente
@@ -26,10 +26,15 @@ class Parrafo:
     # Una sola línea visual, separada de lo anterior y lo siguiente (PDF), o un <p> propio.
     aislado: bool = True
     negrita: bool = False
+    filas: list[list[str]] | None = None  # una tabla de datos, celda por celda
 
 
 def _forma(s: str) -> str:
     return "MAYUS" if s.lstrip()[:3].isupper() else "otra"
+
+
+def _estilo(num: str) -> str:
+    return "decimal" if re.fullmatch(r"\d+(?:\.\d+){2,}", num) else "simple"
 
 
 def _sigue(num: str, ultimo: str | None) -> bool:
@@ -41,6 +46,16 @@ def _sigue(num: str, ultimo: str | None) -> bool:
             return False
     except TypeError:
         return True
+    if _estilo(num) == "decimal" and _estilo(ultimo) == "decimal":
+        # 1.2.1.22.5 -> 1.2.1.23.1 sí; 1.3.1.8.5 -> 1.311.8.1.3 (número mal extraído del PDF) no:
+        # en la primera posición que cambia, el salto debe ser corto (en la última, como un artículo).
+        i = next(i for i, (x, y) in enumerate(zip(a, b)) if x != y) if a[:len(b)] != b else len(b)
+        if i < min(len(a), len(b)):
+            try:
+                return a[i] - b[i] <= (MAX_SALTO if i == len(a) - 1 else 3)
+            except TypeError:
+                return True
+        return True
     return len(a) > 1 or a[0] - b[0] <= MAX_SALTO
 
 
@@ -49,6 +64,9 @@ def _partir_articulos(parrafos: list[Parrafo]) -> list[Parrafo]:
     out = []
     for p in parrafos:
         piezas = ARTICULO_EN_LINEA.split(p.texto)
+        if p.filas:
+            out.append(p)
+            continue
         out.append(Parrafo(piezas[0], p.aislado, p.negrita))
         out.extend(Parrafo(x, False, p.negrita) for x in piezas[1:])
     return out
@@ -61,12 +79,19 @@ def segmentar(parrafos: list[Parrafo], sentencia: bool) -> tuple[list[Bloque], d
     candidatos = [p for p in parrafos if not sentencia and jq.articulo(p.texto)]
     forma = collections.Counter(_forma(p.texto) for p in candidatos).most_common(1)
     forma = forma[0][0] if forma else None
+    # Numeración decimal de los decretos únicos (1.2.1.2.1.) frente a la simple (42, 206E):
+    # en un DUR, un "Artículo 206E." es un artículo citado del Estatuto, no el siguiente.
+    estilo = collections.Counter(_estilo(jq.articulo(p.texto)[0]) for p in candidatos).most_common(1)
+    estilo = estilo[0][0] if estilo and estilo[0][1] >= 0.5 * len(candidatos) else None
 
     bloques: list[Bloque] = []
     ultimo: str | None = None
     nombre_pendiente = False
     rechazados = 0
     for p in parrafos:
+        if p.filas:
+            bloques.append(Bloque(TABLA, "", filas=p.filas))
+            continue
         t = p.texto
         if not t:
             continue
@@ -88,7 +113,7 @@ def segmentar(parrafos: list[Parrafo], sentencia: bool) -> tuple[list[Bloque], d
             bloques.append(Bloque(est[0], t))
             nombre_pendiente = not est[1]
             continue
-        if (art := jq.articulo(t)) and _forma(t) == forma:
+        if (art := jq.articulo(t)) and _forma(t) == forma and estilo in (None, _estilo(art[0])):
             num, resto = art
             if _sigue(num, ultimo):
                 bloques.append(Bloque(jq.ARTICULO, jq.titulo_articulo(num, ""), num))

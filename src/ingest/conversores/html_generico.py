@@ -7,7 +7,7 @@ from pathlib import Path
 
 from bs4 import Tag
 
-from ._html import IGNORAR, leer, limpio, sopa, tabla_a_lineas
+from ._html import IGNORAR, leer, limpio, sopa, tabla_filas
 from ._texto import Parrafo, segmentar
 from .base import Resultado
 
@@ -25,7 +25,8 @@ def _parrafos(el: Tag):
             if c.find(BLOQUES):
                 yield from _parrafos(c)
             else:
-                yield from (Parrafo(f, aislado=False) for f in tabla_a_lineas(c))
+                if filas := tabla_filas(c):
+                    yield Parrafo("", aislado=False, filas=filas)
         else:
             yield from _parrafos(c)
 
@@ -33,7 +34,7 @@ def _parrafos(el: Tag):
 def parrafos_html(html: str) -> list[Parrafo]:
     s = sopa(html)
     raiz = s.body or s
-    return [p for p in _parrafos(raiz) if p.texto]
+    return [p for p in _parrafos(raiz) if p.texto or p.filas]
 
 
 class HtmlGenerico:

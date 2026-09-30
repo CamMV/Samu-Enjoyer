@@ -1,6 +1,7 @@
 """Utilidades HTML compartidas por los conversores de HTML y .doc."""
 from __future__ import annotations
 
+import codecs
 import re
 from pathlib import Path
 
@@ -10,19 +11,29 @@ from ..normalizar import texto
 
 TACHADO = {"s", "strike", "del"}
 IGNORAR = {"script", "style", "select", "form", "noscript", "head", "title", "meta", "link"}
+CHARSET = re.compile(r"""<meta[^>]*charset[^>]*>|(<\?xml[^>]*?)\s+encoding=["'][^"']*["']""", re.I)
+
+
+def _cp1252_por_byte(e: UnicodeDecodeError) -> tuple[str, int]:
+    """Lo que no es UTF-8 válido se lee como windows-1252 (bytes sin carácter: se omiten)."""
+    return e.object[e.start:e.end].decode("cp1252", errors="replace").replace("�", ""), e.end
+
+
+codecs.register_error("cp1252_por_byte", _cp1252_por_byte)
 
 
 def leer(path: Path) -> str:
-    """Decodifica según el charset declarado; el Senado y la Corte usan windows-1252."""
-    crudo = path.read_bytes()
-    m = re.search(rb"""charset=["']?([\w-]+)""", crudo[:5000], re.I)
-    enc = m.group(1).decode().lower() if m else "cp1252"
-    if enc in ("iso-8859-1", "latin-1", "latin1", "windows-1252"):
-        enc = "cp1252"  # superconjunto práctico: trae las comillas “ ” y la raya —
-    try:
-        return crudo.decode(enc)
-    except (UnicodeDecodeError, LookupError):
-        return crudo.decode("latin-1")
+    """Decodifica el HTML y le quita la declaración de charset.
+
+    El Senado y la Corte declaran windows-1252, pero hay páginas que mezclan trozos en
+    UTF-8 (la relatoría de la Corte Constitucional) o que declaran ISO-8859-1 y vienen en
+    UTF-8 (DIAN). Se lee cada secuencia como UTF-8 si lo es y, si no, byte a byte como
+    windows-1252: en un archivo todo windows-1252 da lo mismo que decodificarlo así.
+    La declaración se quita porque lxml, al verla, vuelve a decodificar el texto ya
+    decodificado y corta el documento (la C-355 de 2006 quedaba en el 13 %).
+    """
+    texto_html = path.read_bytes().decode("utf-8", errors="cp1252_por_byte")
+    return CHARSET.sub(lambda m: m.group(1) or "", texto_html)
 
 
 def sopa(html: str) -> BeautifulSoup:
@@ -58,12 +69,18 @@ def limpio(el: Tag) -> str:
     return texto(s)
 
 
-def tabla_a_lineas(tabla: Tag) -> list[str]:
-    """Una tabla de datos (no una caja) como filas "celda | celda"."""
+def tabla_filas(tabla: Tag) -> list[list[str]]:
+    """Celdas de una tabla de datos (no una caja), fila por fila, sin filas vacías."""
     filas = []
     for tr in tabla.find_all("tr"):
+        if tr.find_parent("table") is not tabla:  # filas de tablas anidadas: las lee su tabla
+            continue
         celdas = [limpio(td) for td in tr.find_all(["td", "th"], recursive=False)]
-        celdas = [c for c in celdas if c]
-        if celdas:
-            filas.append(" | ".join(celdas))
+        if any(celdas):
+            filas.append(celdas)
     return filas
+
+
+def tabla_a_lineas(tabla: Tag) -> list[str]:
+    """Una tabla de datos como filas "celda | celda" (texto plano)."""
+    return [" | ".join(c for c in f if c) for f in tabla_filas(tabla)]
