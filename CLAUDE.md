@@ -162,18 +162,32 @@ python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 
 5. Formato: basta con el HTML; no hace falta convertir a PDF. El siguiente
    paso es pasar a Markdown conservando la jerarquía.
 
-## Siguiente paso (no es parte de la descarga)
+## Conversión a Markdown (`src/ingest/`)
 
-Conversión a Markdown, pendiente de implementar:
+```bash
+python -m src.ingest.convertir                  # corpus/raw -> corpus/md/<doc_id>.md + corpus_manifest.json
+python -m src.ingest.auditar_muestra            # 50 .md al azar contra su fuente -> corpus/md/_auditoria/
+pytest tests/
+```
 
-- Jerarquía: en la plantilla del Senado, cada artículo es
-  `<a class="bookmarkaj" name="N">ARTICULO N.</a>` y los encabezados de
-  Libro, Título y Capítulo son `<p class="centrado">`.
-- Texto tachado (`<strike>`/`<del>`/`<s>`): es texto declarado inexequible o
-  derogado. Hay que conservarlo marcado (`~~…~~`) o como no vigente.
-- Hay que quitar el menú del selector, el CSS incrustado y, en los PDF, los
-  encabezados y pies de página repetidos. También normalizar las ligaduras
-  (`ﬁ` → `fi`).
-- `corpus_manifest.json` debe quedar en la raíz del corpus procesado, con
-  `doc_id`, `titulo`, `fuente`, `url`, `fecha_consulta` y `areas`, como pide
-  el enunciado.
+- `convertir` procesa lo que está `ok` en `corpus/raw/corpus_manifest.json`.
+  Es reanudable: salta los `.md` cuyo `sha256_origen` coincide (`--forzar`
+  reconvierte). `corpus/md/` está en `.gitignore`.
+- Conversores (`src/ingest/conversores/`), elegidos por extensión y contenido:
+  `html_plantilla` (Senado, Colpensiones, DIAN, Cancillería), `html_generico`
+  (relatoría de la Corte Constitucional y demás HTML), `pdf` (PyMuPDF) y `doc`
+  (LibreOffice → HTML). Todos devuelven bloques; `markdown.py` los escribe.
+- `jerarquia.py` tiene las reglas de Parte/Libro/Título/Capítulo/Sección,
+  `Artículo N.` y secciones de sentencia. Los niveles de encabezado se asignan
+  por tipo según lo que tenga cada documento: un tipo usa siempre el mismo nivel
+  (puede haber saltos, p. ej. un Título sin Capítulos). El chunker debe usar el
+  texto `Artículo N.` para el ID `doc_id/art_N`, no el nivel.
+- Plantilla del Senado: el texto está entre `<!--Inicio documento-->` y
+  `<!--Fin documento-->`. Los artículos son anclas `<a name>` (con o sin clase
+  `bookmarkaj`); el tachado viene como `<S>`. Las leyes estatutarias traen al
+  final la sentencia de revisión: sus encabezados sin ancla quedan como párrafos.
+- PDF y texto sin marcas: un "ARTÍCULO N" solo cuenta si usa la misma forma
+  que los artículos del documento y sigue la numeración (así no se toman los
+  artículos citados de otra norma).
+- OCR: no implementado. `ocr.py` marca los PDF sin capa de texto
+  (`estado_conversion: "requiere_ocr"`) y documenta cómo enchufar un motor.

@@ -1,2 +1,5 @@
 corpus/raw/
+corpus/md/
 __pycache__/
+.venv/
+.pytest_cache/
