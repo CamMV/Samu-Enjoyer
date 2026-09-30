@@ -38,11 +38,13 @@ Uso:
   python scraper/scrape_corpus.py --max-enlazados 300      # solo los 300 más citados por nivel
   python scraper/scrape_corpus.py --solo "Ley 80"          # filtra el seed por nombre
   python scraper/scrape_corpus.py --seed a.json b.json     # varios archivos de documentos
+  python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 --origen seed,enriquecimiento,muestra
+  python scraper/scrape_corpus.py --seed data/corpus_targets.json --profundidad 0 --fuente Suprema
   python scraper/scrape_corpus.py --pdf                    # además imprime los HTML a PDF (Playwright)
 
 Se puede cortar y volver a correr: lo ya descargado se salta. Lo que falle queda
 con "estado": "falla" en corpus_manifest.json; pon su URL en
-data/urls_manuales.json ({"ley_50_1990": "https://..."}) y vuelve a correr.
+data/fuentes/urls_manuales.json ({"ley_50_1990": "https://..."}) y vuelve a correr.
 """
 from __future__ import annotations
 
@@ -54,6 +56,7 @@ import datetime as dt
 import hashlib
 import html
 import json
+import os
 import re
 import threading
 import time
@@ -71,6 +74,10 @@ CC = "https://www.corteconstitucional.gov.co/relatoria/"
 CSJ_API = "https://consultaprovidenciasbk.cortesuprema.gov.co"
 COLPENSIONES = "https://normativa.colpensiones.gov.co/colpens/docs/"
 FUENTE_SENADO = "Secretaría del Senado - Base documental"
+FUENTES_EXTRA = {
+    "consejodeestado.gov.co": "Consejo de Estado - Relatoría",
+    "dapre.presidencia.gov.co": "Presidencia de la República - Normativa",
+}
 # Sitios con la plantilla del Senado (páginas _prNNN + cajas en js/<página>.js).
 FUENTES_PLANTILLA = {
     "secretariasenado.gov.co": FUENTE_SENADO,
@@ -125,6 +132,7 @@ CAJA_JS = re.compile(
     r"""function insRow\d+\(\)\s*\{\s*var description = new Array\(\);\s*"""
     r"""description\[0\] = "(.*?)";\s*var z=document\.getElementById\('([^']+)'\)""", re.S)
 
+_lock_ce = threading.Lock()
 _session = requests.Session()
 _session.headers.update({"User-Agent": UA, "Accept-Language": "es-CO,es;q=0.9"})
 
@@ -224,12 +232,16 @@ def corte_suprema(tipo: str, num: str, anio: str):
     # Los títulos traen sufijos: "SP1680-2022(60875).pdf", "SC1121-2018 [2007-00128-01].docx".
     objetivo = re.compile(rf"^{tipo}0*{int(num)}-{anio}(?:[\s(\[].*)?\.(pdf|docx?)$", re.I)
     # Primero búsqueda exacta filtrada por año; si no aparece, búsqueda libre sin año.
-    for exacta, filtro_anio, paginas in (("true", anio, 5), ("false", anio, 10), ("true", "", 10)):
+    # Los títulos a veces llevan ceros a la izquierda ("SP073-2023"): se busca con ambas formas.
+    numeros = list(dict.fromkeys([str(int(num)), f"{int(num):03d}"]))
+    intentos = [(n, e, a, p) for n in numeros
+                for e, a, p in (("true", anio, 5), ("false", anio, 10), ("true", "", 10))]
+    for numero, exacta, filtro_anio, paginas in intentos:
         for start in range(0, 10 * paginas, 10):
             gql = ('{ getSearchResult(searchQuery:{ query: "%s%s-%s" typeOfQuery: "%s" start: %d '
                    'isExact: %s magistrate:"" year:"%s" autoSentencia: "" order: "" '
                    'roomTutelas: "" addedQueries: [] }) { searchResults { title onlinePath } numOfResults } }'
-                   % (tipo, num, anio, sala, start, exacta, filtro_anio))
+                   % (tipo, numero, anio, sala, start, exacta, filtro_anio))
             data = get(f"{CSJ_API}/api", method="POST", json={"query": gql}).json()
             res = data["data"]["getSearchResult"]["searchResults"] or []
             hits = [x for x in res if objetivo.match(x["title"])]
@@ -244,6 +256,8 @@ def corte_suprema(tipo: str, num: str, anio: str):
                     es_valido = b"%PDF" in r.content[:20] if ext == "pdf" else r.content[:4] in (
                         b"\xd0\xcf\x11\xe0", b"PK\x03\x04")  # firmas de .doc (OLE) y .docx (zip)
                     if r.ok and es_valido:
+                        if ext != "pdf":  # el nombre en el servidor a veces dice .doc y es un .docx
+                            ext = "docx" if r.content[:4] == b"PK" else "doc"
                         url = f"{CSJ_API}/downloadFile?path={up.quote(path)}"
                         return "Corte Suprema de Justicia - Relatoría", [(url, r.content, ext)], collections.Counter()
             if len(res) < 10:
@@ -361,7 +375,7 @@ def descargar_url(url: str):
     if url.startswith(f"{CSJ_API}/downloadFile"):  # la Corte Suprema descarga por POST
         path = up.unquote(up.parse_qs(up.urlparse(url).query)["path"][0])
         r = get(f"{CSJ_API}/downloadFile", method="POST", json={"path": path})
-        if not r.ok or len(r.content) < 1_000:
+        if not r.ok or len(r.content) < 1_000:  # responde 200 "Not Found" si el archivo no está
             raise NoEncontrado(f"{path} no se pudo descargar de la Corte Suprema")
         return "Corte Suprema de Justicia - Relatoría", [(url, r.content, path.rsplit(".", 1)[-1].lower())], \
             collections.Counter()
@@ -379,8 +393,24 @@ def descargar_url(url: str):
     r = get(url)
     if r.status_code != 200:
         raise NoEncontrado(f"{url} respondió {r.status_code}")
-    es_pdf = b"%PDF" in r.content[:20]
-    return up.urlparse(url).netloc, [(url, r.content, "pdf" if es_pdf else "html")], collections.Counter()
+    if "consejodeestado.gov.co/WebRelatoria" in url and not r.content:
+        # El servicio del Consejo de Estado exige una sesión (cookies de WebRelatoria): se abre
+        # una vez y se reintenta; algunos archivos igual vienen vacíos a ratos.
+        with _lock_ce:
+            if not _session.cookies.get("JSESSIONID", domain="servicios.consejodeestado.gov.co"):
+                get("https://servicios.consejodeestado.gov.co/WebRelatoria/ce/index.xhtml")
+        for espera in (0, 3, 8):
+            time.sleep(espera)
+            r = get(url)
+            if r.content:
+                break
+    cabeza = r.content[:20]
+    ext = ("pdf" if b"%PDF" in cabeza else "doc" if cabeza[:4] == b"\xd0\xcf\x11\xe0"
+           else "docx" if cabeza[:4] == b"PK\x03\x04" else "html")
+    if "consejodeestado.gov.co" in url and ext == "html":  # el servicio responde 200 vacío si no existe
+        raise NoEncontrado(f"{url} no devolvió el documento")
+    fuente = next((f for d, f in FUENTES_EXTRA.items() if d in url), up.urlparse(url).netloc)
+    return fuente, [(url, r.content, ext)], collections.Counter()
 
 
 def resolver(doc: dict, manuales: dict):
@@ -391,7 +421,15 @@ def resolver(doc: dict, manuales: dict):
         return enlazado(doc["stem_enlace"], doc.get("bases_enlace", []))
     url = doc.get("donde_buscar", "")
     if url and "?q=" not in url:  # ya es la URL del documento, no una búsqueda
-        return descargar_url(url)
+        try:
+            return descargar_url(url)
+        except NoEncontrado:
+            # El índice de la Corte Suprema a veces apunta a archivos movidos ("Not Found"):
+            # se vuelve a buscar la sentencia, probando todas sus versiones (PDF, .doc, .docx).
+            if "cortesuprema" in url and t == "jurisprudencia":
+                tipo, n = num.split("-", 1)
+                return corte_suprema(tipo, n, anio)
+            raise
     if t in PDF_DIRECTOS:
         fuente, url = PDF_DIRECTOS[t]
         return fuente, [(url, get(url).content, "pdf")], collections.Counter()
@@ -435,6 +473,8 @@ class Corpus:
         if self.path.exists():
             self.registros = {r["doc_id"]: r for r in json.loads(self.path.read_text(encoding="utf-8"))}
         self.hashes = {h: r["doc_id"] for r in self.registros.values() for h in r.get("sha256", [])}
+        self.tocados: set[str] = set()  # doc_id procesados en esta corrida
+        self.parada = salida.parent / "PARAR"  # si existe, se termina lo que está en curso y se sale
         self.lock = threading.Lock()
 
     def ya_listo(self, did: str) -> bool:
@@ -443,12 +483,47 @@ class Corpus:
                     and all((self.salida / a).exists() for a in r.get("archivos", [])))
 
     def guardar(self):
+        """Une lo de esta corrida con lo que haya en disco y escribe de forma atómica.
+
+        Así se pueden correr varias tandas a la vez (una por fuente, en terminales
+        distintas) sobre la misma carpeta sin que una borre lo que guardó la otra.
+        """
+        bloqueo = self.path.with_suffix(".lock")
         with self.lock:
-            datos = sorted(self.registros.values(), key=lambda r: r["doc_id"])
-            self.path.write_text(json.dumps(datos, ensure_ascii=False, indent=1), encoding="utf-8")
+            inicio = time.time()
+            while True:
+                try:
+                    os.close(os.open(bloqueo, os.O_CREAT | os.O_EXCL))
+                    break
+                except FileExistsError:
+                    if time.time() - inicio > 60:  # bloqueo huérfano de un proceso muerto
+                        bloqueo.unlink(missing_ok=True)
+                    time.sleep(0.2)
+            try:
+                if self.path.exists():
+                    disco = {r["doc_id"]: r for r in json.loads(self.path.read_text(encoding="utf-8"))}
+                    for did, r in disco.items():
+                        if did not in self.tocados:
+                            self.registros[did] = r
+                            for h in r.get("sha256", []):
+                                self.hashes.setdefault(h, did)
+                datos = sorted(self.registros.values(), key=lambda r: r["doc_id"])
+                tmp = self.path.with_suffix(f".{os.getpid()}.tmp")
+                tmp.write_text(json.dumps(datos, ensure_ascii=False, indent=1), encoding="utf-8")
+                for intento in range(50):  # en Windows falla si otro proceso lo está leyendo justo ahora
+                    try:
+                        os.replace(tmp, self.path)
+                        break
+                    except PermissionError:
+                        if intento == 49:
+                            raise
+                        time.sleep(0.2)
+            finally:
+                bloqueo.unlink(missing_ok=True)
 
     def procesar(self, doc: dict) -> dict:
-        did = canonico(doc_id(doc["canonico"]) if "stem_enlace" not in doc else doc_id_senado(doc["stem_enlace"]))
+        did = doc.get("doc_id") or canonico(doc_id(doc["canonico"]) if "stem_enlace" not in doc
+                                            else doc_id_senado(doc["stem_enlace"]))
         registro = {"doc_id": did, "titulo": doc["norma"], "areas": sorted(doc["areas"]),
                     "origen": doc.get("origen", "seed"), "profundidad": doc.get("profundidad", 0)}
         for k in ("items_del_banco", "citado_por", "prioridad", "vigencia", "nota", "tema", "areas_inferidas"):
@@ -456,6 +531,10 @@ class Corpus:
                 registro[k] = doc[k]
         if self.ya_listo(did):
             return self.registros[did]
+        if self.parada.exists():  # parada limpia: no se empiezan documentos nuevos
+            return {"doc_id": did, "estado": "pendiente"}
+        with self.lock:
+            self.tocados.add(did)
         try:
             fuente, partes, enlaces = resolver(doc, self.manuales)
         except Exception as e:  # noqa: BLE001 - se registra y se sigue con el resto
@@ -490,13 +569,17 @@ class Corpus:
         return registro
 
     def correr(self, docs: list[dict], hilos: int):
+        ultimo = time.time()
         with cf.ThreadPoolExecutor(hilos) as ex:
             for i, r in enumerate(ex.map(self.procesar, docs), 1):
+                if r["estado"] == "pendiente":
+                    continue
                 marca = {"ok": "OK ", "duplicado": "== "}.get(r["estado"], "XX ")
                 print(marca, r["doc_id"].ljust(36), r.get("fuente") or r.get("duplicado_de") or r.get("error"),
                       flush=True)
-                if i % 50 == 0:
+                if i % 50 == 0 or time.time() - ultimo > 120:  # checkpoint
                     self.guardar()
+                    ultimo = time.time()
         self.guardar()
 
 
@@ -541,7 +624,9 @@ def main():
                     help="uno o más JSON con la forma de seed_targets.json")
     ap.add_argument("--salida", default=ROOT / "corpus" / "raw", type=Path)
     ap.add_argument("--solo", help="procesa solo normas del seed cuyo nombre contenga este texto")
-    ap.add_argument("--manuales", default=ROOT / "data" / "urls_manuales.json", type=Path,
+    ap.add_argument("--origen", help="solo documentos con estos orígenes (coma): seed,enriquecimiento,muestra,enlace,fuente_nueva")
+    ap.add_argument("--fuente", help="solo documentos cuya fuente contenga este texto, p. ej. 'Suprema' o 'Senado'")
+    ap.add_argument("--manuales", default=ROOT / "data" / "fuentes" / "urls_manuales.json", type=Path,
                     help="JSON {doc_id: url} para normas que no se resuelven solas")
     ap.add_argument("--profundidad", type=int, default=1,
                     help="niveles de hipervínculos a seguir desde el seed (0 = solo seed)")
@@ -556,6 +641,11 @@ def main():
     docs = [d for f in args.seed for d in json.loads(f.read_text(encoding="utf-8"))["documentos"]]
     if args.solo:
         docs = [d for d in docs if args.solo.lower() in d["norma"].lower()]
+    if args.origen:  # descarga por tandas desde data/corpus_targets.json
+        origenes = {o.strip() for o in args.origen.split(",")}
+        docs = [d for d in docs if d.get("origen", "seed") in origenes]
+    if args.fuente:
+        docs = [d for d in docs if args.fuente.lower() in d.get("fuente", "").lower()]
     manuales = json.loads(args.manuales.read_text(encoding="utf-8")) if args.manuales.exists() else {}
     args.salida.mkdir(parents=True, exist_ok=True)
     corpus = Corpus(args.salida, manuales)

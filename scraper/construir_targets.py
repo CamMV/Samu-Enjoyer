@@ -7,7 +7,7 @@ documentos enlazados desde las páginas y cajas del nivel 0 citados al menos
 --min-citas veces. No guarda documentos a disco; solo el JSON.
 
 Uso:
-  python scraper/construir_targets.py --seed data/seed_targets.json data/corpus_nuevos_documentos.json
+  python scraper/construir_targets.py --seed data/seed_targets.json data/fuentes/corpus_nuevos_documentos.json
 """
 from __future__ import annotations
 
@@ -53,10 +53,18 @@ MARCAS = {  # se descargan, pero con metadatos de cuidado
 }
 # Nivel 1: solo normas y sentencias; fuera doctrina y actos administrativos
 # (oficios y conceptos DIAN, resoluciones, circulares, directivas, conceptos del Consejo de Estado).
+# Sin decisiones de la Comunidad Andina en nivel 1: es derecho supranacional (criterio de no
+# transnacionalidad). La Decisión 486 del seed se mantiene porque el reto la pide.
 ENLACE_PERMITIDO = re.compile(
-    r"^(ley|decreto|acto_legislativo|codigo|constitucion|estatuto|decision_comisioncandina|jurisprudencia|csj)[_-]")
+    r"^(ley|decreto|acto_legislativo|codigo|constitucion|estatuto|jurisprudencia|csj)[_-]")
 # Fichas de Colpensiones: st855_11 = T-855 de 2011, sc789_02 = C-789 de 2002, su...: SU.
 FICHA_CC = re.compile(r"s(c|t|u)0*(\d+)_(\d{2})")
+# Nombre con el que scripts/citations.py (evaluador oficial) reconoce estos códigos. El
+# doc_id sigue el nombre del Senado; el canonico usa el del evaluador para cruzar citas.
+CANONICO_EVALUADOR = {
+    "codigo_procedimiento_administrativo": ["cpaca", None, None],
+    "codigo_procedimental_laboral": ["codigo_procesal_trabajo", None, None],
+}
 ERRATAS_SEED = {  # entradas del seed que no existen tal como están escritas
     "ley_11500_2007": "Probable errata; la Ley 1150 de 2007 ya está en el seed.",
     "ley_1150_2005": "Probable errata; la Ley 1150 de 2007 ya está en el seed.",
@@ -125,6 +133,37 @@ def agregar(path: Path, lista: Path, origen: str):
     """Suma al JSON maestro (nivel 0) los documentos de otra lista, sin reconstruir todo."""
     t = json.loads(path.read_text(encoding="utf-8"))
     ids = {d["doc_id"] for d in t["documentos"] if d["nivel"] == 0}
+    if origen == "fuente_nueva":
+        # Listas de data/fuentes/: no reemplazan nada existente (cualquier nivel) y ya traen URL de
+        # la lista oficial de la fuente, así que se agregan sin descargar cada documento.
+        todos = {d["doc_id"] for d in t["documentos"]} | {x["doc_id"] for x in t["excluidos"]}
+        n = 0
+        for d in json.loads(lista.read_text(encoding="utf-8"))["documentos"]:
+            did = s.canonico(s.doc_id(d["canonico"]))
+            if did in todos or did in EXCLUIR:
+                continue
+            todos.add(did)
+            t["documentos"].append({
+                "doc_id": did, "norma": d["norma"], "canonico": d["canonico"], "nivel": 0, "profundidad": 0,
+                "origen": "fuente_nueva", "items_del_banco": 0, "areas": d["areas"],
+                "areas_inferidas": d.get("areas_inferidas", True), "tema": d.get("tema"), "fuente": d["fuente"],
+                "donde_buscar": d["donde_buscar"], "formato": d["formato"], "archivos_estimados": 1,
+                "prioridad": "normal", **({"nota": d["nota"]} if d.get("nota") else {})})
+            n += 1
+        print(f"+{n} documentos de {lista.name}")
+        # Normas del seed que no se encontraban y que la fuente nueva sí trae: recuperan su origen
+        # seed (con items_del_banco y prioridad alta) y salen de no_encontrados.
+        faltantes = {x["doc_id"]: x for x in t["no_encontrados"]}
+        for d in t["documentos"]:
+            f = faltantes.get(d["doc_id"])
+            if f and f.get("origen") == "seed":
+                d.update(origen="seed", items_del_banco=f.get("items_del_banco", 0), prioridad="alta",
+                         nota=(d.get("nota", "") + " Norma del seed recuperada desde " + d["fuente"] + ".").strip())
+                del faltantes[d["doc_id"]]
+                print("  recuperada del seed:", d["doc_id"])
+        t["no_encontrados"] = list(faltantes.values())
+        path.write_text(json.dumps(t, ensure_ascii=False, indent=1), encoding="utf-8")
+        return refiltrar(path)
     nuevos = []
     for d in json.loads(lista.read_text(encoding="utf-8"))["documentos"]:
         did = s.canonico(s.doc_id(d["canonico"]))
@@ -200,8 +239,11 @@ def refiltrar(path: Path):
         else:
             n = normalizar_enlace(stem)
         if not ENLACE_PERMITIDO.match(n["doc_id"]):
+            motivo = ("derecho supranacional (Comunidad Andina): fuera por no transnacionalidad"
+                      if "candina" in n["doc_id"] else
+                      "doctrina o acto administrativo: en nivel 1 solo van normas y sentencias")
             filtrados.append({"doc_id": n["doc_id"], "norma": n["norma"], "citado_por": d["citado_por"],
-                              "motivo": "doctrina o acto administrativo: en nivel 1 solo van normas y sentencias"})
+                              "donde_buscar": d["donde_buscar"], "motivo": motivo})
             continue
         if n["doc_id"] in vistos:
             continue
@@ -221,6 +263,9 @@ def refiltrar(path: Path):
             d |= {"prioridad": prioridad, "nota": nota} | ({"vigencia": vigencia} if vigencia else {})
         nivel1.append(d)
     t["documentos"] = nivel0 + nivel1
+    for d in t["documentos"]:
+        if d["doc_id"] in CANONICO_EVALUADOR:
+            d["canonico"] = CANONICO_EVALUADOR[d["doc_id"]]
     ya_excluidos = {x["doc_id"] for x in t["excluidos"]}
     t["excluidos"] += [x for x in filtrados if x["doc_id"] not in ya_excluidos]
     t["no_encontrados"] = [x for x in t["no_encontrados"] if x.get("origen") != "enlace"
@@ -266,7 +311,7 @@ def main():
     if not args.seed:
         ap.error("--seed es obligatorio salvo con --refiltrar")
 
-    manuales = json.loads((ROOT / "data" / "urls_manuales.json").read_text(encoding="utf-8"))
+    manuales = json.loads((ROOT / "data" / "fuentes" / "urls_manuales.json").read_text(encoding="utf-8"))
     docs, vistos, excluidos, no_encontrados = [], set(), [], []
     for i, f in enumerate(args.seed):
         for d in json.loads(f.read_text(encoding="utf-8"))["documentos"]:

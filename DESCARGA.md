@@ -1,0 +1,73 @@
+# Descarga del corpus en este PC — cómo parar y retomar
+
+Descarga de los 31.157 documentos de `data/corpus_targets.json` a `corpus/raw/`
+(disco T, ~13-26 GB). Corre en 4 carriles paralelos, uno por servidor, desacoplados
+de la terminal.
+
+## Órdenes (desde la raíz del repo)
+
+```bash
+python scraper/descargar.py estado
+```
+Avance por carril, fallas, GB en disco y horas restantes (el ritmo sale de comparar con el `estado` anterior).
+
+```bash
+python scraper/descargar.py parar
+```
+**Antes de suspender o mover el PC.** Parada limpia: cada carril termina lo que tiene en curso, guarda y sale (1-2 min).
+
+```bash
+python scraper/descargar.py iniciar
+```
+**Al volver.** Relanza lo que no esté corriendo. Lo ya descargado se salta y las fallas se reintentan.
+
+- Si no hay tiempo para la parada limpia: `python scraper/descargar.py parar --forzar`
+  (se pierde como mucho lo de los últimos 2 minutos, que se vuelve a bajar).
+- Si el PC se suspendió sin parar: al despertar, correr `estado`. Si algún carril
+  aparece detenido o con muchas fallas de red, correr `iniciar`.
+
+## Carriles
+
+| Carril | Qué baja | Docs |
+|---|---|---|
+| A | Senado/Colpensiones: núcleo (seed, enriquecimiento, muestra) → nivel 1 → UVT DIAN | 8.776 |
+| B | Corte Constitucional C, SU y T | 10.794 |
+| C | Corte Suprema | 7.946 |
+| D | Presidencia → Consejo de Estado | 3.641 |
+
+## Dónde está cada cosa
+
+- `corpus/raw/<doc_id>/…` documentos; `corpus/raw/corpus_manifest.json` registro (estado, url, fecha).
+- `corpus/descarga/log_X.txt` log de cada carril; `carril_X.json` paso y procesos.
+- `corpus/PARAR` existe mientras hay una parada pedida (`iniciar` lo borra).
+- Todo `corpus/raw/` está fuera de git.
+
+## Bitácora de checkpoints
+
+| Fecha y hora | Evento | Total ok | Nota |
+|---|---|---|---|
+| 2026-09-30 00:34 | Antes de lanzar | 291 / 31.157 | 291 documentos de las pruebas (mini-corpus) se reutilizan |
+| 2026-09-30 00:34 | Lanzamiento de los 4 carriles | 291 | |
+| 2026-09-30 00:37 | Prueba de `parar` (40 s) | 6.311 | Parada limpia OK, nada perdido |
+| 2026-09-30 00:40 | `iniciar` otra vez | 6.311 | Corregida la extensión .doc/.docx de la Corte Suprema |
+| 2026-09-30 00:44 | Carriles A, C y D cerrados a mano | 17.877 | Nada perdido |
+| 2026-09-30 00:47 | `iniciar` (ahora por WMI, sin ventanas) | 17.877 | Retoma sin repetir |
+| 2026-09-30 01:05 | A, B y D murieron al guardar (manifest leído por `estado`); corregido y relanzado | 22.348 | Lo no guardado se vuelve a bajar |
+| 2026-09-30 01:23 | Descarga terminada | 31.037 | 117 fallas permanentes; el reintento no recupera ninguna |
+| 2026-09-30 02:30 | Auditoría con `--arreglar` | 31.037 | 0 dañados, 0 repetidos, 51 .doc renombrados a .docx |
+
+## Resultado final
+
+**31.040 de 31.157 documentos (99,6 %)**: 31.037 ok + 3 duplicados (mismo contenido que otro
+doc_id). 32.348 archivos, 24,86 GB. Detalle en `corpus/descarga/auditoria.json`.
+
+- **117 fallas, todas `NoEncontrado` en la fuente oficial** (no hay que buscarlas en fuentes no
+  oficiales): 90 de la Corte Suprema (su buscador ya no las encuentra), 26 del Consejo de Estado (el
+  servidor devuelve el archivo vacío) y 1 de la Corte Constitucional (SU-163/23 no publicada).
+- **Integridad:** ningún archivo truncado ni dañado. Los PDF de Función Pública no traen `%%EOF`,
+  pero abren completos (terminan con su pie de creación).
+- **Normas del Senado:** todas con sus cajas de concordancias incrustadas. 5 tienen anclas mal
+  escritas en el propio Senado (`ley_734_2002`, `acto_legislativo_1_1999`, `decreto_663_1993`,
+  `ley_294_1996`, `ley_701_2001`), pero el texto de esos artículos está: no falta contenido.
+
+Para volver a auditar: `python scraper/auditar_descarga.py` (solo lectura, ~25 min).

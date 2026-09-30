@@ -1,0 +1,5224 @@
+{
+  "seed": 20260830,
+  "documentos": [
+    {
+      "norma": "Codigo civil",
+      "canonico": [
+        "codigo_civil",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/codigo_civil.html"
+    },
+    {
+      "norma": "Codigo comercio",
+      "canonico": [
+        "codigo_comercio",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/codigo_comercio.html"
+    },
+    {
+      "norma": "Codigo penal",
+      "canonico": [
+        "codigo_penal",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0599_2000.html"
+    },
+    {
+      "norma": "Codigo procedimiento penal",
+      "canonico": [
+        "codigo_procedimiento_penal",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0906_2004.html"
+    },
+    {
+      "norma": "Codigo procedimiento administrativo",
+      "canonico": [
+        "codigo_procedimiento_administrativo",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1437_2011.html"
+    },
+    {
+      "norma": "Codigo penitenciario",
+      "canonico": [
+        "codigo_penitenciario",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0065_1993.html"
+    },
+    {
+      "norma": "Codigo penal militar",
+      "canonico": [
+        "codigo_penal_militar",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1407_2010.html"
+    },
+    {
+      "norma": "Codigo disciplinario abogado",
+      "canonico": [
+        "codigo_disciplinario_abogado",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1123_2007.html"
+    },
+    {
+      "norma": "Codigo minas",
+      "canonico": [
+        "codigo_minas",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0685_2001.html"
+    },
+    {
+      "norma": "Codigo regimen municipal",
+      "canonico": [
+        "codigo_regimen_municipal",
+        null,
+        null
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1333_1986.htm"
+    },
+    {
+      "norma": "Acto Legislativo 01 de 2016",
+      "canonico": [
+        "acto_legislativo",
+        "01",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/acto_legislativo_01_2016.htm"
+    },
+    {
+      "norma": "Acto Legislativo 01 de 2017",
+      "canonico": [
+        "acto_legislativo",
+        "01",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/acto_legislativo_01_2017.htm"
+    },
+    {
+      "norma": "Acto Legislativo 02 de 2015",
+      "canonico": [
+        "acto_legislativo",
+        "02",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/acto_legislativo_02_2015.htm"
+    },
+    {
+      "norma": "Acto Legislativo 03 de 2011",
+      "canonico": [
+        "acto_legislativo",
+        "03",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/acto_legislativo_03_2011.htm"
+    },
+    {
+      "norma": "Acto Legislativo 04 de 2019",
+      "canonico": [
+        "acto_legislativo",
+        "04",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/acto_legislativo_04_2019.htm"
+    },
+    {
+      "norma": "Decreto 2591 de 1991",
+      "canonico": [
+        "decreto",
+        "2591",
+        "1991"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/decreto_2591_1991.html"
+    },
+    {
+      "norma": "Decreto 306 de 1992",
+      "canonico": [
+        "decreto",
+        "306",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_0306_1992.htm"
+    },
+    {
+      "norma": "Ley 5 de 1992",
+      "canonico": [
+        "ley",
+        "5",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0005_1992.html"
+    },
+    {
+      "norma": "Ley 134 de 1994",
+      "canonico": [
+        "ley",
+        "134",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0134_1994.html"
+    },
+    {
+      "norma": "Ley 1757 de 2015",
+      "canonico": [
+        "ley",
+        "1757",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1757_2015.html"
+    },
+    {
+      "norma": "Ley 270 de 1996",
+      "canonico": [
+        "ley",
+        "270",
+        "1996"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0270_1996.html"
+    },
+    {
+      "norma": "Ley 472 de 1998",
+      "canonico": [
+        "ley",
+        "472",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0472_1998.html"
+    },
+    {
+      "norma": "Ley 393 de 1997",
+      "canonico": [
+        "ley",
+        "393",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0393_1997.html"
+    },
+    {
+      "norma": "Ley 1712 de 2014",
+      "canonico": [
+        "ley",
+        "1712",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1712_2014.html"
+    },
+    {
+      "norma": "Ley 1751 de 2015",
+      "canonico": [
+        "ley",
+        "1751",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1751_2015.html"
+    },
+    {
+      "norma": "Ley 1122 de 2007",
+      "canonico": [
+        "ley",
+        "1122",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1122_2007.html"
+    },
+    {
+      "norma": "Ley 1438 de 2011",
+      "canonico": [
+        "ley",
+        "1438",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1438_2011.html"
+    },
+    {
+      "norma": "Ley 1733 de 2014",
+      "canonico": [
+        "ley",
+        "1733",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1733_2014.html"
+    },
+    {
+      "norma": "Ley 1618 de 2013",
+      "canonico": [
+        "ley",
+        "1618",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1618_2013.html"
+    },
+    {
+      "norma": "Ley 1251 de 2008",
+      "canonico": [
+        "ley",
+        "1251",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1251_2008.html"
+    },
+    {
+      "norma": "Ley 1622 de 2013",
+      "canonico": [
+        "ley",
+        "1622",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1622_2013.html"
+    },
+    {
+      "norma": "Ley 1448 de 2011",
+      "canonico": [
+        "ley",
+        "1448",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1448_2011.html"
+    },
+    {
+      "norma": "Ley 70 de 1993",
+      "canonico": [
+        "ley",
+        "70",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0070_1993.html"
+    },
+    {
+      "norma": "Ley 130 de 1994",
+      "canonico": [
+        "ley",
+        "130",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0130_1994.html"
+    },
+    {
+      "norma": "Ley 1475 de 2011",
+      "canonico": [
+        "ley",
+        "1475",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1475_2011.html"
+    },
+    {
+      "norma": "Ley 581 de 2000",
+      "canonico": [
+        "ley",
+        "581",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0581_2000.html"
+    },
+    {
+      "norma": "Ley 1621 de 2013",
+      "canonico": [
+        "ley",
+        "1621",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1621_2013.html"
+    },
+    {
+      "norma": "Ley 1957 de 2019",
+      "canonico": [
+        "ley",
+        "1957",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1957_2019.html"
+    },
+    {
+      "norma": "Ley 2080 de 2021",
+      "canonico": [
+        "ley",
+        "2080",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2080_2021.html"
+    },
+    {
+      "norma": "Ley 489 de 1998",
+      "canonico": [
+        "ley",
+        "489",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0489_1998.html"
+    },
+    {
+      "norma": "Ley 909 de 2004",
+      "canonico": [
+        "ley",
+        "909",
+        "2004"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0909_2004.html"
+    },
+    {
+      "norma": "Ley 1474 de 2011",
+      "canonico": [
+        "ley",
+        "1474",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1474_2011.html"
+    },
+    {
+      "norma": "Ley 190 de 1995",
+      "canonico": [
+        "ley",
+        "190",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0190_1995.html"
+    },
+    {
+      "norma": "Ley 2195 de 2022",
+      "canonico": [
+        "ley",
+        "2195",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2195_2022.html"
+    },
+    {
+      "norma": "Ley 1778 de 2016",
+      "canonico": [
+        "ley",
+        "1778",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho comercial y sociedades",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1778_2016.html"
+    },
+    {
+      "norma": "Ley 2094 de 2021",
+      "canonico": [
+        "ley",
+        "2094",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2094_2021.html"
+    },
+    {
+      "norma": "Ley 610 de 2000",
+      "canonico": [
+        "ley",
+        "610",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0610_2000.html"
+    },
+    {
+      "norma": "Ley 42 de 1993",
+      "canonico": [
+        "ley",
+        "42",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0042_1993.html"
+    },
+    {
+      "norma": "Decreto 403 de 2020",
+      "canonico": [
+        "decreto",
+        "403",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_0403_2020.htm"
+    },
+    {
+      "norma": "Ley 1882 de 2018",
+      "canonico": [
+        "ley",
+        "1882",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1882_2018.html"
+    },
+    {
+      "norma": "Ley 2022 de 2020",
+      "canonico": [
+        "ley",
+        "2022",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2022_2020.html"
+    },
+    {
+      "norma": "Ley 1508 de 2012",
+      "canonico": [
+        "ley",
+        "1508",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1508_2012.html"
+    },
+    {
+      "norma": "Ley 1682 de 2013",
+      "canonico": [
+        "ley",
+        "1682",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1682_2013.html"
+    },
+    {
+      "norma": "Ley 142 de 1994",
+      "canonico": [
+        "ley",
+        "142",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0142_1994.html"
+    },
+    {
+      "norma": "Ley 143 de 1994",
+      "canonico": [
+        "ley",
+        "143",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0143_1994.html"
+    },
+    {
+      "norma": "Ley 1341 de 2009",
+      "canonico": [
+        "ley",
+        "1341",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1341_2009.html"
+    },
+    {
+      "norma": "Ley 1978 de 2019",
+      "canonico": [
+        "ley",
+        "1978",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1978_2019.html"
+    },
+    {
+      "norma": "Ley 136 de 1994",
+      "canonico": [
+        "ley",
+        "136",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0136_1994.html"
+    },
+    {
+      "norma": "Ley 1551 de 2012",
+      "canonico": [
+        "ley",
+        "1551",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1551_2012.html"
+    },
+    {
+      "norma": "Ley 2200 de 2022",
+      "canonico": [
+        "ley",
+        "2200",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2200_2022.html"
+    },
+    {
+      "norma": "Ley 1454 de 2011",
+      "canonico": [
+        "ley",
+        "1454",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1454_2011.html"
+    },
+    {
+      "norma": "Ley 1617 de 2013",
+      "canonico": [
+        "ley",
+        "1617",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1617_2013.html"
+    },
+    {
+      "norma": "Ley 1625 de 2013",
+      "canonico": [
+        "ley",
+        "1625",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1625_2013.html"
+    },
+    {
+      "norma": "Ley 388 de 1997",
+      "canonico": [
+        "ley",
+        "388",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0388_1997.html"
+    },
+    {
+      "norma": "Ley 99 de 1993",
+      "canonico": [
+        "ley",
+        "99",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0099_1993.html"
+    },
+    {
+      "norma": "Ley 1333 de 2009",
+      "canonico": [
+        "ley",
+        "1333",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1333_2009.html"
+    },
+    {
+      "norma": "Ley 2387 de 2024",
+      "canonico": [
+        "ley",
+        "2387",
+        "2024"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2387_2024.html"
+    },
+    {
+      "norma": "Ley 1523 de 2012",
+      "canonico": [
+        "ley",
+        "1523",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1523_2012.html"
+    },
+    {
+      "norma": "Ley 1715 de 2014",
+      "canonico": [
+        "ley",
+        "1715",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1715_2014.html"
+    },
+    {
+      "norma": "Ley 1787 de 2016",
+      "canonico": [
+        "ley",
+        "1787",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1787_2016.html"
+    },
+    {
+      "norma": "Ley 1955 de 2019",
+      "canonico": [
+        "ley",
+        "1955",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1955_2019.html"
+    },
+    {
+      "norma": "Ley 2294 de 2023",
+      "canonico": [
+        "ley",
+        "2294",
+        "2023"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2294_2023.html"
+    },
+    {
+      "norma": "Ley 1066 de 2006",
+      "canonico": [
+        "ley",
+        "1066",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1066_2006.html"
+    },
+    {
+      "norma": "Decreto 19 de 2012",
+      "canonico": [
+        "decreto",
+        "19",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/decreto_0019_2012.html"
+    },
+    {
+      "norma": "Decreto 2106 de 2019",
+      "canonico": [
+        "decreto",
+        "2106",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_2106_2019.htm"
+    },
+    {
+      "norma": "Decreto 1083 de 2015",
+      "canonico": [
+        "decreto",
+        "1083",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=62866"
+    },
+    {
+      "norma": "Decreto 1076 de 2015",
+      "canonico": [
+        "decreto",
+        "1076",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1076_2015.htm"
+    },
+    {
+      "norma": "Decreto 1081 de 2015",
+      "canonico": [
+        "decreto",
+        "1081",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1081_2015.htm"
+    },
+    {
+      "norma": "Ley 1709 de 2014",
+      "canonico": [
+        "ley",
+        "1709",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1709_2014.html"
+    },
+    {
+      "norma": "Ley 1826 de 2017",
+      "canonico": [
+        "ley",
+        "1826",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1826_2017.html"
+    },
+    {
+      "norma": "Ley 975 de 2005",
+      "canonico": [
+        "ley",
+        "975",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0975_2005.html"
+    },
+    {
+      "norma": "Ley 1592 de 2012",
+      "canonico": [
+        "ley",
+        "1592",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1592_2012.html"
+    },
+    {
+      "norma": "Ley 1820 de 2016",
+      "canonico": [
+        "ley",
+        "1820",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1820_2016.html"
+    },
+    {
+      "norma": "Ley 1922 de 2018",
+      "canonico": [
+        "ley",
+        "1922",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1922_2018.html"
+    },
+    {
+      "norma": "Ley 1453 de 2011",
+      "canonico": [
+        "ley",
+        "1453",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1453_2011.html"
+    },
+    {
+      "norma": "Ley 1142 de 2007",
+      "canonico": [
+        "ley",
+        "1142",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1142_2007.html"
+    },
+    {
+      "norma": "Ley 2197 de 2022",
+      "canonico": [
+        "ley",
+        "2197",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2197_2022.html"
+    },
+    {
+      "norma": "Ley 1760 de 2015",
+      "canonico": [
+        "ley",
+        "1760",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1760_2015.html"
+    },
+    {
+      "norma": "Ley 1786 de 2016",
+      "canonico": [
+        "ley",
+        "1786",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1786_2016.html"
+    },
+    {
+      "norma": "Ley 1908 de 2018",
+      "canonico": [
+        "ley",
+        "1908",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1908_2018.html"
+    },
+    {
+      "norma": "Ley 1121 de 2006",
+      "canonico": [
+        "ley",
+        "1121",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1121_2006.html"
+    },
+    {
+      "norma": "Ley 1273 de 2009",
+      "canonico": [
+        "ley",
+        "1273",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1273_2009.html"
+    },
+    {
+      "norma": "Ley 1257 de 2008",
+      "canonico": [
+        "ley",
+        "1257",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1257_2008.html"
+    },
+    {
+      "norma": "Ley 1761 de 2015",
+      "canonico": [
+        "ley",
+        "1761",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1761_2015.html"
+    },
+    {
+      "norma": "Ley 1639 de 2013",
+      "canonico": [
+        "ley",
+        "1639",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1639_2013.html"
+    },
+    {
+      "norma": "Ley 1773 de 2016",
+      "canonico": [
+        "ley",
+        "1773",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1773_2016.html"
+    },
+    {
+      "norma": "Ley 1482 de 2011",
+      "canonico": [
+        "ley",
+        "1482",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1482_2011.html"
+    },
+    {
+      "norma": "Ley 1752 de 2015",
+      "canonico": [
+        "ley",
+        "1752",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1752_2015.html"
+    },
+    {
+      "norma": "Ley 1236 de 2008",
+      "canonico": [
+        "ley",
+        "1236",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1236_2008.html"
+    },
+    {
+      "norma": "Ley 1146 de 2007",
+      "canonico": [
+        "ley",
+        "1146",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1146_2007.html"
+    },
+    {
+      "norma": "Ley 1329 de 2009",
+      "canonico": [
+        "ley",
+        "1329",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1329_2009.html"
+    },
+    {
+      "norma": "Ley 1918 de 2018",
+      "canonico": [
+        "ley",
+        "1918",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1918_2018.html"
+    },
+    {
+      "norma": "Ley 2081 de 2021",
+      "canonico": [
+        "ley",
+        "2081",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2081_2021.html"
+    },
+    {
+      "norma": "Ley 1719 de 2014",
+      "canonico": [
+        "ley",
+        "1719",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1719_2014.html"
+    },
+    {
+      "norma": "Ley 985 de 2005",
+      "canonico": [
+        "ley",
+        "985",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0985_2005.html"
+    },
+    {
+      "norma": "Ley 1426 de 2010",
+      "canonico": [
+        "ley",
+        "1426",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1426_2010.html"
+    },
+    {
+      "norma": "Ley 1542 de 2012",
+      "canonico": [
+        "ley",
+        "1542",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1542_2012.html"
+    },
+    {
+      "norma": "Ley 1850 de 2017",
+      "canonico": [
+        "ley",
+        "1850",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1850_2017.html"
+    },
+    {
+      "norma": "Ley 1696 de 2013",
+      "canonico": [
+        "ley",
+        "1696",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1696_2013.html"
+    },
+    {
+      "norma": "Ley 1774 de 2016",
+      "canonico": [
+        "ley",
+        "1774",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1774_2016.html"
+    },
+    {
+      "norma": "Ley 1762 de 2015",
+      "canonico": [
+        "ley",
+        "1762",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1762_2015.html"
+    },
+    {
+      "norma": "Ley 2111 de 2021",
+      "canonico": [
+        "ley",
+        "2111",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2111_2021.html"
+    },
+    {
+      "norma": "Ley 1032 de 2006",
+      "canonico": [
+        "ley",
+        "1032",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1032_2006.html"
+    },
+    {
+      "norma": "Ley 2292 de 2023",
+      "canonico": [
+        "ley",
+        "2292",
+        "2023"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2292_2023.html"
+    },
+    {
+      "norma": "Ley 1765 de 2015",
+      "canonico": [
+        "ley",
+        "1765",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1765_2015.html"
+    },
+    {
+      "norma": "Ley 30 de 1986",
+      "canonico": [
+        "ley",
+        "30",
+        "1986"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=2774"
+    },
+    {
+      "norma": "Ley 2213 de 2022",
+      "canonico": [
+        "ley",
+        "2213",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2213_2022.html"
+    },
+    {
+      "norma": "Ley 1285 de 2009",
+      "canonico": [
+        "ley",
+        "1285",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1285_2009.html"
+    },
+    {
+      "norma": "Ley 2430 de 2024",
+      "canonico": [
+        "ley",
+        "2430",
+        "2024"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2430_2024.html"
+    },
+    {
+      "norma": "Ley 1395 de 2010",
+      "canonico": [
+        "ley",
+        "1395",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1395_2010.html"
+    },
+    {
+      "norma": "Ley 446 de 1998",
+      "canonico": [
+        "ley",
+        "446",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0446_1998.html"
+    },
+    {
+      "norma": "Ley 1194 de 2008",
+      "canonico": [
+        "ley",
+        "1194",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1194_2008.html"
+    },
+    {
+      "norma": "Ley 794 de 2003",
+      "canonico": [
+        "ley",
+        "794",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0794_2003.html"
+    },
+    {
+      "norma": "Decreto 1069 de 2015",
+      "canonico": [
+        "decreto",
+        "1069",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1069_2015.htm"
+    },
+    {
+      "norma": "Ley 222 de 1995",
+      "canonico": [
+        "ley",
+        "222",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0222_1995.html"
+    },
+    {
+      "norma": "Ley 1314 de 2009",
+      "canonico": [
+        "ley",
+        "1314",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1314_2009.html"
+    },
+    {
+      "norma": "Decreto 2420 de 2015",
+      "canonico": [
+        "decreto",
+        "2420",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_2420_2015.htm"
+    },
+    {
+      "norma": "Ley 1676 de 2013",
+      "canonico": [
+        "ley",
+        "1676",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1676_2013.html"
+    },
+    {
+      "norma": "Ley 2069 de 2020",
+      "canonico": [
+        "ley",
+        "2069",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2069_2020.html"
+    },
+    {
+      "norma": "Ley 1429 de 2010",
+      "canonico": [
+        "ley",
+        "1429",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1429_2010.html"
+    },
+    {
+      "norma": "Ley 1231 de 2008",
+      "canonico": [
+        "ley",
+        "1231",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1231_2008.html"
+    },
+    {
+      "norma": "Ley 2024 de 2020",
+      "canonico": [
+        "ley",
+        "2024",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2024_2020.html"
+    },
+    {
+      "norma": "Ley 43 de 1990",
+      "canonico": [
+        "ley",
+        "43",
+        "1990"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0043_1990.htm"
+    },
+    {
+      "norma": "Ley 79 de 1988",
+      "canonico": [
+        "ley",
+        "79",
+        "1988"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0079_1988.htm"
+    },
+    {
+      "norma": "Ley 454 de 1998",
+      "canonico": [
+        "ley",
+        "454",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0454_1998.html"
+    },
+    {
+      "norma": "Ley 1527 de 2012",
+      "canonico": [
+        "ley",
+        "1527",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1527_2012.html"
+    },
+    {
+      "norma": "Ley 1901 de 2018",
+      "canonico": [
+        "ley",
+        "1901",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1901_2018.html"
+    },
+    {
+      "norma": "Ley 590 de 2000",
+      "canonico": [
+        "ley",
+        "590",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0590_2000.html"
+    },
+    {
+      "norma": "Ley 905 de 2004",
+      "canonico": [
+        "ley",
+        "905",
+        "2004"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0905_2004.html"
+    },
+    {
+      "norma": "Ley 1727 de 2014",
+      "canonico": [
+        "ley",
+        "1727",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1727_2014.html"
+    },
+    {
+      "norma": "Ley 550 de 1999",
+      "canonico": [
+        "ley",
+        "550",
+        "1999"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0550_1999.html"
+    },
+    {
+      "norma": "Ley 964 de 2005",
+      "canonico": [
+        "ley",
+        "964",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0964_2005.html"
+    },
+    {
+      "norma": "Ley 510 de 1999",
+      "canonico": [
+        "ley",
+        "510",
+        "1999"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0510_1999.html"
+    },
+    {
+      "norma": "Ley 795 de 2003",
+      "canonico": [
+        "ley",
+        "795",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0795_2003.html"
+    },
+    {
+      "norma": "Decreto 2555 de 2010",
+      "canonico": [
+        "decreto",
+        "2555",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_2555_2010.htm"
+    },
+    {
+      "norma": "Ley 1735 de 2014",
+      "canonico": [
+        "ley",
+        "1735",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1735_2014.html"
+    },
+    {
+      "norma": "Ley 546 de 1999",
+      "canonico": [
+        "ley",
+        "546",
+        "1999"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0546_1999.html"
+    },
+    {
+      "norma": "Ley 1834 de 2017",
+      "canonico": [
+        "ley",
+        "1834",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1834_2017.html"
+    },
+    {
+      "norma": "Decreto 1074 de 2015",
+      "canonico": [
+        "decreto",
+        "1074",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=76608"
+    },
+    {
+      "norma": "Ley 675 de 2001",
+      "canonico": [
+        "ley",
+        "675",
+        "2001"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0675_2001.html"
+    },
+    {
+      "norma": "Ley 791 de 2002",
+      "canonico": [
+        "ley",
+        "791",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0791_2002.html"
+    },
+    {
+      "norma": "Ley 95 de 1890",
+      "canonico": [
+        "ley",
+        "95",
+        "1890"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0095_1890.htm"
+    },
+    {
+      "norma": "Ley 1579 de 2012",
+      "canonico": [
+        "ley",
+        "1579",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1579_2012.html"
+    },
+    {
+      "norma": "Ley 1561 de 2012",
+      "canonico": [
+        "ley",
+        "1561",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1561_2012.html"
+    },
+    {
+      "norma": "Ley 1996 de 2019",
+      "canonico": [
+        "ley",
+        "1996",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1996_2019.html"
+    },
+    {
+      "norma": "Ley 258 de 1996",
+      "canonico": [
+        "ley",
+        "258",
+        "1996"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0258_1996.html"
+    },
+    {
+      "norma": "Ley 9 de 1989",
+      "canonico": [
+        "ley",
+        "9",
+        "1989"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0009_1989.htm"
+    },
+    {
+      "norma": "Ley 1537 de 2012",
+      "canonico": [
+        "ley",
+        "1537",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1537_2012.html"
+    },
+    {
+      "norma": "Ley 2079 de 2021",
+      "canonico": [
+        "ley",
+        "2079",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2079_2021.html"
+    },
+    {
+      "norma": "Ley 1673 de 2013",
+      "canonico": [
+        "ley",
+        "1673",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1673_2013.html"
+    },
+    {
+      "norma": "Decreto 1260 de 1970",
+      "canonico": [
+        "decreto",
+        "1260",
+        "1970"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.cancilleria.gov.co/normograma/compilacion/docs/decreto_1260_1970.htm"
+    },
+    {
+      "norma": "Decreto 902 de 1988",
+      "canonico": [
+        "decreto",
+        "902",
+        "1988"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_0902_1988.htm"
+    },
+    {
+      "norma": "Ley 1060 de 2006",
+      "canonico": [
+        "ley",
+        "1060",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1060_2006.html"
+    },
+    {
+      "norma": "Ley 25 de 1992",
+      "canonico": [
+        "ley",
+        "25",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0025_1992.html"
+    },
+    {
+      "norma": "Ley 1 de 1976",
+      "canonico": [
+        "ley",
+        "1",
+        "1976"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0001_1976.htm"
+    },
+    {
+      "norma": "Ley 28 de 1932",
+      "canonico": [
+        "ley",
+        "28",
+        "1932"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0028_1932.htm"
+    },
+    {
+      "norma": "Ley 70 de 1931",
+      "canonico": [
+        "ley",
+        "70",
+        "1931"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0070_1931.htm"
+    },
+    {
+      "norma": "Ley 294 de 1996",
+      "canonico": [
+        "ley",
+        "294",
+        "1996"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0294_1996.html"
+    },
+    {
+      "norma": "Ley 1959 de 2019",
+      "canonico": [
+        "ley",
+        "1959",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1959_2019.html"
+    },
+    {
+      "norma": "Ley 1361 de 2009",
+      "canonico": [
+        "ley",
+        "1361",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1361_2009.html"
+    },
+    {
+      "norma": "Ley 1857 de 2017",
+      "canonico": [
+        "ley",
+        "1857",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1857_2017.html"
+    },
+    {
+      "norma": "Ley 311 de 1996",
+      "canonico": [
+        "ley",
+        "311",
+        "1996"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0311_1996.html"
+    },
+    {
+      "norma": "Ley 2097 de 2021",
+      "canonico": [
+        "ley",
+        "2097",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2097_2021.html"
+    },
+    {
+      "norma": "Ley 1878 de 2018",
+      "canonico": [
+        "ley",
+        "1878",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1878_2018.html"
+    },
+    {
+      "norma": "Ley 1804 de 2016",
+      "canonico": [
+        "ley",
+        "1804",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1804_2016.html"
+    },
+    {
+      "norma": "Ley 2089 de 2021",
+      "canonico": [
+        "ley",
+        "2089",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2089_2021.html"
+    },
+    {
+      "norma": "Ley 2126 de 2021",
+      "canonico": [
+        "ley",
+        "2126",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2126_2021.html"
+    },
+    {
+      "norma": "Ley 2215 de 2022",
+      "canonico": [
+        "ley",
+        "2215",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2215_2022.html"
+    },
+    {
+      "norma": "Ley 2277 de 2022",
+      "canonico": [
+        "ley",
+        "2277",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2277_2022.html"
+    },
+    {
+      "norma": "Ley 2155 de 2021",
+      "canonico": [
+        "ley",
+        "2155",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2155_2021.html"
+    },
+    {
+      "norma": "Ley 2010 de 2019",
+      "canonico": [
+        "ley",
+        "2010",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2010_2019.html"
+    },
+    {
+      "norma": "Ley 1739 de 2014",
+      "canonico": [
+        "ley",
+        "1739",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1739_2014.html"
+    },
+    {
+      "norma": "Ley 1430 de 2010",
+      "canonico": [
+        "ley",
+        "1430",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1430_2010.html"
+    },
+    {
+      "norma": "Ley 1370 de 2009",
+      "canonico": [
+        "ley",
+        "1370",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1370_2009.html"
+    },
+    {
+      "norma": "Ley 1111 de 2006",
+      "canonico": [
+        "ley",
+        "1111",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1111_2006.html"
+    },
+    {
+      "norma": "Ley 788 de 2002",
+      "canonico": [
+        "ley",
+        "788",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0788_2002.html"
+    },
+    {
+      "norma": "Ley 633 de 2000",
+      "canonico": [
+        "ley",
+        "633",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0633_2000.html"
+    },
+    {
+      "norma": "Ley 223 de 1995",
+      "canonico": [
+        "ley",
+        "223",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0223_1995.html"
+    },
+    {
+      "norma": "Ley 1393 de 2010",
+      "canonico": [
+        "ley",
+        "1393",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1393_2010.html"
+    },
+    {
+      "norma": "Ley 14 de 1983",
+      "canonico": [
+        "ley",
+        "14",
+        "1983"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=267"
+    },
+    {
+      "norma": "Ley 44 de 1990",
+      "canonico": [
+        "ley",
+        "44",
+        "1990"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0044_1990.htm"
+    },
+    {
+      "norma": "Ley 1004 de 2005",
+      "canonico": [
+        "ley",
+        "1004",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1004_2005.html"
+    },
+    {
+      "norma": "Ley 1609 de 2013",
+      "canonico": [
+        "ley",
+        "1609",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1609_2013.html"
+    },
+    {
+      "norma": "Decreto 1165 de 2019",
+      "canonico": [
+        "decreto",
+        "1165",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normograma.dian.gov.co/dian/compilacion/docs/decreto_1165_2019.htm"
+    },
+    {
+      "norma": "Decreto 920 de 2023",
+      "canonico": [
+        "decreto",
+        "920",
+        "2023"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normograma.dian.gov.co/dian/compilacion/docs/decreto_0920_2023.htm"
+    },
+    {
+      "norma": "Decreto 358 de 2020",
+      "canonico": [
+        "decreto",
+        "358",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normograma.dian.gov.co/dian/compilacion/docs/decreto_0358_2020.htm"
+    },
+    {
+      "norma": "Decreto 1625 de 2016",
+      "canonico": [
+        "decreto",
+        "1625",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=83233"
+    },
+    {
+      "norma": "Decreto 1068 de 2015",
+      "canonico": [
+        "decreto",
+        "1068",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1068_2015.htm"
+    },
+    {
+      "norma": "Ley 100 de 1993",
+      "canonico": [
+        "ley",
+        "100",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0100_1993.html"
+    },
+    {
+      "norma": "Ley 789 de 2002",
+      "canonico": [
+        "ley",
+        "789",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0789_2002.html"
+    },
+    {
+      "norma": "Ley 797 de 2003",
+      "canonico": [
+        "ley",
+        "797",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0797_2003.html"
+    },
+    {
+      "norma": "Ley 860 de 2003",
+      "canonico": [
+        "ley",
+        "860",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0860_2003.html"
+    },
+    {
+      "norma": "Ley 2381 de 2024",
+      "canonico": [
+        "ley",
+        "2381",
+        "2024"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2381_2024.html"
+    },
+    {
+      "norma": "Ley 1580 de 2012",
+      "canonico": [
+        "ley",
+        "1580",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1580_2012.html"
+    },
+    {
+      "norma": "Decreto 1833 de 2016",
+      "canonico": [
+        "decreto",
+        "1833",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1833_2016.htm"
+    },
+    {
+      "norma": "Decreto 1295 de 1994",
+      "canonico": [
+        "decreto",
+        "1295",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1295_1994.htm"
+    },
+    {
+      "norma": "Ley 776 de 2002",
+      "canonico": [
+        "ley",
+        "776",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0776_2002.html"
+    },
+    {
+      "norma": "Ley 1822 de 2017",
+      "canonico": [
+        "ley",
+        "1822",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1822_2017.html"
+    },
+    {
+      "norma": "Ley 1468 de 2011",
+      "canonico": [
+        "ley",
+        "1468",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1468_2011.html"
+    },
+    {
+      "norma": "Ley 755 de 2002",
+      "canonico": [
+        "ley",
+        "755",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0755_2002.html"
+    },
+    {
+      "norma": "Ley 1823 de 2017",
+      "canonico": [
+        "ley",
+        "1823",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1823_2017.html"
+    },
+    {
+      "norma": "Ley 1280 de 2009",
+      "canonico": [
+        "ley",
+        "1280",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1280_2009.html"
+    },
+    {
+      "norma": "Ley 2101 de 2021",
+      "canonico": [
+        "ley",
+        "2101",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2101_2021.html"
+    },
+    {
+      "norma": "Ley 1846 de 2017",
+      "canonico": [
+        "ley",
+        "1846",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1846_2017.html"
+    },
+    {
+      "norma": "Ley 584 de 2000",
+      "canonico": [
+        "ley",
+        "584",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0584_2000.html"
+    },
+    {
+      "norma": "Ley 1210 de 2008",
+      "canonico": [
+        "ley",
+        "1210",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1210_2008.html"
+    },
+    {
+      "norma": "Ley 1788 de 2016",
+      "canonico": [
+        "ley",
+        "1788",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1788_2016.html"
+    },
+    {
+      "norma": "Ley 1221 de 2008",
+      "canonico": [
+        "ley",
+        "1221",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1221_2008.html"
+    },
+    {
+      "norma": "Ley 2088 de 2021",
+      "canonico": [
+        "ley",
+        "2088",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2088_2021.html"
+    },
+    {
+      "norma": "Ley 2121 de 2021",
+      "canonico": [
+        "ley",
+        "2121",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2121_2021.html"
+    },
+    {
+      "norma": "Ley 2191 de 2022",
+      "canonico": [
+        "ley",
+        "2191",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2191_2022.html"
+    },
+    {
+      "norma": "Ley 2365 de 2024",
+      "canonico": [
+        "ley",
+        "2365",
+        "2024"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral",
+        "Derecho penal"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2365_2024.html"
+    },
+    {
+      "norma": "Ley 361 de 1997",
+      "canonico": [
+        "ley",
+        "361",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0361_1997.html"
+    },
+    {
+      "norma": "Ley 1496 de 2011",
+      "canonico": [
+        "ley",
+        "1496",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1496_2011.html"
+    },
+    {
+      "norma": "Ley 1636 de 2013",
+      "canonico": [
+        "ley",
+        "1636",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1636_2013.html"
+    },
+    {
+      "norma": "Ley 1780 de 2016",
+      "canonico": [
+        "ley",
+        "1780",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1780_2016.html"
+    },
+    {
+      "norma": "Ley 2040 de 2020",
+      "canonico": [
+        "ley",
+        "2040",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2040_2020.html"
+    },
+    {
+      "norma": "Ley 1610 de 2013",
+      "canonico": [
+        "ley",
+        "1610",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1610_2013.html"
+    },
+    {
+      "norma": "Ley 1233 de 2008",
+      "canonico": [
+        "ley",
+        "1233",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1233_2008.html"
+    },
+    {
+      "norma": "Ley 4 de 1992",
+      "canonico": [
+        "ley",
+        "4",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0004_1992.html"
+    },
+    {
+      "norma": "Ley 6 de 1945",
+      "canonico": [
+        "ley",
+        "6",
+        "1945"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0006_1945.htm"
+    },
+    {
+      "norma": "Decreto 1045 de 1978",
+      "canonico": [
+        "decreto",
+        "1045",
+        "1978"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1045_1978.htm"
+    },
+    {
+      "norma": "Ley 244 de 1995",
+      "canonico": [
+        "ley",
+        "244",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0244_1995.html"
+    },
+    {
+      "norma": "Ley 1071 de 2006",
+      "canonico": [
+        "ley",
+        "1071",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1071_2006.html"
+    },
+    {
+      "norma": "Ley 1821 de 2016",
+      "canonico": [
+        "ley",
+        "1821",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1821_2016.html"
+    },
+    {
+      "norma": "Decreto 1072 de 2015",
+      "canonico": [
+        "decreto",
+        "1072",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=72173"
+    },
+    {
+      "norma": "Ley 1266 de 2008",
+      "canonico": [
+        "ley",
+        "1266",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1266_2008.html"
+    },
+    {
+      "norma": "Ley 23 de 1982",
+      "canonico": [
+        "ley",
+        "23",
+        "1982"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0023_1982.htm"
+    },
+    {
+      "norma": "Ley 44 de 1993",
+      "canonico": [
+        "ley",
+        "44",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0044_1993.html"
+    },
+    {
+      "norma": "Ley 1915 de 2018",
+      "canonico": [
+        "ley",
+        "1915",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1915_2018.html"
+    },
+    {
+      "norma": "Ley 603 de 2000",
+      "canonico": [
+        "ley",
+        "603",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0603_2000.html"
+    },
+    {
+      "norma": "Ley 1403 de 2010",
+      "canonico": [
+        "ley",
+        "1403",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1403_2010.html"
+    },
+    {
+      "norma": "Ley 1835 de 2017",
+      "canonico": [
+        "ley",
+        "1835",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1835_2017.html"
+    },
+    {
+      "norma": "Ley 1648 de 2013",
+      "canonico": [
+        "ley",
+        "1648",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1648_2013.html"
+    },
+    {
+      "norma": "Ley 1328 de 2009",
+      "canonico": [
+        "ley",
+        "1328",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1328_2009.html"
+    },
+    {
+      "norma": "Ley 1555 de 2012",
+      "canonico": [
+        "ley",
+        "1555",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1555_2012.html"
+    },
+    {
+      "norma": "Ley 2300 de 2023",
+      "canonico": [
+        "ley",
+        "2300",
+        "2023"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2300_2023.html"
+    },
+    {
+      "norma": "Decreto 1078 de 2015",
+      "canonico": [
+        "decreto",
+        "1078",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1078_2015.htm"
+    },
+    {
+      "norma": "Sentencia T-406 de 1992",
+      "canonico": [
+        "jurisprudencia",
+        "T-406",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1992/T-406-92.htm"
+    },
+    {
+      "norma": "Sentencia T-426 de 1992",
+      "canonico": [
+        "jurisprudencia",
+        "T-426",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1992/T-426-92.htm"
+    },
+    {
+      "norma": "Sentencia C-4 de 1992",
+      "canonico": [
+        "jurisprudencia",
+        "C-4",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1992/C-004-92.htm"
+    },
+    {
+      "norma": "Sentencia C-131 de 1993",
+      "canonico": [
+        "jurisprudencia",
+        "C-131",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1993/C-131-93.htm"
+    },
+    {
+      "norma": "Sentencia C-179 de 1994",
+      "canonico": [
+        "jurisprudencia",
+        "C-179",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1994/C-179-94.htm"
+    },
+    {
+      "norma": "Sentencia C-83 de 1995",
+      "canonico": [
+        "jurisprudencia",
+        "C-83",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1995/C-083-95.htm"
+    },
+    {
+      "norma": "Sentencia SU-111 de 1997",
+      "canonico": [
+        "jurisprudencia",
+        "SU-111",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1997/SU111-97.htm"
+    },
+    {
+      "norma": "Sentencia SU-559 de 1997",
+      "canonico": [
+        "jurisprudencia",
+        "SU-559",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1997/SU559-97.htm"
+    },
+    {
+      "norma": "Sentencia SU-39 de 1997",
+      "canonico": [
+        "jurisprudencia",
+        "SU-39",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1997/SU039-97.htm"
+    },
+    {
+      "norma": "Sentencia T-153 de 1998",
+      "canonico": [
+        "jurisprudencia",
+        "T-153",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1998/T-153-98.htm"
+    },
+    {
+      "norma": "Sentencia SU-510 de 1998",
+      "canonico": [
+        "jurisprudencia",
+        "SU-510",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1998/SU510-98.htm"
+    },
+    {
+      "norma": "Sentencia T-477 de 1995",
+      "canonico": [
+        "jurisprudencia",
+        "T-477",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1995/T-477-95.htm"
+    },
+    {
+      "norma": "Sentencia SU-337 de 1999",
+      "canonico": [
+        "jurisprudencia",
+        "SU-337",
+        "1999"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1999/SU337-99.htm"
+    },
+    {
+      "norma": "Sentencia C-1052 de 2001",
+      "canonico": [
+        "jurisprudencia",
+        "C-1052",
+        "2001"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2001/C-1052-01.htm"
+    },
+    {
+      "norma": "Sentencia T-881 de 2002",
+      "canonico": [
+        "jurisprudencia",
+        "T-881",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2002/T-881-02.htm"
+    },
+    {
+      "norma": "Sentencia C-551 de 2003",
+      "canonico": [
+        "jurisprudencia",
+        "C-551",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2003/C-551-03.htm"
+    },
+    {
+      "norma": "Sentencia T-25 de 2004",
+      "canonico": [
+        "jurisprudencia",
+        "T-25",
+        "2004"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2004/T-025-04.htm"
+    },
+    {
+      "norma": "Sentencia C-1040 de 2005",
+      "canonico": [
+        "jurisprudencia",
+        "C-1040",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2005/C-1040-05.htm"
+    },
+    {
+      "norma": "Sentencia C-30 de 2008",
+      "canonico": [
+        "jurisprudencia",
+        "C-30",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2008/C-030-08.htm"
+    },
+    {
+      "norma": "Sentencia C-141 de 2010",
+      "canonico": [
+        "jurisprudencia",
+        "C-141",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2010/C-141-10.htm"
+    },
+    {
+      "norma": "Sentencia C-252 de 2010",
+      "canonico": [
+        "jurisprudencia",
+        "C-252",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2010/C-252-10.htm"
+    },
+    {
+      "norma": "Sentencia T-129 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "T-129",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/T-129-11.htm"
+    },
+    {
+      "norma": "Sentencia C-366 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-366",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-366-11.htm"
+    },
+    {
+      "norma": "Sentencia C-274 de 2013",
+      "canonico": [
+        "jurisprudencia",
+        "C-274",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2013/C-274-13.htm"
+    },
+    {
+      "norma": "Sentencia C-579 de 2013",
+      "canonico": [
+        "jurisprudencia",
+        "C-579",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2013/C-579-13.htm"
+    },
+    {
+      "norma": "Sentencia C-313 de 2014",
+      "canonico": [
+        "jurisprudencia",
+        "C-313",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2014/C-313-14.htm"
+    },
+    {
+      "norma": "Sentencia C-577 de 2014",
+      "canonico": [
+        "jurisprudencia",
+        "C-577",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2014/C-577-14.htm"
+    },
+    {
+      "norma": "Sentencia C-150 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "C-150",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/C-150-15.htm"
+    },
+    {
+      "norma": "Sentencia T-63 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "T-63",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/T-063-15.htm"
+    },
+    {
+      "norma": "Sentencia T-99 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "T-99",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/T-099-15.htm"
+    },
+    {
+      "norma": "Sentencia T-622 de 2016",
+      "canonico": [
+        "jurisprudencia",
+        "T-622",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2016/T-622-16.htm"
+    },
+    {
+      "norma": "Sentencia T-445 de 2016",
+      "canonico": [
+        "jurisprudencia",
+        "T-445",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2016/T-445-16.htm"
+    },
+    {
+      "norma": "Sentencia C-379 de 2016",
+      "canonico": [
+        "jurisprudencia",
+        "C-379",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2016/C-379-16.htm"
+    },
+    {
+      "norma": "Sentencia C-699 de 2016",
+      "canonico": [
+        "jurisprudencia",
+        "C-699",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2016/C-699-16.htm"
+    },
+    {
+      "norma": "Sentencia C-332 de 2017",
+      "canonico": [
+        "jurisprudencia",
+        "C-332",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2017/C-332-17.htm"
+    },
+    {
+      "norma": "Sentencia C-630 de 2017",
+      "canonico": [
+        "jurisprudencia",
+        "C-630",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2017/C-630-17.htm"
+    },
+    {
+      "norma": "Sentencia C-674 de 2017",
+      "canonico": [
+        "jurisprudencia",
+        "C-674",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2017/C-674-17.htm"
+    },
+    {
+      "norma": "Sentencia C-80 de 2018",
+      "canonico": [
+        "jurisprudencia",
+        "C-80",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2018/C-080-18.htm"
+    },
+    {
+      "norma": "Sentencia SU-95 de 2018",
+      "canonico": [
+        "jurisprudencia",
+        "SU-95",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2018/SU095-18.htm"
+    },
+    {
+      "norma": "Sentencia SU-96 de 2018",
+      "canonico": [
+        "jurisprudencia",
+        "SU-96",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2018/SU096-18.htm"
+    },
+    {
+      "norma": "Sentencia SU-123 de 2018",
+      "canonico": [
+        "jurisprudencia",
+        "SU-123",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2018/SU123-18.htm"
+    },
+    {
+      "norma": "Sentencia C-333 de 1996",
+      "canonico": [
+        "jurisprudencia",
+        "C-333",
+        "1996"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1996/C-333-96.htm"
+    },
+    {
+      "norma": "Sentencia C-1436 de 2000",
+      "canonico": [
+        "jurisprudencia",
+        "C-1436",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2000/C-1436-00.htm"
+    },
+    {
+      "norma": "Sentencia C-588 de 2009",
+      "canonico": [
+        "jurisprudencia",
+        "C-588",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2009/C-588-09.htm"
+    },
+    {
+      "norma": "Sentencia SU-913 de 2009",
+      "canonico": [
+        "jurisprudencia",
+        "SU-913",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2009/SU913-09.htm"
+    },
+    {
+      "norma": "Sentencia C-539 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-539",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-539-11.htm"
+    },
+    {
+      "norma": "Sentencia C-634 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-634",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-634-11.htm"
+    },
+    {
+      "norma": "Sentencia C-816 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-816",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-816-11.htm"
+    },
+    {
+      "norma": "Sentencia C-818 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-818",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-818-11.htm"
+    },
+    {
+      "norma": "Sentencia C-951 de 2014",
+      "canonico": [
+        "jurisprudencia",
+        "C-951",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2014/C-951-14.htm"
+    },
+    {
+      "norma": "Sentencia C-30 de 2023",
+      "canonico": [
+        "jurisprudencia",
+        "C-30",
+        "2023"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2023/C-030-23.htm"
+    },
+    {
+      "norma": "Sentencia C-221 de 1994",
+      "canonico": [
+        "jurisprudencia",
+        "C-221",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1994/C-221-94.htm"
+    },
+    {
+      "norma": "Sentencia C-591 de 2005",
+      "canonico": [
+        "jurisprudencia",
+        "C-591",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2005/C-591-05.htm"
+    },
+    {
+      "norma": "Sentencia C-370 de 2006",
+      "canonico": [
+        "jurisprudencia",
+        "C-370",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2006/C-370-06.htm"
+    },
+    {
+      "norma": "Sentencia C-454 de 2006",
+      "canonico": [
+        "jurisprudencia",
+        "C-454",
+        "2006"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2006/C-454-06.htm"
+    },
+    {
+      "norma": "Sentencia C-209 de 2007",
+      "canonico": [
+        "jurisprudencia",
+        "C-209",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2007/C-209-07.htm"
+    },
+    {
+      "norma": "Sentencia C-516 de 2007",
+      "canonico": [
+        "jurisprudencia",
+        "C-516",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2007/C-516-07.htm"
+    },
+    {
+      "norma": "Sentencia C-25 de 2009",
+      "canonico": [
+        "jurisprudencia",
+        "C-25",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2009/C-025-09.htm"
+    },
+    {
+      "norma": "Sentencia C-417 de 2009",
+      "canonico": [
+        "jurisprudencia",
+        "C-417",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2009/C-417-09.htm"
+    },
+    {
+      "norma": "Sentencia C-936 de 2010",
+      "canonico": [
+        "jurisprudencia",
+        "C-936",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2010/C-936-10.htm"
+    },
+    {
+      "norma": "Sentencia C-442 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-442",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-442-11.htm"
+    },
+    {
+      "norma": "Sentencia C-491 de 2012",
+      "canonico": [
+        "jurisprudencia",
+        "C-491",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2012/C-491-12.htm"
+    },
+    {
+      "norma": "Sentencia T-388 de 2013",
+      "canonico": [
+        "jurisprudencia",
+        "T-388",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2013/T-388-13.htm"
+    },
+    {
+      "norma": "Sentencia C-792 de 2014",
+      "canonico": [
+        "jurisprudencia",
+        "C-792",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2014/C-792-14.htm"
+    },
+    {
+      "norma": "Sentencia T-762 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "T-762",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/T-762-15.htm"
+    },
+    {
+      "norma": "Sentencia C-253 de 2019",
+      "canonico": [
+        "jurisprudencia",
+        "C-253",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2019/C-253-19.htm"
+    },
+    {
+      "norma": "Sentencia SU-146 de 2020",
+      "canonico": [
+        "jurisprudencia",
+        "SU-146",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho penal",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2020/SU146-20.htm"
+    },
+    {
+      "norma": "Sentencia C-294 de 2021",
+      "canonico": [
+        "jurisprudencia",
+        "C-294",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2021/C-294-21.htm"
+    },
+    {
+      "norma": "Sentencia SU-122 de 2022",
+      "canonico": [
+        "jurisprudencia",
+        "SU-122",
+        "2022"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho penal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2022/SU122-22.htm"
+    },
+    {
+      "norma": "Sentencia T-6 de 1992",
+      "canonico": [
+        "jurisprudencia",
+        "T-6",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1992/T-006-92.htm"
+    },
+    {
+      "norma": "Sentencia C-543 de 1992",
+      "canonico": [
+        "jurisprudencia",
+        "C-543",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1992/C-543-92.htm"
+    },
+    {
+      "norma": "Sentencia C-37 de 1996",
+      "canonico": [
+        "jurisprudencia",
+        "C-37",
+        "1996"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1996/C-037-96.htm"
+    },
+    {
+      "norma": "Sentencia C-836 de 2001",
+      "canonico": [
+        "jurisprudencia",
+        "C-836",
+        "2001"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2001/C-836-01.htm"
+    },
+    {
+      "norma": "Sentencia C-1195 de 2001",
+      "canonico": [
+        "jurisprudencia",
+        "C-1195",
+        "2001"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2001/C-1195-01.htm"
+    },
+    {
+      "norma": "Sentencia C-590 de 2005",
+      "canonico": [
+        "jurisprudencia",
+        "C-590",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2005/C-590-05.htm"
+    },
+    {
+      "norma": "Sentencia C-713 de 2008",
+      "canonico": [
+        "jurisprudencia",
+        "C-713",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2008/C-713-08.htm"
+    },
+    {
+      "norma": "Sentencia SU-768 de 2014",
+      "canonico": [
+        "jurisprudencia",
+        "SU-768",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2014/SU768-14.htm"
+    },
+    {
+      "norma": "Sentencia C-420 de 2020",
+      "canonico": [
+        "jurisprudencia",
+        "C-420",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2020/C-420-20.htm"
+    },
+    {
+      "norma": "Sentencia C-470 de 1997",
+      "canonico": [
+        "jurisprudencia",
+        "C-470",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1997/C-470-97.htm"
+    },
+    {
+      "norma": "Sentencia C-531 de 2000",
+      "canonico": [
+        "jurisprudencia",
+        "C-531",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2000/C-531-00.htm"
+    },
+    {
+      "norma": "Sentencia C-893 de 2001",
+      "canonico": [
+        "jurisprudencia",
+        "C-893",
+        "2001"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2001/C-893-01.htm"
+    },
+    {
+      "norma": "Sentencia C-1064 de 2001",
+      "canonico": [
+        "jurisprudencia",
+        "C-1064",
+        "2001"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2001/C-1064-01.htm"
+    },
+    {
+      "norma": "Sentencia C-38 de 2004",
+      "canonico": [
+        "jurisprudencia",
+        "C-38",
+        "2004"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2004/C-038-04.htm"
+    },
+    {
+      "norma": "Sentencia C-336 de 2008",
+      "canonico": [
+        "jurisprudencia",
+        "C-336",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2008/C-336-08.htm"
+    },
+    {
+      "norma": "Sentencia C-614 de 2009",
+      "canonico": [
+        "jurisprudencia",
+        "C-614",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2009/C-614-09.htm"
+    },
+    {
+      "norma": "Sentencia SU-62 de 2010",
+      "canonico": [
+        "jurisprudencia",
+        "SU-62",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2010/SU062-10.htm"
+    },
+    {
+      "norma": "Sentencia SU-70 de 2013",
+      "canonico": [
+        "jurisprudencia",
+        "SU-70",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2013/SU070-13.htm"
+    },
+    {
+      "norma": "Sentencia C-258 de 2013",
+      "canonico": [
+        "jurisprudencia",
+        "C-258",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2013/C-258-13.htm"
+    },
+    {
+      "norma": "Sentencia SU-230 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "SU-230",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/SU230-15.htm"
+    },
+    {
+      "norma": "Sentencia C-5 de 2017",
+      "canonico": [
+        "jurisprudencia",
+        "C-5",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de familia",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2017/C-005-17.htm"
+    },
+    {
+      "norma": "Sentencia SU-49 de 2017",
+      "canonico": [
+        "jurisprudencia",
+        "SU-49",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2017/SU049-17.htm"
+    },
+    {
+      "norma": "Sentencia SU-75 de 2018",
+      "canonico": [
+        "jurisprudencia",
+        "SU-75",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho laboral"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2018/SU075-18.htm"
+    },
+    {
+      "norma": "Sentencia C-105 de 1994",
+      "canonico": [
+        "jurisprudencia",
+        "C-105",
+        "1994"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1994/C-105-94.htm"
+    },
+    {
+      "norma": "Sentencia C-75 de 2007",
+      "canonico": [
+        "jurisprudencia",
+        "C-75",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2007/C-075-07.htm"
+    },
+    {
+      "norma": "Sentencia C-521 de 2007",
+      "canonico": [
+        "jurisprudencia",
+        "C-521",
+        "2007"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2007/C-521-07.htm"
+    },
+    {
+      "norma": "Sentencia C-29 de 2009",
+      "canonico": [
+        "jurisprudencia",
+        "C-29",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2009/C-029-09.htm"
+    },
+    {
+      "norma": "Sentencia C-283 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-283",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-283-11.htm"
+    },
+    {
+      "norma": "Sentencia C-577 de 2011",
+      "canonico": [
+        "jurisprudencia",
+        "C-577",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2011/C-577-11.htm"
+    },
+    {
+      "norma": "Sentencia C-238 de 2012",
+      "canonico": [
+        "jurisprudencia",
+        "C-238",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2012/C-238-12.htm"
+    },
+    {
+      "norma": "Sentencia SU-617 de 2014",
+      "canonico": [
+        "jurisprudencia",
+        "SU-617",
+        "2014"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2014/SU617-14.htm"
+    },
+    {
+      "norma": "Sentencia C-71 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "C-71",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/C-071-15.htm"
+    },
+    {
+      "norma": "Sentencia T-12 de 2016",
+      "canonico": [
+        "jurisprudencia",
+        "T-12",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2016/T-012-16.htm"
+    },
+    {
+      "norma": "Sentencia T-338 de 2018",
+      "canonico": [
+        "jurisprudencia",
+        "T-338",
+        "2018"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de familia"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2018/T-338-18.htm"
+    },
+    {
+      "norma": "Sentencia C-776 de 2003",
+      "canonico": [
+        "jurisprudencia",
+        "C-776",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2003/C-776-03.htm"
+    },
+    {
+      "norma": "Sentencia C-481 de 2019",
+      "canonico": [
+        "jurisprudencia",
+        "C-481",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2019/C-481-19.htm"
+    },
+    {
+      "norma": "Sentencia T-414 de 1992",
+      "canonico": [
+        "jurisprudencia",
+        "T-414",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1992/T-414-92.htm"
+    },
+    {
+      "norma": "Sentencia SU-82 de 1995",
+      "canonico": [
+        "jurisprudencia",
+        "SU-82",
+        "1995"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/1995/SU082-95.htm"
+    },
+    {
+      "norma": "Sentencia C-1141 de 2000",
+      "canonico": [
+        "jurisprudencia",
+        "C-1141",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2000/C-1141-00.htm"
+    },
+    {
+      "norma": "Sentencia T-729 de 2002",
+      "canonico": [
+        "jurisprudencia",
+        "T-729",
+        "2002"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2002/T-729-02.htm"
+    },
+    {
+      "norma": "Sentencia C-1011 de 2008",
+      "canonico": [
+        "jurisprudencia",
+        "C-1011",
+        "2008"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2008/C-1011-08.htm"
+    },
+    {
+      "norma": "Sentencia C-228 de 2010",
+      "canonico": [
+        "jurisprudencia",
+        "C-228",
+        "2010"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2010/C-228-10.htm"
+    },
+    {
+      "norma": "Ley 389 de 1997",
+      "canonico": [
+        "ley",
+        "389",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0389_1997.html"
+    },
+    {
+      "norma": "Ley 35 de 1993",
+      "canonico": [
+        "ley",
+        "35",
+        "1993"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0035_1993.html"
+    },
+    {
+      "norma": "Ley 31 de 1992",
+      "canonico": [
+        "ley",
+        "31",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0031_1992.html"
+    },
+    {
+      "norma": "Ley 1870 de 2017",
+      "canonico": [
+        "ley",
+        "1870",
+        "2017"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1870_2017.html"
+    },
+    {
+      "norma": "Decreto 560 de 2020",
+      "canonico": [
+        "decreto",
+        "560",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_0560_2020.htm"
+    },
+    {
+      "norma": "Decreto 772 de 2020",
+      "canonico": [
+        "decreto",
+        "772",
+        "2020"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho procesal"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_0772_2020.htm"
+    },
+    {
+      "norma": "Ley 1796 de 2016",
+      "canonico": [
+        "ley",
+        "1796",
+        "2016"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1796_2016.html"
+    },
+    {
+      "norma": "Ley 400 de 1997",
+      "canonico": [
+        "ley",
+        "400",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0400_1997.html"
+    },
+    {
+      "norma": "Ley 588 de 2000",
+      "canonico": [
+        "ley",
+        "588",
+        "2000"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0588_2000.html"
+    },
+    {
+      "norma": "Decreto 1077 de 2015",
+      "canonico": [
+        "decreto",
+        "1077",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho civil"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1077_2015.htm"
+    },
+    {
+      "norma": "Sentencia C-1235 de 2005",
+      "canonico": [
+        "jurisprudencia",
+        "C-1235",
+        "2005"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho civil",
+        "Derecho constitucional"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2005/C-1235-05.htm"
+    },
+    {
+      "norma": "Decreto 1377 de 2013",
+      "canonico": [
+        "decreto",
+        "1377",
+        "2013"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/decreto_1377_2013.htm"
+    },
+    {
+      "norma": "Ley 2108 de 2021",
+      "canonico": [
+        "ley",
+        "2108",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2108_2021.html"
+    },
+    {
+      "norma": "Ley 1369 de 2009",
+      "canonico": [
+        "ley",
+        "1369",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1369_2009.html"
+    },
+    {
+      "norma": "Ley 1493 de 2011",
+      "canonico": [
+        "ley",
+        "1493",
+        "2011"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1493_2011.html"
+    },
+    {
+      "norma": "Ley 2120 de 2021",
+      "canonico": [
+        "ley",
+        "2120",
+        "2021"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_2120_2021.html"
+    },
+    {
+      "norma": "Ley 1335 de 2009",
+      "canonico": [
+        "ley",
+        "1335",
+        "2009"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho administrativo",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1335_2009.html"
+    },
+    {
+      "norma": "Sentencia SU-458 de 2012",
+      "canonico": [
+        "jurisprudencia",
+        "SU-458",
+        "2012"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2012/SU458-12.htm"
+    },
+    {
+      "norma": "Sentencia T-277 de 2015",
+      "canonico": [
+        "jurisprudencia",
+        "T-277",
+        "2015"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2015/T-277-15.htm"
+    },
+    {
+      "norma": "Sentencia SU-420 de 2019",
+      "canonico": [
+        "jurisprudencia",
+        "SU-420",
+        "2019"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho constitucional",
+        "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]"
+      ],
+      "donde_buscar": "https://www.corteconstitucional.gov.co/relatoria/2019/SU420-19.htm"
+    },
+    {
+      "norma": "Ley 6 de 1992",
+      "canonico": [
+        "ley",
+        "6",
+        "1992"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0006_1992.html"
+    },
+    {
+      "norma": "Ley 383 de 1997",
+      "canonico": [
+        "ley",
+        "383",
+        "1997"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0383_1997.html"
+    },
+    {
+      "norma": "Ley 488 de 1998",
+      "canonico": [
+        "ley",
+        "488",
+        "1998"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0488_1998.html"
+    },
+    {
+      "norma": "Ley 863 de 2003",
+      "canonico": [
+        "ley",
+        "863",
+        "2003"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho tributario"
+      ],
+      "donde_buscar": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0863_2003.html"
+    },
+    {
+      "norma": "Ley 49 de 1990",
+      "canonico": [
+        "ley",
+        "49",
+        "1990"
+      ],
+      "items_del_banco": 0,
+      "areas": [
+        "Derecho comercial y sociedades",
+        "Derecho tributario"
+      ],
+      "donde_buscar": "https://normativa.colpensiones.gov.co/colpens/docs/ley_0049_1990.htm"
+    }
+  ]
+}
