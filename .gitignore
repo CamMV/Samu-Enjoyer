@@ -5,3 +5,5 @@ __pycache__/
 *.tar.gz
 
 ./docs_reto
+
+venv/
