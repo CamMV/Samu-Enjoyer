@@ -1,24 +1,46 @@
 """Tool de escritura: redacta la respuesta jurídica con Qwen3-8B (temperature=0).
 
-Usa un servidor OpenAI-compatible (vLLM, llama.cpp, Ollama...) configurable por
-entorno: LLM_BASE_URL (default http://localhost:8000/v1), LLM_MODEL
-(default Qwen/Qwen3-8B). Si no hay servidor, cae a un fallback determinista
-(mock) que devuelve un JSON válido según submission.schema.json.
+Se conecta EXCLUSIVAMENTE a una instancia LOCAL de Qwen3-8B (modelo abierto)
+servida por vLLM / Ollama / llama.cpp con API compatible con OpenAI
+(endpoint /v1/chat/completions). Por regla del reto no se usan APIs ni modelos
+cerrados (OpenAI, Anthropic, Google, Cohere): el cliente es `requests` puro y
+se rechaza cualquier LLM_BASE_URL que apunte a un SaaS de terceros.
+
+Si la llamada falla (caída de conexión, timeout, error HTTP), cae a un
+fallback determinista (mock) que devuelve un JSON válido según
+submission.schema.json.
+
+Dependencias (ver requirements-agent.txt):
+    pydantic>=2.6.0      modelos CanonicalPassage / QuestionState
+    requests>=2.31.0     cliente HTTP hacia el servidor local
+    python-dotenv>=1.0.0 carga de variables desde un archivo .env
+
+Configuración por entorno o .env:
+    LLM_BASE_URL  (default http://localhost:8000/v1)
+    LLM_MODEL     (default Qwen/Qwen3-8B)
+    LLM_TIMEOUT   segundos (default 30)
 """
 from __future__ import annotations
 
 import json
 import os
 import re
-import urllib.error
-import urllib.request
 from typing import Optional
+from urllib.parse import urlparse
+
+import requests
+from dotenv import load_dotenv
 
 from src.agent.schemas import CanonicalPassage
 
+load_dotenv()
+
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "http://localhost:8000/v1")
 LLM_MODEL = os.environ.get("LLM_MODEL", "Qwen/Qwen3-8B")
-LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "120"))
+LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "30"))
+
+# Proveedores cerrados prohibidos por el reto (causal de descalificación).
+_HOSTS_PROHIBIDOS = ("openai", "anthropic", "google", "googleapis", "cohere", "azure", "mistral")
 
 _SYSTEM_BASE = (
     "Eres un asistente jurídico colombiano. Responde EXCLUSIVAMENTE con la información de los "
@@ -66,21 +88,28 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     return system, "\n\n".join(partes)
 
 
+def _verificar_host_local(base_url: str) -> None:
+    host = (urlparse(base_url).hostname or "").lower()
+    if any(p in host for p in _HOSTS_PROHIBIDOS):
+        raise ValueError(f"LLM_BASE_URL apunta a un proveedor cerrado prohibido: {host}")
+
+
 def _llamar_llm(system: str, user: str) -> str:
+    """POST al Qwen3-8B local (modelo abierto). Lanza `requests.exceptions.RequestException`
+    si falla la conexión, hay timeout o el servidor responde con error HTTP."""
+    _verificar_host_local(LLM_BASE_URL)
     payload = {
         "model": LLM_MODEL,
         "temperature": 0,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-        "chat_template_kwargs": {"enable_thinking": False},
+        "chat_template_kwargs": {"enable_thinking": False},  # Qwen3: sin bloque <think>
     }
-    req = urllib.request.Request(
-        f"{LLM_BASE_URL.rstrip('/')}/chat/completions",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=LLM_TIMEOUT) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    return data["choices"][0]["message"]["content"]
+    resp = requests.post(f"{LLM_BASE_URL.rstrip('/')}/chat/completions", json=payload, timeout=LLM_TIMEOUT)
+    resp.raise_for_status()
+    try:
+        return resp.json()["choices"][0]["message"]["content"] or ""
+    except (ValueError, KeyError, IndexError, TypeError) as e:
+        raise requests.exceptions.RequestException(f"Respuesta del servidor con formato inesperado: {e}") from e
 
 
 def _parsear_json(texto: str) -> dict:
@@ -157,17 +186,21 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
     """Redacta la respuesta según `flags['formato']` usando solo `pasajes`.
 
     Devuelve el borrador con las llaves del schema de entrega para ese formato
-    más `formato` y `abstencion`. Sin pasajes, abstención. Si no hay servidor
-    LLM o su salida no es JSON válido, usa `mock_write_legal_response`.
+    más `formato` y `abstencion`. Sin pasajes, abstención. Si la llamada al servidor
+    LLM falla, usa `mock_write_legal_response`; si responde JSON inválido, abstención.
     """
     formato = flags["formato"]
     if not pasajes:
         return _abstencion(formato)
     system, user = build_prompts(pregunta, flags, pasajes, opciones)
     try:
-        borrador = _parsear_json(_llamar_llm(system, user))
-    except (urllib.error.URLError, OSError, ValueError, KeyError):
+        salida = _llamar_llm(system, user)
+    except requests.exceptions.RequestException:  # conexión caída, timeout, HTTP error
         return mock_write_legal_response(pregunta, flags, pasajes, opciones)
+    try:
+        borrador = _parsear_json(salida)
+    except ValueError:  # JSON inválido: el servidor respondió, no se enmascara con el mock
+        return _abstencion(formato)
     borrador["formato"] = formato
     borrador["abstencion"] = bool(borrador.get("abstencion", False))
     return borrador

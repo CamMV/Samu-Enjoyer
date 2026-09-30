@@ -14,6 +14,10 @@ Se encuentra un enlace simbólico a la carpeta de instrucciones llamada `docs_re
 - **Datos y banco de prueba:** `data/sample_50.jsonl` y `data/corpus_targets.json` (actualizadas en la raíz)
 - **Formato de entrega:** Generación estricta de `submissions.jsonl` según el schema oficial.
 
+# PROHIBICIÓN ESTRICTA (Causal de descalificación)
+- Prohibido el uso de APIs o modelos cerrados/propietarios (OpenAI, Anthropic, Google, Cohere) en CUALQUIER componente del sistema (generación, reescritura, reranking o datos sintéticos).
+- TODO el pipeline debe correr sobre modelos abiertos: Qwen3-8B local (vía vLLM / Ollama / llama.cpp con API local), bge-m3 y bge-reranker-v2-m3.
+- Las llamadas HTTP del agente siempre deben apuntar a hosts locales o de infraestructura propia (`http://localhost:...` o variables `LLM_BASE_URL` internas), nunca a servicios SaaS de terceros.
 ---
 
 ## 2. Frente Agente RAG (Orquestador, Escritor y Juez)
