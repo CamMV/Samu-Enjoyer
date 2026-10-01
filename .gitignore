@@ -7,3 +7,5 @@ envs/
 *.tar.gz
 logs/
 ./docs_reto
+*.tar
+

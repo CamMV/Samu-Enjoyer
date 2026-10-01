@@ -1,0 +1,5098 @@
+{
+ "k": 10,
+ "n": 50,
+ "n_chunks": {
+  "bm25": 2210629,
+  "denso": 2210629
+ },
+ "cobertura": 1.0,
+ "por_etapa": {
+  "bm25": {
+   "recall_citas": 0.756,
+   "recall_docs": 0.415,
+   "rr": 0.17,
+   "ndcg": 0.258
+  },
+  "denso": {
+   "recall_citas": 0.862,
+   "recall_docs": 0.423,
+   "rr": 0.176,
+   "ndcg": 0.256
+  },
+  "rrf": {
+   "recall_citas": 0.882,
+   "recall_docs": 0.545,
+   "rr": 0.263,
+   "ndcg": 0.372
+  },
+  "rerank": {
+   "recall_citas": 0.862,
+   "recall_docs": 0.439,
+   "rr": 0.236,
+   "ndcg": 0.313
+  },
+  "final": {
+   "recall_citas": 0.862,
+   "recall_docs": 0.439,
+   "rr": 0.236,
+   "ndcg": 0.314
+  }
+ },
+ "final_por_formato": {
+  "multiple_choice": {
+   "recall_citas": 0.846,
+   "recall_docs": 0.308
+  },
+  "open_ended": {
+   "recall_citas": 0.417,
+   "recall_docs": 0.333
+  },
+  "semi_open": {
+   "recall_citas": 0.944,
+   "recall_docs": 0.528
+  }
+ },
+ "tiempos_s": {
+  "citas": {
+   "media": 0.001,
+   "p95": 0.002
+  },
+  "bm25": {
+   "media": 0.201,
+   "p95": 0.376
+  },
+  "denso": {
+   "media": 0.124,
+   "p95": 0.076
+  },
+  "reranker": {
+   "media": 0.253,
+   "p95": 0.274
+  },
+  "seleccion": {
+   "media": 0.0,
+   "p95": 0.0
+  }
+ },
+ "preguntas": [
+  {
+   "id": 51,
+   "formato": "multiple_choice",
+   "area": "Derecho constitucional",
+   "legal_basis": "Constitución Política, artículo 88; Ley 472 de 1998, artículos 3 y 46.",
+   "n_oro": 2,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-215_1999/cargo_general_contra_la_ley_47#77",
+      "jurisprudencia_c-215_1999/cargo_general_contra_la_ley_47#78",
+      "jurisprudencia_su-429_2024/ii_consideraciones#60",
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#21",
+      "jurisprudencia_c-1062_2000/iv_intervenciones#2",
+      "jurisprudencia_c-898_2005/v_concepto_del_procurador_gene#3",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#20",
+      "jurisprudencia_t-95_2016/ii_consideraciones_y_fundament#61",
+      "jurisprudencia_c-407_2021/c_problema_jurídico_y_esquema_#13",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#6"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-242_2012/vi_fundamentos_de_la_decisión#14",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#80",
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#20",
+      "jurisprudencia_su-18_2024/ii_consideraciones#49",
+      "jurisprudencia_c-407_2021/c_problema_jurídico_y_esquema_#23",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#28",
+      "jurisprudencia_c-242_2012/vi_fundamentos_de_la_decisión#16",
+      "jurisprudencia_c-1062_2000/ficha",
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#51",
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#21"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#21",
+      "jurisprudencia_su-18_2024/ii_consideraciones#49",
+      "jurisprudencia_c-1062_2000/iv_intervenciones#2",
+      "jurisprudencia_c-304_2010/inicio#2",
+      "jurisprudencia_c-215_1999/cargo_general_contra_la_ley_47#77",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#68",
+      "jurisprudencia_c-304_2010/vi_fundamentos_de_la_decisión#13",
+      "jurisprudencia_c-1062_2000/iv_intervenciones#1",
+      "jurisprudencia_c-1062_2000/vi_consideraciones_y_fundament#30",
+      "jurisprudencia_c-569_2004/inicio#10"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-690_2012/resuelve#14",
+      "jurisprudencia_t-65_2013/resuelve#6",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#29",
+      "jurisprudencia_c-215_1999/cargo_general_contra_la_ley_47#77",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#28",
+      "jurisprudencia_su-18_2024/ii_consideraciones#49",
+      "jurisprudencia_t-197_2014/ii_consideraciones_y_fundament#9",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#20",
+      "jurisprudencia_c-242_2012/vi_fundamentos_de_la_decisión#16",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#68"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-690_2012/resuelve#14",
+      "jurisprudencia_t-65_2013/resuelve#6",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#29",
+      "jurisprudencia_c-215_1999/cargo_general_contra_la_ley_47#77",
+      "jurisprudencia_c-215_1999/i_consideraciones_generales#28",
+      "jurisprudencia_su-18_2024/ii_consideraciones#49",
+      "jurisprudencia_t-197_2014/ii_consideraciones_y_fundament#9",
+      "jurisprudencia_c-242_2012/vi_fundamentos_de_la_decisión#16",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#68",
+      "jurisprudencia_c-898_2005/v_concepto_del_procurador_gene#3"
+     ]
+    }
+   }
+  },
+  {
+   "id": 58,
+   "formato": "multiple_choice",
+   "area": "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+   "legal_basis": "Ley 1564 de 2002 (El Estatuto del Consumidor). ",
+   "n_oro": 2,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "ley_600_2000/art_74/notas#2",
+      "ley_600_2000/art_73/notas#2",
+      "ley_5_1992/anexo#27",
+      "decreto_537_2022/preambulo#2",
+      "jurisprudencia_c-635_2016/iv_consideraciones_de_la_corte#11",
+      "jurisprudencia_t-526_2024/ii_consideraciones#27",
+      "jurisprudencia_t-425_2024/ii_consideraciones#5",
+      "jurisprudencia_c-189_2021/consideraciones_la_corte_const#24",
+      "ley_5_1992/art_330",
+      "jurisprudencia_su-363_2021/ii_consideraciones#39"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-1904_2019/ii_el_trámite_observado#2",
+      "jurisprudencia_sc-466_2021/ii_el_trámite_observado#2",
+      "jurisprudencia_c-244_1996/vi_consideraciones_de_la_corte#13",
+      "jurisprudencia_sc-4683_2019/consideraciones#1",
+      "jurisprudencia_sc-2966_2022/ii_consideraciones#1",
+      "jurisprudencia_sc-5036_2021/inicio#4",
+      "jurisprudencia_sc-572_2021/iii_consideraciones#1",
+      "jurisprudencia_sc-2141_2024/consideraciones#1",
+      "jurisprudencia_sc-439_2021/iii_consideraciones#1",
+      "jurisprudencia_sc-560_2024/consideraciones#1"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-537_2010/vi_consideraciones_de_la_corte#33",
+      "jurisprudencia_sc-1904_2019/ii_el_trámite_observado#2",
+      "ley_600_2000/art_74/notas#2",
+      "jurisprudencia_sc-466_2021/ii_el_trámite_observado#2",
+      "ley_600_2000/art_73/notas#2",
+      "jurisprudencia_c-244_1996/vi_consideraciones_de_la_corte#13",
+      "ley_5_1992/anexo#27",
+      "decreto_537_2022/preambulo#2",
+      "jurisprudencia_sc-4683_2019/consideraciones#1",
+      "jurisprudencia_c-635_2016/iv_consideraciones_de_la_corte#11"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "ley_5_1992/anexo#27",
+      "ley_600_2000/art_74/notas#2",
+      "ley_600_2000/art_73/notas#2",
+      "jurisprudencia_t-425_2024/ii_consideraciones#5",
+      "jurisprudencia_t-526_2024/ii_consideraciones#27",
+      "jurisprudencia_t-140_2023/ii_consideraciones#24",
+      "decreto_537_2022/preambulo#2",
+      "jurisprudencia_t-438_2021/ii_fundamento_jurídico_de_la_d#1",
+      "jurisprudencia_su-363_2021/ii_consideraciones#39",
+      "jurisprudencia_c-635_2016/i_antecedentes#12"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "ley_5_1992/anexo#27",
+      "ley_600_2000/art_74/notas#2",
+      "ley_600_2000/art_73/notas#2",
+      "jurisprudencia_t-425_2024/ii_consideraciones#5",
+      "jurisprudencia_t-526_2024/ii_consideraciones#27",
+      "jurisprudencia_t-140_2023/ii_consideraciones#24",
+      "decreto_537_2022/preambulo#2",
+      "jurisprudencia_t-438_2021/ii_fundamento_jurídico_de_la_d#1",
+      "jurisprudencia_su-363_2021/ii_consideraciones#39",
+      "jurisprudencia_c-635_2016/i_antecedentes#12"
+     ]
+    }
+   }
+  },
+  {
+   "id": 60,
+   "formato": "multiple_choice",
+   "area": "Derecho procesal",
+   "legal_basis": "Constitución Política de Colombia, artículo 29; Código General del Proceso (Ley 1564 de 2012), artículo 6.",
+   "n_oro": 2,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-415_2002/vi_consideraciones_y_fundament#36",
+      "jurisprudencia_su-48_2022/salvamento_de_voto_de_la_magis~2#17",
+      "jurisprudencia_t-866_2013/iv_consideraciones#17",
+      "jurisprudencia_c-760_2001/vi_consideraciones_de_la_corte#109",
+      "jurisprudencia_t-309_2013/aclaración_de_voto_del_magistr#15",
+      "jurisprudencia_t-942_2013/aclaración_de_voto_del_magistr~2#7",
+      "jurisprudencia_c-496_2015/problema_jurídico#19",
+      "jurisprudencia_c-134_2023/consideraciones#1186",
+      "jurisprudencia_t-267_2013/aclaración_de_voto_del_magistr#14",
+      "jurisprudencia_sc-1230_2018/inicio#39"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-594_2014/problema_jurídico#4",
+      "jurisprudencia_t-686_2017/c_planteamiento_del_problema_j#3",
+      "jurisprudencia_t-323_2024/ii_consideraciones#125",
+      "jurisprudencia_c-496_2015/problema_jurídico#19",
+      "jurisprudencia_c-200_2002/vi_decision#2",
+      "jurisprudencia_su-1184_2001/ii_fundamentos_y_consideracion#20",
+      "jurisprudencia_c-1064_2002/vi_decision#9",
+      "jurisprudencia_c-674_2017/aclaración_de_voto_del_magistr~3#7",
+      "jurisprudencia_c-200_2002/vi_decision#5",
+      "jurisprudencia_c-193_2020/v_consideraciones_de_la_corte_#85"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-496_2015/problema_jurídico#19",
+      "jurisprudencia_c-594_2014/problema_jurídico#4",
+      "jurisprudencia_su-1184_2001/ii_fundamentos_y_consideracion#20",
+      "jurisprudencia_t-942_2013/aclaración_de_voto_del_magistr~2#7",
+      "jurisprudencia_t-267_2013/aclaración_de_voto_del_magistr#14",
+      "jurisprudencia_t-309_2013/aclaración_de_voto_del_magistr#15",
+      "jurisprudencia_t-323_2024/ii_consideraciones#125",
+      "jurisprudencia_c-134_2023/consideraciones#1186",
+      "jurisprudencia_c-200_2002/vi_decision#5",
+      "jurisprudencia_su-48_2022/salvamento_de_voto_de_la_magis~2#17"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-193_2020/v_consideraciones_de_la_corte_#88",
+      "jurisprudencia_c-1064_2002/vi_decision#8",
+      "jurisprudencia_c-674_2017/aclaración_de_voto_del_magistr~3#7",
+      "jurisprudencia_c-93_1993/vii_consideraciones_de_la_cort#139",
+      "jurisprudencia_t-323_2024/ii_consideraciones#125",
+      "jurisprudencia_c-1064_2002/vi_decision#9",
+      "jurisprudencia_su-1184_2001/ii_fundamentos_y_consideracion#20",
+      "jurisprudencia_t-942_2013/aclaración_de_voto_del_magistr~2#7",
+      "jurisprudencia_su-373_2019/iii_consideraciones_y_fundamen#30",
+      "jurisprudencia_t-453_2024/ii_consideraciones#18"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-193_2020/v_consideraciones_de_la_corte_#88",
+      "jurisprudencia_c-1064_2002/vi_decision#8",
+      "jurisprudencia_c-674_2017/aclaración_de_voto_del_magistr~3#7",
+      "jurisprudencia_c-93_1993/vii_consideraciones_de_la_cort#139",
+      "jurisprudencia_t-323_2024/ii_consideraciones#125",
+      "jurisprudencia_c-1064_2002/vi_decision#9",
+      "jurisprudencia_su-1184_2001/ii_fundamentos_y_consideracion#20",
+      "jurisprudencia_t-942_2013/aclaración_de_voto_del_magistr~2#7",
+      "jurisprudencia_su-373_2019/iii_consideraciones_y_fundamen#30",
+      "jurisprudencia_t-453_2024/ii_consideraciones#18"
+     ]
+    }
+   }
+  },
+  {
+   "id": 128,
+   "formato": "multiple_choice",
+   "area": "Derecho comercial y sociedades",
+   "legal_basis": "Decreto Ley 663 de 1993",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "decreto_1068_2025/preambulo#5",
+      "ley_674_2001/preambulo#3",
+      "ley_45_1990/art_1",
+      "decreto_1068_2025/art_2.26.3",
+      "decreto_663_1993/art_325/notas#4",
+      "jurisprudencia_c-719_2004/vii_decision#32",
+      "decreto_663_1993/art_2/notas",
+      "decreto_663_1993/art_142/notas",
+      "decreto_663_1993/art_253#1",
+      "ley_35_1993/art_12"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "decreto_2555_2010/art_2.28.2.1.8",
+      "jurisprudencia_sc-9446_2015/consideraciones~2#7",
+      "decreto_2555_2010/art_2.28.2.1.3",
+      "decreto_2555_2010/art_2.28.2.1.9",
+      "decreto_2555_2010/art_2.2.1.2.4/notas",
+      "jurisprudencia_sp-7462_2016/consideraciones_de_la_corte#33",
+      "decreto_2555_2010/art_2.2.1.2.5/notas",
+      "decreto_1745_2020/art_62#2",
+      "jurisprudencia_sc-9446_2015/consideraciones~2#8",
+      "decreto_2555_2010/art_2.28.2.1.4"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "ley_35_1993/art_12",
+      "decreto_663_1993/art_26/notas",
+      "jurisprudencia_sc-9446_2015/consideraciones~2#8",
+      "decreto_663_1993/art_141/notas",
+      "decreto_1745_2020/art_62#2",
+      "decreto_2555_2010/art_2.2.1.1.2/notas",
+      "ley_674_2001/preambulo#3",
+      "jurisprudencia_sp-7462_2016/consideraciones_de_la_corte#33",
+      "jurisprudencia_c-719_2004/vii_decision#32",
+      "decreto_1625_2016/art_1.4.2.2.19"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1111111111111111,
+     "ndcg": 0.3010299956639812,
+     "top": [
+      "jurisprudencia_sc-9446_2015/consideraciones~2#7",
+      "decreto_1745_2020/art_62#2",
+      "jurisprudencia_t-734_2013/ii_consideraciones_y_fundament#29",
+      "jurisprudencia_sp-7462_2016/consideraciones_de_la_corte#40",
+      "decreto_1745_2020/art_62#3",
+      "jurisprudencia_sc-9446_2015/consideraciones~2#8",
+      "decreto_2555_2010/art_2.2.1.1.3/notas",
+      "decreto_2555_2010/art_2.28.2.1.3",
+      "decreto_663_1993/art_13/notas#5",
+      "decreto_2555_2010/art_2.2.1.2.4/notas"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.125,
+     "ndcg": 0.31546487678572877,
+     "top": [
+      "jurisprudencia_sc-9446_2015/consideraciones~2#7",
+      "decreto_1745_2020/art_62",
+      "jurisprudencia_t-734_2013/ii_consideraciones_y_fundament#29",
+      "jurisprudencia_sp-7462_2016/consideraciones_de_la_corte#40",
+      "jurisprudencia_sc-9446_2015/consideraciones~2#8",
+      "decreto_2555_2010/art_2.2.1.1.3/notas",
+      "decreto_2555_2010/art_2.28.2.1.3",
+      "decreto_663_1993/art_13/notas#5",
+      "decreto_2555_2010/art_2.2.1.2.4/notas",
+      "jurisprudencia_sp-7462_2016/consideraciones_de_la_corte#33"
+     ]
+    }
+   }
+  },
+  {
+   "id": 290,
+   "formato": "multiple_choice",
+   "area": "Derecho administrativo",
+   "legal_basis": "Artículo 11 ley 1150 de 2007",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/ii_consideraciones#86",
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_su-16_2026/ii_consideraciones#66",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#42",
+      "jurisprudencia_su-16_2026/ii_consideraciones#64",
+      "jurisprudencia_c-27_2020/norma_demandada#6",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#20",
+      "decreto_2555_2010/art_9.1.3.1.3",
+      "ley_510_1999/art_23#1"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_sp-2160_2018/consideraciones#28",
+      "jurisprudencia_ce-85001-23-31-000-1995-00174-01_2012/inicio#15",
+      "jurisprudencia_c-712_2005/inicio#49",
+      "ley_1150_2007/art_11",
+      "ley_2024_2020/art_12",
+      "jurisprudencia_ce-85001-23-31-000-1995-00174-01_2012/resuelve#13",
+      "jurisprudencia_c-567_2003/vii_decision#4",
+      "jurisprudencia_su-16_2026/i_antecedentes#12",
+      "jurisprudencia_c-1049_2004/vi_consideraciones_de_la_corte#17"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.125,
+     "ndcg": 0.31546487678572877,
+     "top": [
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#20",
+      "jurisprudencia_su-16_2026/ii_consideraciones#64",
+      "jurisprudencia_c-567_2003/vii_decision#4",
+      "jurisprudencia_su-16_2026/i_antecedentes#12",
+      "jurisprudencia_sp-2160_2018/consideraciones#28",
+      "ley_1150_2007/art_11",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#44",
+      "jurisprudencia_t-430_2016/i_antecedentes#16"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/i_antecedentes#12",
+      "jurisprudencia_sp-2160_2018/consideraciones#28",
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_su-16_2026/i_antecedentes#2",
+      "jurisprudencia_su-16_2026/ii_consideraciones#58",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#20",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr#5",
+      "jurisprudencia_su-335_2023/ii_consideraciones_de_la_corte#75",
+      "jurisprudencia_c-375_2008/vi_consideraciones_de_la_corte#3"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/i_antecedentes#12",
+      "jurisprudencia_sp-2160_2018/consideraciones#28",
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_su-335_2023/ii_consideraciones_de_la_corte#75",
+      "jurisprudencia_c-375_2008/vi_consideraciones_de_la_corte#3",
+      "jurisprudencia_su-103_2022/i_antecedentes#2",
+      "jurisprudencia_ce-85001-23-31-000-1995-00174-01_2012/resuelve#13",
+      "jurisprudencia_c-27_2020/norma_demandada#6",
+      "jurisprudencia_c-967_2012/salvamento_de_voto_del_magistr#16"
+     ]
+    }
+   }
+  },
+  {
+   "id": 308,
+   "formato": "multiple_choice",
+   "area": "Derecho administrativo",
+   "legal_basis": "Art 44 ley 1150 ",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-567_2003/vii_decision#4",
+      "ley_1150_2007/art_11",
+      "ley_80_1993/art_60/notas",
+      "codigo_contencioso_administrativo/art_136#3",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#44",
+      "ley_446_1998/art_44#3",
+      "jurisprudencia_su-16_2026/ii_consideraciones#57",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#37",
+      "jurisprudencia_su-16_2026/ii_consideraciones#54"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "ley_1150_2007/art_11",
+      "jurisprudencia_c-1049_2004/vi_consideraciones_de_la_corte#17",
+      "jurisprudencia_c-967_2012/salvamento_de_voto_del_magistr#16",
+      "ley_80_1993/art_60/notas",
+      "jurisprudencia_c-114_1999/antecedentes#11",
+      "jurisprudencia_c-567_2003/vii_decision#5",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_c-967_2012/salvamento_de_voto_del_magistr#15",
+      "jurisprudencia_ce-85001-23-31-000-1995-00174-01_2012/resuelve#13",
+      "jurisprudencia_su-16_2026/ii_consideraciones#65"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "ley_1150_2007/art_11",
+      "ley_80_1993/art_60/notas",
+      "jurisprudencia_c-567_2003/vii_decision#4",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#44",
+      "jurisprudencia_su-16_2026/ii_consideraciones#57",
+      "jurisprudencia_c-1049_2004/vi_consideraciones_de_la_corte#17",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr#5",
+      "jurisprudencia_c-114_1999/antecedentes#11",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#20"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "ley_1150_2007/art_11",
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr#7",
+      "jurisprudencia_sp-2160_2018/consideraciones#28",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#37",
+      "jurisprudencia_c-114_1999/antecedentes#11",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#44",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#14",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#20",
+      "jurisprudencia_su-16_2026/i_antecedentes#12"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "ley_1150_2007/art_11",
+      "jurisprudencia_su-16_2026/ii_consideraciones#54",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr#7",
+      "jurisprudencia_sp-2160_2018/consideraciones#28",
+      "jurisprudencia_su-16_2026/aclaración_de_voto_del_magistr~2#37",
+      "jurisprudencia_c-114_1999/antecedentes#11",
+      "jurisprudencia_su-406_2016/vii_consideraciones#79",
+      "ley_80_1993/art_60/notas",
+      "jurisprudencia_su-174_2007/aclaracion_de_voto#218",
+      "jurisprudencia_ce-85001-23-31-000-1995-00174-01_2012/resuelve#13"
+     ]
+    }
+   }
+  },
+  {
+   "id": 352,
+   "formato": "multiple_choice",
+   "area": "Derecho constitucional",
+   "legal_basis": "Decreto 2067 de 1991, art. 49 (nulidad por violación del debido proceso).",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-238_2006/iii_intervenciones_oficiales#1",
+      "jurisprudencia_c-161_2024/consideraciones#42",
+      "jurisprudencia_c-279_2001/v_consideraciones_y_fundamento#2",
+      "decreto_334_2016/art_241-10#20",
+      "jurisprudencia_c-278_2004/iv_consideraciones_de_la_corte#6",
+      "jurisprudencia_c-55_1995/i_antecedentes#80",
+      "jurisprudencia_c-982_2010/v_consideraciones_de_la_corte#35",
+      "jurisprudencia_su-174_2007/salvamento_de_voto_a_la_senten#38",
+      "jurisprudencia_c-421_1997/consideraciones_de_la_corte#2",
+      "jurisprudencia_c-1041_2005/v_cargos_por_vicios_de_procedi#238"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1300_2005/vii_consideraciones_de_la_cort#3",
+      "jurisprudencia_c-1299_2005/vii_consideraciones_y_fundamen#9",
+      "jurisprudencia_c-75_2007/vi_consideraciones_de_la_corte#1",
+      "jurisprudencia_c-27_1993/ii_fundamentos#2",
+      "jurisprudencia_c-27_1993/ii_fundamentos~2#2",
+      "jurisprudencia_c-1299_2005/vii_consideraciones_y_fundamen#10",
+      "jurisprudencia_su-1219_2001/ii_consideraciones_y_fundament#48",
+      "jurisprudencia_c-802_2009/vi_fundamentos_de_la_decisión#7",
+      "jurisprudencia_su-1073_2012/ii_consideraciones#6",
+      "jurisprudencia_c-63_1998/ii_consideraciones#2"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1300_2005/vii_consideraciones_de_la_cort#3",
+      "jurisprudencia_c-238_2006/iii_intervenciones_oficiales#1",
+      "jurisprudencia_c-1299_2005/vii_consideraciones_y_fundamen#9",
+      "jurisprudencia_c-161_2024/consideraciones#42",
+      "jurisprudencia_c-279_2001/v_consideraciones_y_fundamento#2",
+      "jurisprudencia_c-75_2007/vi_consideraciones_de_la_corte#1",
+      "decreto_334_2016/art_241-10#20",
+      "jurisprudencia_c-27_1993/ii_fundamentos#2",
+      "jurisprudencia_c-278_2004/iv_consideraciones_de_la_corte#6",
+      "jurisprudencia_c-27_1993/ii_fundamentos~2#2"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1300_2005/vii_consideraciones_de_la_cort#3",
+      "jurisprudencia_c-75_2007/vi_consideraciones_de_la_corte#1",
+      "jurisprudencia_c-1299_2005/vii_consideraciones_y_fundamen#9",
+      "jurisprudencia_su-769_2014/ii_consideraciones_de_la_corte#53",
+      "jurisprudencia_su-1219_2001/ii_consideraciones_y_fundament#48",
+      "jurisprudencia_c-1300_2005/vii_consideraciones_de_la_cort#2",
+      "jurisprudencia_c-27_1993/ii_fundamentos#2",
+      "jurisprudencia_c-27_1993/ii_fundamentos~2#2",
+      "jurisprudencia_t-673_2012/ii_consideraciones~2#5",
+      "jurisprudencia_c-41_2017/iii_consideraciones_de_la_cort#10"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1300_2005/vii_consideraciones_de_la_cort#3",
+      "jurisprudencia_c-75_2007/vi_consideraciones_de_la_corte#1",
+      "jurisprudencia_c-1299_2005/vii_consideraciones_y_fundamen#9",
+      "jurisprudencia_su-769_2014/ii_consideraciones_de_la_corte#53",
+      "jurisprudencia_su-1219_2001/ii_consideraciones_y_fundament#48",
+      "jurisprudencia_c-1300_2005/vii_consideraciones_de_la_cort#2",
+      "jurisprudencia_c-27_1993/ii_fundamentos#2",
+      "jurisprudencia_c-27_1993/ii_fundamentos~2#2",
+      "jurisprudencia_t-673_2012/ii_consideraciones~2#5",
+      "jurisprudencia_c-41_2017/iii_consideraciones_de_la_cort#10"
+     ]
+    }
+   }
+  },
+  {
+   "id": 358,
+   "formato": "multiple_choice",
+   "area": "Derecho civil",
+   "legal_basis": "c) Acción reivindicatoria, disponible únicamente para los dueños legales del bien, de acuerdo con el artículo 946 del C.C.\n",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "csj_sp_s18_0405_1989/texto#18",
+      "jurisprudencia_sc-4415_2016/aclaracion_de_voto#103",
+      "codigo_civil/art_983",
+      "jurisprudencia_su-157_2022/iii_consideraciones_de_la_cort#162",
+      "jurisprudencia_sc-1692_2019/iii_consideraciones#2",
+      "jurisprudencia_sc-11287_2016/inicio#57",
+      "jurisprudencia_sc-11340_2015/consideraciones#1",
+      "jurisprudencia_t-98_2012/ii_consideraciones#13",
+      "jurisprudencia_t-98_2012/ii_consideraciones#24",
+      "jurisprudencia_sc-11641_2014/consideraciones#1"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "jurisprudencia_c-241_2010/iv_intervenciones#15",
+      "jurisprudencia_t-740_2012/iv_consideraciones#39",
+      "jurisprudencia_c-820_2012/resuelve#64",
+      "jurisprudencia_c-820_2012/resuelve#58",
+      "codigo_civil/art_983",
+      "jurisprudencia_c-820_2012/resuelve#59",
+      "codigo_civil/art_982",
+      "jurisprudencia_t-302_2011/resuelve#47",
+      "jurisprudencia_sc-12437_2016/consideraciones~2#6",
+      "jurisprudencia_t-98_2012/ii_consideraciones#13"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_civil/art_983",
+      "jurisprudencia_su-157_2022/iii_consideraciones_de_la_cort#162",
+      "jurisprudencia_t-98_2012/ii_consideraciones#13",
+      "jurisprudencia_t-740_2012/iv_consideraciones#39",
+      "jurisprudencia_sc-11340_2015/consideraciones#1",
+      "jurisprudencia_sc-11641_2014/consideraciones#1",
+      "jurisprudencia_c-820_2012/resuelve#58",
+      "jurisprudencia_t-731_2013/ii_consideraciones_y_fundament#16",
+      "jurisprudencia_c-241_2010/iv_intervenciones#15",
+      "jurisprudencia_sc-4415_2016/aclaracion_de_voto#103"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-157_2022/iii_consideraciones_de_la_cort#162",
+      "jurisprudencia_sc-11641_2014/consideraciones#1",
+      "jurisprudencia_t-629_2014/inicio#69",
+      "jurisprudencia_sc-13489_2014/consideraciones#1",
+      "jurisprudencia_sc-11340_2015/consideraciones#1",
+      "jurisprudencia_t-98_2012/ii_consideraciones#13",
+      "jurisprudencia_t-731_2013/ii_consideraciones_y_fundament#16",
+      "jurisprudencia_c-820_2012/resuelve#59",
+      "jurisprudencia_sc-3493_2014/consideraciones#1",
+      "jurisprudencia_sc-3691_2021/c_c#5"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-157_2022/iii_consideraciones_de_la_cort#162",
+      "jurisprudencia_sc-11641_2014/consideraciones#1",
+      "jurisprudencia_t-629_2014/inicio#69",
+      "jurisprudencia_sc-13489_2014/consideraciones#1",
+      "jurisprudencia_sc-11340_2015/consideraciones#1",
+      "jurisprudencia_t-98_2012/ii_consideraciones#13",
+      "jurisprudencia_t-731_2013/ii_consideraciones_y_fundament#16",
+      "jurisprudencia_c-820_2012/resuelve#59",
+      "jurisprudencia_sc-3493_2014/consideraciones#1",
+      "jurisprudencia_sc-3691_2021/c_c#5"
+     ]
+    }
+   }
+  },
+  {
+   "id": 487,
+   "formato": "multiple_choice",
+   "area": "Derecho de familia",
+   "legal_basis": "1820 del Código Civil. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-3864_2015/salvamento_de_voto~2#51",
+      "jurisprudencia_c-700_2013/inicio#2",
+      "jurisprudencia_c-193_2016/vi_fundamentos_de_la_decisión#75",
+      "jurisprudencia_sc-10809_2015/fundamentos_del_fallo_impugnad#9",
+      "jurisprudencia_sc-11949_2016/consideraciones#42",
+      "jurisprudencia_sc-1413_2022/consideraciones#49",
+      "jurisprudencia_c-193_2016/vi_fundamentos_de_la_decisión#97",
+      "jurisprudencia_su-169_2024/anexo#23",
+      "jurisprudencia_c-700_2013/vi_consideraciones_y_fundament#51",
+      "jurisprudencia_sc-12015_2015/consideraciones#14"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.125,
+     "ndcg": 0.31546487678572877,
+     "top": [
+      "jurisprudencia_sc-11949_2016/consideraciones#34",
+      "jurisprudencia_sc-2429_2024/consideraciones~2#3",
+      "jurisprudencia_c-901_2003/vi_consideraciones_y_fundament#15",
+      "jurisprudencia_c-700_2013/inicio#2",
+      "jurisprudencia_sc-2502_2021/inicio#45",
+      "jurisprudencia_sc-2502_2021/inicio#36",
+      "jurisprudencia_c-114_1996/ii_consideraciones#12",
+      "codigo_civil/art_1820",
+      "ley_1_1976/art_25",
+      "jurisprudencia_c-700_2013/vi_consideraciones_y_fundament#36"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_c-700_2013/inicio#2",
+      "jurisprudencia_c-901_2003/vi_consideraciones_y_fundament#15",
+      "jurisprudencia_sc-2429_2024/consideraciones~2#3",
+      "codigo_civil/art_1820",
+      "ley_1_1976/art_25",
+      "jurisprudencia_su-169_2024/anexo#23",
+      "jurisprudencia_sc-11949_2016/consideraciones#34",
+      "jurisprudencia_c-114_1996/ii_consideraciones#12",
+      "jurisprudencia_c-901_2003/vi_consideraciones_y_fundament#14",
+      "jurisprudencia_sc-2502_2021/inicio#45"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "ley_1_1976/art_25",
+      "jurisprudencia_sc-2429_2024/consideraciones~2#3",
+      "jurisprudencia_sc-2502_2021/inicio#45",
+      "codigo_civil/art_1820",
+      "jurisprudencia_su-169_2024/anexo#23",
+      "jurisprudencia_sc-2502_2021/inicio#36",
+      "jurisprudencia_sc-4528_2020/consideraciones#6",
+      "jurisprudencia_c-114_1996/ii_consideraciones#12",
+      "jurisprudencia_sc-12015_2015/consideraciones#14",
+      "jurisprudencia_sc-12015_2015/consideraciones#15"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "ley_1_1976/art_25",
+      "jurisprudencia_sc-2429_2024/consideraciones~2#3",
+      "jurisprudencia_sc-2502_2021/inicio#45",
+      "codigo_civil/art_1820",
+      "jurisprudencia_su-169_2024/anexo#23",
+      "jurisprudencia_sc-2502_2021/inicio#36",
+      "jurisprudencia_sc-4528_2020/consideraciones#6",
+      "jurisprudencia_c-114_1996/ii_consideraciones#12",
+      "jurisprudencia_sc-12015_2015/consideraciones#14",
+      "jurisprudencia_sc-12015_2015/consideraciones#15"
+     ]
+    }
+   }
+  },
+  {
+   "id": 528,
+   "formato": "multiple_choice",
+   "area": "Derecho procesal",
+   "legal_basis": "Código General del Proceso. Art. 25.",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1,
+     "ndcg": 0.2890648263178879,
+     "top": [
+      "jurisprudencia_c-103_2005/inicio#2",
+      "codigo_procedimiento_civil/art_19/notas#2",
+      "decreto_522_1988/art_1",
+      "ley_572_2000/art_1",
+      "jurisprudencia_c-103_2005/vii_consideraciones_y_fundamen#10",
+      "codigo_procedimiento_civil/art_19/notas#3",
+      "jurisprudencia_t-353_2019/ii_consideraciones#30",
+      "codigo_procedimiento_penal_1991/art_19",
+      "jurisprudencia_c-103_2005/vii_consideraciones_y_fundamen#4",
+      "codigo_general_proceso/art_25"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "codigo_procedimiento_civil/art_19/notas#3",
+      "decreto_522_1988/art_1",
+      "codigo_procedimiento_civil/art_19/notas#2",
+      "jurisprudencia_t-353_2019/ii_consideraciones#30",
+      "codigo_general_proceso/art_25",
+      "jurisprudencia_t-308_2023/ii_consideraciones_de_la_corte#8",
+      "codigo_procedimiento_penal_1991/art_19",
+      "ley_572_2000/art_1",
+      "codigo_procedimiento_civil/art_397",
+      "codigo_procedimiento_administrativo/art_157"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.16666666666666666,
+     "ndcg": 0.3562071871080222,
+     "top": [
+      "codigo_procedimiento_civil/art_19/notas#2",
+      "decreto_522_1988/art_1",
+      "codigo_procedimiento_civil/art_19/notas#3",
+      "jurisprudencia_t-353_2019/ii_consideraciones#30",
+      "ley_572_2000/art_1",
+      "codigo_general_proceso/art_25",
+      "codigo_procedimiento_penal_1991/art_19",
+      "jurisprudencia_c-507_2014/ii_consideraciones#2",
+      "ley_2540_2025/art_11",
+      "jurisprudencia_sp-17773_2017/consideraciones_de_la_corte#10"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_t-353_2019/ii_consideraciones#30",
+      "decreto_522_1988/art_1",
+      "jurisprudencia_c-507_2014/i_antecedentes#1",
+      "codigo_general_proceso/art_25",
+      "jurisprudencia_t-289_2024/ii_consideraciones#7",
+      "jurisprudencia_sp-3189_2022/consideraciones_de_la_corte#15",
+      "jurisprudencia_c-507_2014/ii_consideraciones#2",
+      "codigo_procedimiento_civil/art_19/notas#2",
+      "codigo_procedimiento_civil/art_19/notas#3",
+      "jurisprudencia_t-237_2018/aclaración_de_voto_del_magistr#2"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_t-353_2019/ii_consideraciones#30",
+      "decreto_522_1988/art_1",
+      "jurisprudencia_c-507_2014/i_antecedentes#1",
+      "codigo_general_proceso/art_25",
+      "jurisprudencia_t-289_2024/ii_consideraciones#7",
+      "jurisprudencia_sp-3189_2022/consideraciones_de_la_corte#15",
+      "jurisprudencia_c-507_2014/ii_consideraciones#2",
+      "codigo_procedimiento_civil/art_19/notas#2",
+      "codigo_procedimiento_civil/art_19/notas#3",
+      "jurisprudencia_t-237_2018/aclaración_de_voto_del_magistr#2"
+     ]
+    }
+   }
+  },
+  {
+   "id": 600,
+   "formato": "multiple_choice",
+   "area": "Derecho penal",
+   "legal_basis": "Artículo 241 del Código Penal. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sp-4815_2021/consideraciones#4",
+      "jurisprudencia_sp-4788_2020/consideraciones#23",
+      "jurisprudencia_sp-2086_2022/consideraciones_de_la_corte#15",
+      "jurisprudencia_c-255_2020/vii_decisión_184~2#19",
+      "jurisprudencia_sp-12042_2015/consideraciones_de_la_corte#42",
+      "jurisprudencia_sp-8_2023/consideraciones_de_la_corte#8",
+      "jurisprudencia_sp-4394_2020/vi_consideraciones#2",
+      "jurisprudencia_sc-10497_2015/inicio#10",
+      "jurisprudencia_sc-12437_2016/consideraciones~2#5",
+      "jurisprudencia_sp-509_2023/vii_consideraciones#33"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_sp-3959_2021/inicio#8",
+      "ley_1142_2007/art_37",
+      "jurisprudencia_sp-4815_2021/consideraciones#4",
+      "codigo_penal/art_240#1",
+      "jurisprudencia_c-746_1998/vi_consideraciones_de_la_corte#7",
+      "codigo_penal/art_240/notas#3",
+      "codigo_penal_1980/art_350",
+      "ley_813_2003/art_2",
+      "jurisprudencia_sp-298_2023/iii_consideraciones#36",
+      "codigo_penal/art_240/notas#2"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_sp-4815_2021/consideraciones#4",
+      "codigo_penal/art_241",
+      "jurisprudencia_c-255_2020/vii_decisión_184~2#19",
+      "jurisprudencia_sp-203_2025/consideraciones#2",
+      "jurisprudencia_sp-3959_2021/inicio#8",
+      "jurisprudencia_sp-4788_2020/consideraciones#23",
+      "ley_1142_2007/art_37",
+      "jurisprudencia_c-553_2001/vi_consideraciones_y_fundament#5",
+      "jurisprudencia_sp-2086_2022/consideraciones_de_la_corte#15",
+      "codigo_penal/art_240#1"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.125,
+     "ndcg": 0.31546487678572877,
+     "top": [
+      "jurisprudencia_sp-4815_2021/consideraciones#4",
+      "jurisprudencia_sp-7332_2015/consideraciones#5",
+      "ley_813_2003/art_2",
+      "ley_1142_2007/art_37",
+      "jurisprudencia_sp-8_2023/demanda_de_casación#12",
+      "jurisprudencia_sp-203_2025/consideraciones#2",
+      "jurisprudencia_sp-18530_2017/sentencia_impugnada#1",
+      "codigo_penal/art_240#1",
+      "jurisprudencia_sp-3959_2021/inicio#8",
+      "jurisprudencia_c-255_2020/vii_decisión_184~2#19"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.125,
+     "ndcg": 0.31546487678572877,
+     "top": [
+      "jurisprudencia_sp-4815_2021/consideraciones#4",
+      "jurisprudencia_sp-7332_2015/consideraciones#5",
+      "ley_813_2003/art_2",
+      "ley_1142_2007/art_37",
+      "jurisprudencia_sp-8_2023/demanda_de_casación#12",
+      "jurisprudencia_sp-203_2025/consideraciones#2",
+      "jurisprudencia_sp-18530_2017/sentencia_impugnada#1",
+      "codigo_penal/art_240",
+      "jurisprudencia_sp-3959_2021/inicio#8",
+      "jurisprudencia_c-255_2020/vii_decisión_184~2#19"
+     ]
+    }
+   }
+  },
+  {
+   "id": 617,
+   "formato": "multiple_choice",
+   "area": "Derecho laboral",
+   "legal_basis": "Código Sustantivo del Trabajo. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_t-606_2017/resuelve#20",
+      "jurisprudencia_t-386_2011/inicio#31",
+      "ley_50_1990/art_57",
+      "codigo_sustantivo_trabajo/art_406/notas#3",
+      "jurisprudencia_t-57_2016/inicio#48",
+      "jurisprudencia_c-1232_2005/resuelve#6",
+      "jurisprudencia_su-377_2014/resuelve~2#19",
+      "jurisprudencia_t-303_2018/salvamento_de_voto_de_la_magis#19",
+      "codigo_sustantivo_trabajo/art_406/notas#4",
+      "jurisprudencia_t-434_2015/resuelve#22"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-358_2015/iii_fundamentos_jurídicos_de_l#9",
+      "jurisprudencia_t-917_2012/iv_consideraciones_y_fundament#30",
+      "jurisprudencia_t-938_2011/inicio#2",
+      "jurisprudencia_t-733_2011/v_consideraciones_y_fundamento#38",
+      "jurisprudencia_sl-1309_2022/consideraciones#15",
+      "jurisprudencia_t-123_2016/ii_consideraciones_de_la_sala#27",
+      "jurisprudencia_t-938_2011/ii_consideraciones_de_la_corte#8",
+      "jurisprudencia_sl-3041_2022/vii_consideraciones#4",
+      "jurisprudencia_t-14_2018/ii_consideraciones#16",
+      "jurisprudencia_c-33_2021/problema_jurídico_método_y_est#7"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1,
+     "ndcg": 0.2890648263178879,
+     "top": [
+      "jurisprudencia_t-938_2011/ii_consideraciones_de_la_corte#8",
+      "jurisprudencia_t-386_2011/inicio#31",
+      "jurisprudencia_t-57_2016/inicio#48",
+      "jurisprudencia_t-938_2011/inicio#2",
+      "ley_50_1990/art_57",
+      "ley_584_2000/art_12",
+      "jurisprudencia_sl-1309_2022/consideraciones#15",
+      "jurisprudencia_t-606_2017/resuelve#20",
+      "jurisprudencia_t-14_2018/resuelve#7",
+      "codigo_sustantivo_trabajo/art_406#1"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-733_2011/v_consideraciones_y_fundamento#38",
+      "jurisprudencia_sl-3562_2021/iv_consideraciones#2",
+      "jurisprudencia_t-358_2015/iii_fundamentos_jurídicos_de_l#16",
+      "jurisprudencia_t-14_2018/resuelve#7",
+      "jurisprudencia_t-303_2018/d_el_defecto_sustantivo_y_defe#4",
+      "jurisprudencia_sl-4608_2020/vii_recurso_de_sintrae#4",
+      "jurisprudencia_sl-1983_2020/viii_consideraciones#7",
+      "jurisprudencia_c-33_2021/problema_jurídico_método_y_est#7",
+      "jurisprudencia_t-938_2011/inicio#2",
+      "jurisprudencia_t-938_2011/ii_consideraciones_de_la_corte#8"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-733_2011/v_consideraciones_y_fundamento#38",
+      "jurisprudencia_sl-3562_2021/iv_consideraciones#2",
+      "jurisprudencia_t-358_2015/iii_fundamentos_jurídicos_de_l#16",
+      "jurisprudencia_t-14_2018/resuelve#7",
+      "jurisprudencia_t-303_2018/d_el_defecto_sustantivo_y_defe#4",
+      "jurisprudencia_sl-4608_2020/vii_recurso_de_sintrae#4",
+      "jurisprudencia_sl-1983_2020/viii_consideraciones#7",
+      "jurisprudencia_c-33_2021/problema_jurídico_método_y_est#7",
+      "jurisprudencia_t-938_2011/inicio#2",
+      "jurisprudencia_t-938_2011/ii_consideraciones_de_la_corte#8"
+     ]
+    }
+   }
+  },
+  {
+   "id": 647,
+   "formato": "multiple_choice",
+   "area": "Derecho de familia",
+   "legal_basis": "Código civil.",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#12",
+      "ley_1346_2009/art_20",
+      "jurisprudencia_t-294_2013/resuelve#20",
+      "jurisprudencia_t-520_2014/inicio#23",
+      "jurisprudencia_t-831a_2013/ii_consideraciones#17",
+      "jurisprudencia_t-702_2012/iv_resolucion_de_los_casos_en_#46",
+      "ley_2456_2025/art_4#1",
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#11",
+      "jurisprudencia_t-702_2012/iv_resolucion_de_los_casos_en_#45",
+      "jurisprudencia_c-293_2010/ii_texto_de_la_norma_revisada#25"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#12",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#12",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#11",
+      "jurisprudencia_c-821_2005/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_c-246_2002/inicio#5",
+      "jurisprudencia_c-456_2020/antecedentes#13",
+      "jurisprudencia_c-515_2019/competencia#27",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#2",
+      "jurisprudencia_c-246_2002/inicio#8",
+      "jurisprudencia_t-992_2012/ii_consideraciones_y_fundament#14"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#12",
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#11",
+      "jurisprudencia_c-515_2019/competencia#26",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#12",
+      "ley_1346_2009/art_20",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#11",
+      "jurisprudencia_t-294_2013/resuelve#20",
+      "jurisprudencia_c-821_2005/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_t-520_2014/inicio#23",
+      "jurisprudencia_c-246_2002/inicio#5"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#12",
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#11",
+      "jurisprudencia_c-456_2020/antecedentes#13",
+      "jurisprudencia_c-515_2019/competencia#26",
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#7",
+      "jurisprudencia_c-821_2005/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#11",
+      "jurisprudencia_sl-1233_2023/viii_consideraciones#3",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#10",
+      "jurisprudencia_t-506_2011/ii_consideraciones_y_fundament#9"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#12",
+      "jurisprudencia_c-515_2019/salvamento_de_voto_de_la_magis#11",
+      "jurisprudencia_c-456_2020/antecedentes#13",
+      "jurisprudencia_c-515_2019/competencia#26",
+      "jurisprudencia_c-821_2005/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#11",
+      "jurisprudencia_sl-1233_2023/viii_consideraciones#3",
+      "jurisprudencia_c-246_2002/vi_consideraciones_y_fundament#10",
+      "jurisprudencia_t-506_2011/ii_consideraciones_y_fundament#9",
+      "jurisprudencia_t-1096_2008/iii_consideraciones_y_fundamen#13"
+     ]
+    }
+   }
+  },
+  {
+   "id": 671,
+   "formato": "multiple_choice",
+   "area": "Derecho tributario",
+   "legal_basis": "Doctrina. ",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-221_2013/inicio#12",
+      "jurisprudencia_c-221_2013/v_consideraciones_de_la_corte_#42",
+      "jurisprudencia_c-460_2010/v_consideraciones_de_la_corte_#30",
+      "jurisprudencia_c-49_2015/v_consideraciones_de_la_corte#53",
+      "jurisprudencia_c-187_2022/v_consideraciones#49",
+      "jurisprudencia_c-260_2014/v_consideraciones_de_la_corte_#54",
+      "jurisprudencia_c-260_2014/inicio#4",
+      "decreto_334_2016/art_241-10#44",
+      "jurisprudencia_c-460_2010/inicio#4",
+      "jurisprudencia_c-913_2011/vi_consideraciones_de_la_corte#32"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2019/v_consideraciones#40",
+      "jurisprudencia_c-491_2019/v_consideraciones#41",
+      "decreto_331_2016/art_20#34",
+      "decreto_4633_2011/art_170",
+      "jurisprudencia_c-418_2024/iii_consideraciones#61",
+      "decreto_4635_2011/art_134",
+      "jurisprudencia_c-418_2024/iii_consideraciones#80",
+      "ley_2362_2024/art_15",
+      "ley_1582_2012/art_18",
+      "jurisprudencia_c-31_2009/vi_consideraciones_y_fundament#151"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2019/v_consideraciones#40",
+      "jurisprudencia_c-91_2021/iii_consideraciones_de_la_cort#37",
+      "jurisprudencia_c-491_2019/v_consideraciones#41",
+      "jurisprudencia_c-443_2021/iii_consideraciones#42",
+      "jurisprudencia_c-316_2022/iii_consideraciones_de_la_cort#32",
+      "jurisprudencia_c-491_2019/v_consideraciones#39",
+      "jurisprudencia_c-260_2014/resuelve#2",
+      "jurisprudencia_c-221_2013/inicio#12",
+      "jurisprudencia_c-221_2013/v_consideraciones_de_la_corte_#42",
+      "decreto_331_2016/art_20#34"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2019/v_consideraciones#40",
+      "jurisprudencia_c-187_2022/v_consideraciones#40",
+      "ley_2061_2020/art_31#6",
+      "jurisprudencia_c-187_2022/v_consideraciones#49",
+      "jurisprudencia_c-491_2019/v_consideraciones#41",
+      "jurisprudencia_c-221_2013/v_consideraciones_de_la_corte_#42",
+      "jurisprudencia_c-260_2014/resuelve#2",
+      "jurisprudencia_c-221_2013/v_consideraciones_de_la_corte_#43",
+      "jurisprudencia_c-221_2013/inicio#12",
+      "jurisprudencia_c-491_2019/v_consideraciones#39"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2019/v_consideraciones#40",
+      "jurisprudencia_c-187_2022/v_consideraciones#40",
+      "ley_2061_2020/art_31",
+      "jurisprudencia_c-187_2022/v_consideraciones#49",
+      "jurisprudencia_c-491_2019/v_consideraciones#41",
+      "jurisprudencia_c-221_2013/v_consideraciones_de_la_corte_#42",
+      "jurisprudencia_c-260_2014/resuelve#2",
+      "jurisprudencia_c-221_2013/v_consideraciones_de_la_corte_#43",
+      "jurisprudencia_c-221_2013/inicio#12",
+      "jurisprudencia_c-491_2019/v_consideraciones#39"
+     ]
+    }
+   }
+  },
+  {
+   "id": 748,
+   "formato": "multiple_choice",
+   "area": "Derecho administrativo",
+   "legal_basis": "CPACA ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-217_2017/inicio#2",
+      "jurisprudencia_t-622_2016/i_decreto_de_pruebas_en_sede_d#24",
+      "jurisprudencia_c-448_2025/vi_pruebas_decretadas#2",
+      "jurisprudencia_c-595_2010/vii_decisión#46",
+      "jurisprudencia_su-217_2017/ii_consideraciones#30",
+      "jurisprudencia_su-354_2020/iii_consideraciones_de_la_cort#48",
+      "jurisprudencia_t-39_2024/ii_consideraciones_y_fundament#77",
+      "jurisprudencia_c-778_2003/vi_consideraciones_y_fundament#19",
+      "decreto_1345_2010/anexo#4",
+      "decreto_1081_2015/anexo#65"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-217_2017/salvamento_parcial_de_voto_del~3#42",
+      "jurisprudencia_t-436_2016/ii_consideraciones_y_fundament#24",
+      "jurisprudencia_c-366_2011/salvamento_parcial_de_voto_del~2#11",
+      "jurisprudencia_t-307_2018/v_consideraciones#87",
+      "jurisprudencia_t-307_2018/iv_actuaciones_adelantadas_en_#26",
+      "jurisprudencia_t-384a_2014/iv_consideraciones#51",
+      "jurisprudencia_c-366_2011/salvamento_parcial_de_voto_del~2#25",
+      "jurisprudencia_t-461_2022/ii_consideraciones#5",
+      "jurisprudencia_su-383_2003/i_antecedentes#95",
+      "jurisprudencia_t-213_2016/inicio#237"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-294_2014/i_antecedentes#7",
+      "jurisprudencia_t-461_2022/ii_consideraciones#5",
+      "jurisprudencia_su-217_2017/inicio#2",
+      "jurisprudencia_t-294_2014/iii_pruebas#10",
+      "jurisprudencia_t-307_2018/inicio#6",
+      "jurisprudencia_su-217_2017/salvamento_parcial_de_voto_del~3#42",
+      "jurisprudencia_t-436_2016/ii_consideraciones_y_fundament#24",
+      "jurisprudencia_t-622_2016/i_decreto_de_pruebas_en_sede_d#24",
+      "jurisprudencia_c-366_2011/salvamento_parcial_de_voto_del~2#11",
+      "jurisprudencia_c-448_2025/vi_pruebas_decretadas#2"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-294_2014/i_antecedentes#7",
+      "jurisprudencia_t-461_2022/ii_consideraciones#5",
+      "jurisprudencia_t-294_2014/inicio#4",
+      "jurisprudencia_c-778_2003/vi_consideraciones_y_fundament#19",
+      "jurisprudencia_su-217_2017/inicio#2",
+      "jurisprudencia_c-366_2011/vii_consideraciones_y_fundamen#150",
+      "jurisprudencia_su-217_2017/ii_consideraciones#30",
+      "jurisprudencia_t-436_2016/iv_caso_concreto#41",
+      "jurisprudencia_c-366_2011/salvamento_parcial_de_voto_del~2#11",
+      "jurisprudencia_t-436_2016/ii_consideraciones_y_fundament#102"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-294_2014/i_antecedentes#7",
+      "jurisprudencia_t-461_2022/ii_consideraciones#5",
+      "jurisprudencia_t-294_2014/inicio#4",
+      "jurisprudencia_c-778_2003/vi_consideraciones_y_fundament#19",
+      "jurisprudencia_su-217_2017/inicio#2",
+      "jurisprudencia_c-366_2011/vii_consideraciones_y_fundamen#150",
+      "jurisprudencia_su-217_2017/ii_consideraciones#30",
+      "jurisprudencia_t-436_2016/iv_caso_concreto#41",
+      "jurisprudencia_c-366_2011/salvamento_parcial_de_voto_del~2#11",
+      "jurisprudencia_t-436_2016/ii_consideraciones_y_fundament#102"
+     ]
+    }
+   }
+  },
+  {
+   "id": 247,
+   "formato": "open_ended",
+   "area": "Derecho administrativo",
+   "legal_basis": "ley 472 de 1998 ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-231_1997/iii_intervenciones#3",
+      "jurisprudencia_t-129_2022/ii_consideraciones#48",
+      "decreto_728_2017/preambulo#2",
+      "jurisprudencia_c-19_2004/la_demanda#2",
+      "jurisprudencia_c-184_2016/intervenciones_de_entidades_es#6",
+      "jurisprudencia_c-172_2021/vi_consideraciones_de_la_corte#75",
+      "jurisprudencia_c-251_2002/resuelve#59",
+      "jurisprudencia_c-189_2008/iv_concepto_del_procurador_gen#2",
+      "jurisprudencia_t-129_2022/ii_consideraciones#49",
+      "jurisprudencia_t-35_2017/d_el_derecho_a_la_vivienda_dig#18"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_su-842_2013/v_consideraciones_y_fundamento#42",
+      "jurisprudencia_su-842_2013/iii_las_decisiones_judiciales_#9",
+      "jurisprudencia_su-842_2013/i_antecedentes#5",
+      "jurisprudencia_su-842_2013/iii_las_decisiones_judiciales_#11",
+      "jurisprudencia_su-842_2013/v_consideraciones_y_fundamento#47",
+      "jurisprudencia_t-62_2018/iii_revisión_por_parte_de_la_c#3",
+      "jurisprudencia_su-842_2013/i_antecedentes#14",
+      "jurisprudencia_t-202_2013/resuelve#8",
+      "jurisprudencia_c-568_2003/iv_intervenciones#11",
+      "jurisprudencia_t-481_2024/i_antecedentes#13"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-514_2014/inicio#32",
+      "jurisprudencia_c-231_1997/iii_intervenciones#3",
+      "jurisprudencia_su-842_2013/v_consideraciones_y_fundamento#42",
+      "jurisprudencia_su-842_2013/iii_las_decisiones_judiciales_#9",
+      "jurisprudencia_t-129_2022/ii_consideraciones#48",
+      "decreto_728_2017/preambulo#2",
+      "jurisprudencia_su-842_2013/i_antecedentes#5",
+      "jurisprudencia_c-19_2004/la_demanda#2",
+      "jurisprudencia_su-842_2013/iii_las_decisiones_judiciales_#11",
+      "jurisprudencia_c-184_2016/intervenciones_de_entidades_es#6"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-750_2014/ii_consideraciones_de_la_corte#32",
+      "jurisprudencia_su-150_2021/salvamento_de_voto_de_la_magis~2#124",
+      "jurisprudencia_c-268_2025/anexo_1#8",
+      "decreto_728_2017/preambulo#2",
+      "jurisprudencia_t-35_2017/d_el_derecho_a_la_vivienda_dig#18",
+      "jurisprudencia_c-497a_1994/vi_consideraciones_de_la_corte#2",
+      "jurisprudencia_c-251_2002/resuelve#59",
+      "jurisprudencia_c-268_2025/anexo_1#9",
+      "jurisprudencia_c-132_2012/vii_consideraciones_y_fundamen#12",
+      "jurisprudencia_t-514_2014/inicio#32"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-750_2014/ii_consideraciones_de_la_corte#32",
+      "jurisprudencia_su-150_2021/salvamento_de_voto_de_la_magis~2#124",
+      "jurisprudencia_c-268_2025/anexo_1#8",
+      "decreto_728_2017/preambulo#2",
+      "jurisprudencia_t-35_2017/d_el_derecho_a_la_vivienda_dig#18",
+      "jurisprudencia_c-497a_1994/vi_consideraciones_de_la_corte#2",
+      "jurisprudencia_c-251_2002/resuelve#59",
+      "jurisprudencia_c-268_2025/anexo_1#9",
+      "jurisprudencia_c-132_2012/vii_consideraciones_y_fundamen#12",
+      "jurisprudencia_t-514_2014/inicio#32"
+     ]
+    }
+   }
+  },
+  {
+   "id": 253,
+   "formato": "open_ended",
+   "area": "Derecho laboral",
+   "legal_basis": "Sentencia SL3385-2022.\nLey 1562 de 2012.  \nartículo 56 y 57 del CST.  ",
+   "n_oro": 3,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sl-5074_2020/i_antecedentes#2",
+      "jurisprudencia_t-524_2016/ii_consideraciones_y_fundament#41",
+      "jurisprudencia_t-102_2020/ii_consideraciones_y_fundament#33",
+      "jurisprudencia_sl-4802_2021/i_antecedentes#2",
+      "jurisprudencia_t-746_2013/inicio#95",
+      "jurisprudencia_t-412_2014/inicio#4",
+      "jurisprudencia_sl-3426_2020/ix_consideraciones#2",
+      "jurisprudencia_sl-5074_2020/i_antecedentes#1",
+      "jurisprudencia_sl-5074_2020/salvamento_de_voto#5",
+      "jurisprudencia_t-994_2012/ii_consideraciones_y_fundament#13"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.6666666666666666,
+     "rr": 1.0,
+     "ndcg": 0.617319681505689,
+     "top": [
+      "jurisprudencia_sl-3385_2022/x_consideraciones#3",
+      "jurisprudencia_sl-4785_2020/vi_consideraciones#5",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#13",
+      "jurisprudencia_sl-2961_2023/viii_consideraciones#3",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#6",
+      "jurisprudencia_c-460_2013/vi_consideraciones_y_fundament#46",
+      "jurisprudencia_t-134_2013/resuelve~2#6",
+      "ley_1562_2012/art_3",
+      "jurisprudencia_c-1155_2008/resuelve#2",
+      "jurisprudencia_sl-5074_2020/x_sentencia_de_instancia#2"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.3333333333333333,
+     "rr": 0.25,
+     "ndcg": 0.20210734650054757,
+     "top": [
+      "jurisprudencia_sl-3426_2020/ix_consideraciones#2",
+      "jurisprudencia_c-460_2013/vi_consideraciones_y_fundament#45",
+      "jurisprudencia_c-453_2002/iii_la_demanda#9",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#3",
+      "jurisprudencia_sl-5074_2020/i_antecedentes#2",
+      "jurisprudencia_t-181_2021/ii_consideraciones_y_fundament#58",
+      "jurisprudencia_sl-4785_2020/vi_consideraciones#5",
+      "jurisprudencia_t-524_2016/ii_consideraciones_y_fundament#41",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#13",
+      "jurisprudencia_t-102_2020/ii_consideraciones_y_fundament#33"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.3333333333333333,
+     "rr": 1.0,
+     "ndcg": 0.46927872602275644,
+     "top": [
+      "jurisprudencia_sl-3385_2022/x_consideraciones#3",
+      "jurisprudencia_t-550_2023/salvamento_de_voto_del_magistr#25",
+      "jurisprudencia_t-41_2019/resuelve#18",
+      "jurisprudencia_c-582_2002/vii_decisión#4",
+      "jurisprudencia_sl-2961_2023/viii_consideraciones#3",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#13",
+      "jurisprudencia_c-460_2013/vi_consideraciones_y_fundament#45",
+      "jurisprudencia_t-134_2013/resuelve~2#6",
+      "jurisprudencia_sl-3426_2020/ix_consideraciones#2",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#2"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.3333333333333333,
+     "rr": 1.0,
+     "ndcg": 0.46927872602275644,
+     "top": [
+      "jurisprudencia_sl-3385_2022/x_consideraciones#3",
+      "jurisprudencia_t-550_2023/salvamento_de_voto_del_magistr#25",
+      "jurisprudencia_t-41_2019/resuelve#18",
+      "jurisprudencia_c-582_2002/vii_decisión#4",
+      "jurisprudencia_sl-2961_2023/viii_consideraciones#3",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#13",
+      "jurisprudencia_c-460_2013/vi_consideraciones_y_fundament#45",
+      "jurisprudencia_t-134_2013/resuelve~2#6",
+      "jurisprudencia_sl-3426_2020/ix_consideraciones#2",
+      "jurisprudencia_sl-3385_2022/x_consideraciones#2"
+     ]
+    }
+   }
+  },
+  {
+   "id": 272,
+   "formato": "open_ended",
+   "area": "Derecho comercial y sociedades",
+   "legal_basis": "Ley 1116 de 2006 y jurisprudencia de la superintendencia de sociedades en especial el auto auto No. 2025-01-730337",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "ley_1116_2006/art_38/notas#2",
+      "jurisprudencia_sp-4266_2021/consideraciones_de_la_corte#10",
+      "jurisprudencia_t-484_2016/iii_actuaciones_adelantadas_en#10",
+      "jurisprudencia_sc-2705_2022/antecedentes#3",
+      "jurisprudencia_t-80_2012/ii_consideraciones#6",
+      "decreto_1082_2015/anexo#48",
+      "jurisprudencia_sc-380_2018/antecedentes#2",
+      "decreto_1082_2015/anexo#47",
+      "jurisprudencia_t-80_2012/ii_consideraciones#7",
+      "jurisprudencia_sp-3630_2018/hechos_y_actuación_procesal_re#1"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "ley_1116_2006/art_43#1",
+      "decreto_1074_2015/art_2.2.2.12.12",
+      "jurisprudencia_sc-4280_2020/consideraciones#10",
+      "jurisprudencia_su-143_2020/c_estudio_de_los_requisitos_ge#7",
+      "jurisprudencia_c-71_2010/ii_la_norma_demandada#3",
+      "jurisprudencia_sc-5438_2014/iv_consideraciones#16",
+      "jurisprudencia_sc-6227_2016/iii_la_demanda_d_e_casación#7",
+      "jurisprudencia_sc-5175_2020/consideraciones~2#6",
+      "jurisprudencia_sl-2035_2023/iii_sentencia_de_segunda_insta#5",
+      "ley_1116_2006/art_38/notas#3"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "decreto_1082_2015/anexo#47",
+      "ley_1116_2006/art_38/notas#3",
+      "decreto_1082_2015/anexo#48",
+      "ley_1116_2006/art_43#1",
+      "jurisprudencia_c-71_2010/ii_la_norma_demandada#3",
+      "jurisprudencia_t-80_2012/ii_consideraciones#6",
+      "jurisprudencia_c-620_2012/resuelve#26",
+      "jurisprudencia_sc-5438_2014/iv_consideraciones#16",
+      "jurisprudencia_sc-6227_2016/iv_consideraciones#13",
+      "jurisprudencia_t-80_2012/ii_consideraciones#7"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "ley_1116_2006/art_38/notas#3",
+      "jurisprudencia_t-80_2012/ii_consideraciones#6",
+      "jurisprudencia_t-80_2012/ii_consideraciones#7",
+      "ley_1116_2006/art_38/notas#2",
+      "jurisprudencia_sp-4266_2021/consideraciones_de_la_corte#10",
+      "jurisprudencia_sc-380_2018/antecedentes#2",
+      "jurisprudencia_sc-2705_2022/antecedentes#3",
+      "decreto_1082_2015/anexo#47",
+      "jurisprudencia_su-397_2019/i_antecedentes#1",
+      "jurisprudencia_sp-3630_2018/hechos_y_actuación_procesal_re#1"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "ley_1116_2006/art_38/notas#3",
+      "jurisprudencia_t-80_2012/ii_consideraciones#6",
+      "jurisprudencia_t-80_2012/ii_consideraciones#7",
+      "ley_1116_2006/art_38/notas#2",
+      "jurisprudencia_sp-4266_2021/consideraciones_de_la_corte#10",
+      "jurisprudencia_sc-380_2018/antecedentes#2",
+      "jurisprudencia_sc-2705_2022/antecedentes#3",
+      "decreto_1082_2015/anexo#47",
+      "jurisprudencia_su-397_2019/i_antecedentes#1",
+      "jurisprudencia_sp-3630_2018/hechos_y_actuación_procesal_re#1"
+     ]
+    }
+   }
+  },
+  {
+   "id": 513,
+   "formato": "open_ended",
+   "area": "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+   "legal_basis": "https://www.wipo.int/edocs/mdocs/mdocs/en/wipo_ip_bog_12/wipo_ip_bog_12_ref_u14b_aleman.pdf ",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-587_2014/v_concepto_del_procurador_gene#3",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#24",
+      "jurisprudencia_t-132_2025/ii_actuaciones_adelantadas_en_#34",
+      "jurisprudencia_sc-2556_2024/ii_la_sentencia_del_tribunal#5",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#37",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#26",
+      "ley_170_1994/preambulo#42",
+      "jurisprudencia_c-657_2015/iii_la_demanda#9",
+      "jurisprudencia_c-657_2015/iv_intervenciones#2",
+      "jurisprudencia_c-197_1997/inicio#2"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-208_2016/iv_intervenciones#10",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#29",
+      "jurisprudencia_sc-13208_2015/i_a_n_t_e_c_e_d_e_n_t_e_s#16",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#21",
+      "ley_2284_2023/texto#59",
+      "ley_67_1979/art_2",
+      "jurisprudencia_c-59_2021/intervenciones#5",
+      "jurisprudencia_c-529_2000/v_consideraciones_y_fundamento#14",
+      "ley_1841_2017/art_3.12",
+      "jurisprudencia_c-1066_2001/vi_consideraciones_y_fundament#11"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "ley_2284_2023/texto#59",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#28",
+      "jurisprudencia_c-208_2016/iv_intervenciones#10",
+      "jurisprudencia_c-587_2014/v_concepto_del_procurador_gene#3",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#24",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#29",
+      "jurisprudencia_sc-13208_2015/i_a_n_t_e_c_e_d_e_n_t_e_s#16",
+      "jurisprudencia_t-132_2025/ii_actuaciones_adelantadas_en_#34",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#21",
+      "jurisprudencia_sc-2556_2024/ii_la_sentencia_del_tribunal#5"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-13208_2015/ii_la_demanda_d_e_casación#32",
+      "jurisprudencia_c-587_2014/v_concepto_del_procurador_gene#3",
+      "jurisprudencia_t-132_2025/resuelve#14",
+      "jurisprudencia_sc-5230_2021/consideraciones#4",
+      "jurisprudencia_sc-5252_2021/consideraciones#8",
+      "jurisprudencia_c-59_2021/intervenciones#5",
+      "jurisprudencia_sc-13208_2015/i_a_n_t_e_c_e_d_e_n_t_e_s#16",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#24",
+      "ley_170_1994/preambulo#42",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#28"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-13208_2015/ii_la_demanda_d_e_casación#32",
+      "jurisprudencia_c-587_2014/v_concepto_del_procurador_gene#3",
+      "jurisprudencia_t-132_2025/resuelve#14",
+      "jurisprudencia_sc-5230_2021/consideraciones#4",
+      "jurisprudencia_sc-5252_2021/consideraciones#8",
+      "jurisprudencia_c-59_2021/intervenciones#5",
+      "jurisprudencia_sc-13208_2015/i_a_n_t_e_c_e_d_e_n_t_e_s#16",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#24",
+      "ley_170_1994/preambulo#42",
+      "jurisprudencia_t-132_2025/iii_consideraciones_de_la_cort#28"
+     ]
+    }
+   }
+  },
+  {
+   "id": 679,
+   "formato": "open_ended",
+   "area": "Derecho constitucional",
+   "legal_basis": " Ley 1581 de 2012",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-12_2020/iii_consideraciones#9",
+      "jurisprudencia_t-752_2012/i_antecedentes#19",
+      "jurisprudencia_t-212_2011/inicio#1",
+      "jurisprudencia_t-302_2014/iii_consideraciones_y_fundamen#32",
+      "jurisprudencia_t-887_2012/inicio#2",
+      "jurisprudencia_t-752_2012/i_antecedentes#20",
+      "jurisprudencia_t-133_2022/resuelve#28",
+      "ley_2460_2025/art_36",
+      "jurisprudencia_t-94_2016/ii_fundamentos_de_la_decisión#10",
+      "jurisprudencia_t-416_2023/iii_consideraciones#22"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-750_2008/iii_intervenciones#123",
+      "jurisprudencia_c-750_2008/v_consideraciones_de_la_corte_#698",
+      "jurisprudencia_c-750_2008/iii_intervenciones#131",
+      "jurisprudencia_t-105_2015/resuelve#2",
+      "jurisprudencia_t-487_2011/inicio#50",
+      "jurisprudencia_t-539_2013/inicio#89",
+      "jurisprudencia_t-133_2022/i_antecedentes#41",
+      "jurisprudencia_c-750_2008/v_consideraciones_de_la_corte_#697",
+      "jurisprudencia_t-698_2012/ii_consideraciones#11",
+      "jurisprudencia_t-243_2015/ii_consideraciones_de_la_corte#10"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-12_2020/iii_consideraciones#9",
+      "jurisprudencia_t-376_2019/ii_consideraciones#55",
+      "jurisprudencia_c-750_2008/iii_intervenciones#123",
+      "jurisprudencia_c-750_2008/v_consideraciones_de_la_corte_#698",
+      "jurisprudencia_t-752_2012/i_antecedentes#19",
+      "jurisprudencia_c-750_2008/iii_intervenciones#131",
+      "jurisprudencia_t-212_2011/inicio#1",
+      "jurisprudencia_t-105_2015/resuelve#2",
+      "jurisprudencia_t-302_2014/iii_consideraciones_y_fundamen#32",
+      "jurisprudencia_t-487_2011/inicio#50"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-212_2011/inicio#51",
+      "jurisprudencia_t-133_2022/ficha",
+      "jurisprudencia_t-147_2025/i_antecedentes#13",
+      "jurisprudencia_t-212_2011/inicio#1",
+      "jurisprudencia_t-752_2012/i_antecedentes#19",
+      "jurisprudencia_t-463_2022/i_antecedentes#2",
+      "jurisprudencia_t-752_2012/i_antecedentes#20",
+      "jurisprudencia_t-400_2016/i_antecedentes#1",
+      "jurisprudencia_t-133_2022/i_antecedentes#41",
+      "jurisprudencia_t-12_2020/resuelve#4"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-212_2011/inicio#51",
+      "jurisprudencia_t-133_2022/ficha",
+      "jurisprudencia_t-147_2025/i_antecedentes#13",
+      "jurisprudencia_t-212_2011/inicio#1",
+      "jurisprudencia_t-752_2012/i_antecedentes#19",
+      "jurisprudencia_t-463_2022/i_antecedentes#2",
+      "jurisprudencia_t-752_2012/i_antecedentes#20",
+      "jurisprudencia_t-400_2016/i_antecedentes#1",
+      "jurisprudencia_t-133_2022/i_antecedentes#41",
+      "jurisprudencia_t-12_2020/resuelve#4"
+     ]
+    }
+   }
+  },
+  {
+   "id": 24,
+   "formato": "semi_open",
+   "area": "Derecho civil",
+   "legal_basis": null,
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-2218_2021/iv_consideraciones#5",
+      "jurisprudencia_c-976_2001/iv_intervenciones#1",
+      "jurisprudencia_c-917_2001/resuelve#2",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#8",
+      "jurisprudencia_sc-3951_2022/antecedentes#13",
+      "jurisprudencia_sc-5690_2018/vi_cargo_tercero#1",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#33",
+      "jurisprudencia_c-917_2001/iv_intervención#1",
+      "jurisprudencia_sc-1905_2019/consideraciones#9",
+      "jurisprudencia_sl-463_2021/ix_consideraciones#5"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sp-2207_2024/vii_consideraciones#21",
+      "codigo_comercio/art_1045",
+      "jurisprudencia_sc-313_2023/consideraciones#6",
+      "jurisprudencia_sp-2207_2024/vii_consideraciones#20",
+      "jurisprudencia_c-269_1999/vi_consideraciones_de_la_corte#14",
+      "jurisprudencia_sc-172_2020/inicio#10",
+      "jurisprudencia_sc-711_2022/antecedentes#11",
+      "jurisprudencia_sc-515_2024/iv_consideraciones#3",
+      "jurisprudencia_sc-16496_2016/aclaración_de_voto#35",
+      "jurisprudencia_sc-1905_2019/consideraciones#9"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "codigo_comercio/art_1045",
+      "jurisprudencia_sc-1905_2019/consideraciones#9",
+      "jurisprudencia_sc-2218_2021/iv_consideraciones#5",
+      "jurisprudencia_sc-711_2022/antecedentes#11",
+      "jurisprudencia_sc-490_2024/consideraciones~2#1",
+      "jurisprudencia_t-769_2015/inicio#44",
+      "jurisprudencia_t-574_2016/d_defecto_por_violación_direct#14",
+      "jurisprudencia_c-448_2015/ii_fundamentos#2",
+      "jurisprudencia_sc-490_2024/consideraciones~2#2",
+      "jurisprudencia_sc-490_2024/consideraciones~3#2"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-2218_2021/iv_consideraciones#5",
+      "jurisprudencia_sc-1905_2019/consideraciones#9",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#8",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#33",
+      "jurisprudencia_t-769_2015/inicio#44",
+      "jurisprudencia_t-574_2016/d_defecto_por_violación_direct#14",
+      "codigo_sustantivo_trabajo/art_23/notas#2",
+      "jurisprudencia_sc-490_2024/consideraciones~3#2",
+      "jurisprudencia_sc-490_2024/consideraciones~2#2",
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#19"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-2218_2021/iv_consideraciones#5",
+      "jurisprudencia_sc-1905_2019/consideraciones#9",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#8",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#33",
+      "jurisprudencia_t-769_2015/inicio#44",
+      "jurisprudencia_t-574_2016/d_defecto_por_violación_direct#14",
+      "codigo_sustantivo_trabajo/art_23/notas#2",
+      "jurisprudencia_sc-490_2024/consideraciones~3#2",
+      "jurisprudencia_sc-490_2024/consideraciones~2#2",
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#19"
+     ]
+    }
+   }
+  },
+  {
+   "id": 79,
+   "formato": "semi_open",
+   "area": "Derecho laboral",
+   "legal_basis": "Ley 1010 de 2006 ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-462_2015/ii_consideraciones_de_la_corte#132",
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#34",
+      "jurisprudencia_t-262_2025/c_problema_jurídico_y_esquema_#8",
+      "jurisprudencia_c-282_2007/v_concepto_del_procurador_gene#2",
+      "jurisprudencia_t-239_2018/ii_actuaciones_llevadas_a_cabo#46",
+      "jurisprudencia_t-141_2024/ii_consideraciones_y_fundament#15",
+      "jurisprudencia_t-262_2025/c_problema_jurídico_y_esquema_#1",
+      "jurisprudencia_c-282_2007/v_concepto_del_procurador_gene#6",
+      "jurisprudencia_t-168_2019/iii_caso_concreto#14",
+      "jurisprudencia_t-7_2019/ii_consideraciones_de_la_corte#26"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-104_2025/ii_consideraciones_de_la_corte#41",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#73",
+      "jurisprudencia_t-262_2025/c_problema_jurídico_y_esquema_#8",
+      "jurisprudencia_t-31_2020/v_consideraciones#19",
+      "jurisprudencia_t-462_2015/ii_consideraciones_de_la_corte#132",
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#34",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#74",
+      "jurisprudencia_t-45_2025/inicio#3",
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#25",
+      "jurisprudencia_t-198_2022/ii_consideraciones#33"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-462_2015/ii_consideraciones_de_la_corte#132",
+      "jurisprudencia_t-262_2025/c_problema_jurídico_y_esquema_#8",
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#34",
+      "jurisprudencia_t-104_2025/ii_consideraciones_de_la_corte#41",
+      "jurisprudencia_t-141_2024/ii_consideraciones_y_fundament#15",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#73",
+      "jurisprudencia_t-45_2025/i_antecedentes#69",
+      "jurisprudencia_t-141_2024/ii_consideraciones_y_fundament#16",
+      "jurisprudencia_c-898_2006/inicio#24",
+      "jurisprudencia_t-31_2020/v_consideraciones#19"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#34",
+      "jurisprudencia_t-462_2015/ii_consideraciones_de_la_corte#132",
+      "jurisprudencia_t-31_2020/v_consideraciones#19",
+      "jurisprudencia_t-104_2025/ii_consideraciones_de_la_corte#41",
+      "jurisprudencia_t-31_2020/v_consideraciones#18",
+      "jurisprudencia_t-262_2025/c_problema_jurídico_y_esquema_#8",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#73",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#74",
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#25",
+      "jurisprudencia_t-104_2025/ii_consideraciones_de_la_corte#40"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#34",
+      "jurisprudencia_t-462_2015/ii_consideraciones_de_la_corte#132",
+      "jurisprudencia_t-31_2020/v_consideraciones#19",
+      "jurisprudencia_t-104_2025/ii_consideraciones_de_la_corte#41",
+      "jurisprudencia_t-31_2020/v_consideraciones#18",
+      "jurisprudencia_t-262_2025/c_problema_jurídico_y_esquema_#8",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#73",
+      "jurisprudencia_t-372_2012/ii_consideraciones_de_la_corte#74",
+      "jurisprudencia_t-317_2020/ii_consideraciones_y_fundament#25",
+      "jurisprudencia_t-104_2025/ii_consideraciones_de_la_corte#40"
+     ]
+    }
+   }
+  },
+  {
+   "id": 140,
+   "formato": "semi_open",
+   "area": "Derecho comercial y sociedades",
+   "legal_basis": "Sentencia C 145 de 2018",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#39",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#73",
+      "decreto_1074_2015/art_2.2.2.4.2.54",
+      "jurisprudencia_c-85_2018/intervenciones_de_entidades_of#2",
+      "jurisprudencia_c-85_2018/iii_la_demanda#4",
+      "decreto_1074_2015/art_2.2.2.4.2.53",
+      "decreto_1074_2015/art_2.2.2.4.2.58",
+      "jurisprudencia_c-85_2018/vi_consideraciones_de_la_corte#34",
+      "decreto_1074_2015/art_2.2.2.4.2.3#1",
+      "jurisprudencia_c-85_2018/intervenciones_de_organizacion#1"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#33",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#63",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#73",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#72",
+      "jurisprudencia_c-85_2018/vi_consideraciones_de_la_corte#38",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#24",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#36",
+      "jurisprudencia_c-85_2018/intervenciones_de_organizacion#2",
+      "jurisprudencia_c-85_2018/intervenciones_de_organizacion#1",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#65"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#73",
+      "jurisprudencia_c-145_2018/ficha",
+      "jurisprudencia_c-85_2018/intervenciones_de_organizacion#1",
+      "jurisprudencia_c-85_2018/intervenciones_de_entidades_of#2",
+      "jurisprudencia_c-85_2018/iii_la_demanda#4",
+      "jurisprudencia_c-85_2018/vi_consideraciones_de_la_corte#14",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#62",
+      "jurisprudencia_c-85_2018/vi_consideraciones_de_la_corte#34",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#33",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#39"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#79",
+      "jurisprudencia_c-145_2018/inicio#1",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#73",
+      "jurisprudencia_c-145_2018/ficha",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#72",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#80",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#40",
+      "jurisprudencia_c-378_2020/vi_consideraciones#105",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#62",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#39"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#79",
+      "jurisprudencia_c-145_2018/inicio#1",
+      "jurisprudencia_c-145_2018/vi_consideraciones_y_fundament#73",
+      "jurisprudencia_c-378_2020/vi_consideraciones#105",
+      "jurisprudencia_c-85_2018/vi_consideraciones_de_la_corte#15",
+      "jurisprudencia_c-85_2018/iii_la_demanda#3",
+      "jurisprudencia_c-85_2018/iii_la_demanda#4",
+      "jurisprudencia_c-483_2024/antecedentes#5",
+      "jurisprudencia_c-237_2020/consideraciones_de_la_corte_co#119",
+      "decreto_1074_2015/art_2.2.2.4.2.2"
+     ]
+    }
+   }
+  },
+  {
+   "id": 142,
+   "formato": "semi_open",
+   "area": "Derecho tributario",
+   "legal_basis": "Sentencia de unificación 2020CE-SUJ-4-005 del 26 de noviembre de 2020 con expediente 21329.",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-622_2015/consideraciones#42",
+      "jurisprudencia_ce-76001-23-33-000-2016-00539-01_2020/inicio#4",
+      "jurisprudencia_c-489_2023/anexo_i#128",
+      "jurisprudencia_c-489_2023/anexo_i#129",
+      "jurisprudencia_c-489_2023/anexo_iii#12",
+      "jurisprudencia_c-489_2023/anexo_iii#27",
+      "jurisprudencia_c-120_2018/consideraciones_de_la_corte_co#61",
+      "jurisprudencia_c-622_2015/inicio#1",
+      "jurisprudencia_c-36_2024/la_demanda#36",
+      "jurisprudencia_c-489_2023/anexo_ii#34"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-489_2023/consideraciones#104",
+      "jurisprudencia_c-489_2023/consideraciones#103",
+      "ley_1819_2016/art_61#1",
+      "ley_2010_2019/art_86",
+      "ley_1943_2018/art_76",
+      "estatuto_tributario/art_107#2",
+      "estatuto_tributario/art_177-1",
+      "jurisprudencia_c-489_2023/consideraciones#105",
+      "estatuto_tributario/art_115#1",
+      "estatuto_tributario/art_115/notas#10"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-489_2023/anexo_i#212",
+      "jurisprudencia_c-489_2023/anexo_ii#35",
+      "jurisprudencia_c-272_2022/consideraciones#41",
+      "jurisprudencia_c-489_2023/anexo_i#52",
+      "jurisprudencia_c-489_2023/consideraciones#104",
+      "jurisprudencia_c-622_2015/consideraciones#42",
+      "jurisprudencia_c-489_2023/consideraciones#103",
+      "jurisprudencia_ce-76001-23-33-000-2016-00539-01_2020/inicio#4",
+      "jurisprudencia_c-489_2023/anexo_i#128",
+      "ley_1819_2016/art_61#1"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-489_2023/anexo_ii#35",
+      "jurisprudencia_c-489_2023/consideraciones#103",
+      "jurisprudencia_c-120_2018/consideraciones_de_la_corte_co#61",
+      "estatuto_tributario/art_115#1",
+      "jurisprudencia_c-489_2023/consideraciones#105",
+      "jurisprudencia_c-489_2023/anexo_i#128",
+      "jurisprudencia_c-489_2023/consideraciones#104",
+      "jurisprudencia_c-489_2023/consideraciones#125",
+      "estatuto_tributario/art_107#2",
+      "ley_633_2000/art_20"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-489_2023/anexo_ii#35",
+      "jurisprudencia_c-489_2023/consideraciones#103",
+      "jurisprudencia_c-120_2018/consideraciones_de_la_corte_co#61",
+      "estatuto_tributario/art_115",
+      "jurisprudencia_c-489_2023/consideraciones#105",
+      "estatuto_tributario/art_107",
+      "ley_633_2000/art_20",
+      "jurisprudencia_c-272_2022/consideraciones#42",
+      "estatuto_tributario/art_177-1",
+      "jurisprudencia_c-272_2022/consideraciones#41"
+     ]
+    }
+   }
+  },
+  {
+   "id": 168,
+   "formato": "semi_open",
+   "area": "Derecho civil",
+   "legal_basis": "Sentencia del 18 de julio de 2017, de la Sala Civil de la Corte Suprema de Justicia",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#4",
+      "jurisprudencia_c-716_2006/v_concepto_del_ministerio_publ#55",
+      "jurisprudencia_sc-17434_2014/consideraciones#7",
+      "jurisprudencia_c-491_2000/iv_intervenciones#6",
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#8",
+      "jurisprudencia_sc-437_2023/ii_la_sentencia_del_tribunal#2",
+      "jurisprudencia_sc-10291_2017/consideraciones#3",
+      "jurisprudencia_c-236_2014/vi_consideraciones_de_la_corte#16",
+      "jurisprudencia_c-222_1994/vi_consideraciones_de_la_corte#4",
+      "jurisprudencia_sc-3666_2021/antecedentes#5"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#4",
+      "jurisprudencia_sc-10291_2017/consideraciones#3",
+      "jurisprudencia_sc-17434_2014/consideraciones#7",
+      "jurisprudencia_c-236_2014/vi_consideraciones_de_la_corte#17",
+      "jurisprudencia_c-236_2014/vi_consideraciones_de_la_corte#16",
+      "codigo_civil/art_1892",
+      "jurisprudencia_sc-948_2022/consideraciones#4",
+      "jurisprudencia_c-236_2014/vi_consideraciones_de_la_corte#11",
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#5",
+      "jurisprudencia_sc-172_2023/consideraciones#8"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#4",
+      "jurisprudencia_sc-17434_2014/consideraciones#7",
+      "jurisprudencia_sc-10291_2017/consideraciones#3",
+      "jurisprudencia_c-236_2014/vi_consideraciones_de_la_corte#16",
+      "jurisprudencia_c-236_2014/vi_consideraciones_de_la_corte#17",
+      "jurisprudencia_sc-437_2023/ii_la_sentencia_del_tribunal#2",
+      "jurisprudencia_sc-948_2022/consideraciones#4",
+      "codigo_civil/art_1947",
+      "codigo_civil/art_1946",
+      "jurisprudencia_c-222_1994/vi_consideraciones_de_la_corte#4"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#4",
+      "jurisprudencia_sc-10291_2017/consideraciones#3",
+      "jurisprudencia_sc-437_2023/i_antecedentes#1",
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#5",
+      "jurisprudencia_sc-172_2023/consideraciones#8",
+      "jurisprudencia_sc-948_2022/consideraciones#5",
+      "jurisprudencia_sc-948_2022/consideraciones#4",
+      "codigo_civil/art_1947",
+      "jurisprudencia_c-491_2000/iv_intervenciones#6",
+      "jurisprudencia_sc-1182_2016/iii_consideraciones#8"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#4",
+      "jurisprudencia_sc-10291_2017/consideraciones#3",
+      "jurisprudencia_sc-437_2023/i_antecedentes#1",
+      "jurisprudencia_c-491_2000/vi_consideraciones_y_fundament#5",
+      "jurisprudencia_sc-172_2023/consideraciones#8",
+      "jurisprudencia_sc-948_2022/consideraciones#5",
+      "jurisprudencia_sc-948_2022/consideraciones#4",
+      "codigo_civil/art_1947",
+      "jurisprudencia_c-491_2000/iv_intervenciones#6",
+      "jurisprudencia_sc-1182_2016/iii_consideraciones#8"
+     ]
+    }
+   }
+  },
+  {
+   "id": 190,
+   "formato": "semi_open",
+   "area": "Derecho constitucional",
+   "legal_basis": "sentencia t-256",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_t-256_2025/ii_consideraciones#70",
+      "jurisprudencia_t-256_2025/ii_consideraciones#127",
+      "jurisprudencia_t-256_2013/inicio#59",
+      "jurisprudencia_t-131_2026/aclaración_de_voto_de_la_magis#17",
+      "jurisprudencia_t-256_2025/i_antecedentes#18",
+      "jurisprudencia_t-121_2018/m_p_carlos_bernal_pulido#39",
+      "jurisprudencia_t-256_2015/ii_consideraciones_y_fundament#11",
+      "jurisprudencia_t-256_2025/ii_consideraciones#251",
+      "jurisprudencia_t-176_2026/ii_consideraciones#4",
+      "jurisprudencia_t-256_2013/inicio#46"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_su-655_2017/ii_consideraciones_de_la_corte#111",
+      "jurisprudencia_t-256_2024/inicio#1",
+      "jurisprudencia_t-255_2024/i_antecedentes#16",
+      "jurisprudencia_t-256_2024/ficha",
+      "jurisprudencia_t-2_2026/resuelve#7",
+      "jurisprudencia_t-25_2004/i_antecedentes#25",
+      "jurisprudencia_t-25_2016/inicio#3",
+      "jurisprudencia_t-256_2015/iii_segundo_dia_de_la_diligenc#1",
+      "jurisprudencia_t-256_2013/resuelve#4",
+      "jurisprudencia_t-256_2015/inicio#8"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_su-655_2017/ii_consideraciones_de_la_corte#111",
+      "jurisprudencia_t-256_2025/ficha",
+      "jurisprudencia_t-256_2025/ii_consideraciones#70",
+      "jurisprudencia_t-256_2024/inicio#1",
+      "jurisprudencia_t-256_2025/ii_consideraciones#127",
+      "jurisprudencia_t-255_2024/i_antecedentes#16",
+      "jurisprudencia_t-256_2013/inicio#59",
+      "jurisprudencia_t-131_2026/aclaración_de_voto_de_la_magis#17",
+      "jurisprudencia_t-256_2024/ficha",
+      "jurisprudencia_t-256_2025/i_antecedentes#18"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_t-174_2026/iii_consideraciones#40",
+      "jurisprudencia_t-256_2025/ii_consideraciones#70",
+      "jurisprudencia_t-256_2024/inicio#1",
+      "jurisprudencia_t-256_2025/i_antecedentes#18",
+      "jurisprudencia_t-256_2025/i_antecedentes#7",
+      "jurisprudencia_t-256_2024/ficha",
+      "jurisprudencia_t-256_2025/ficha",
+      "jurisprudencia_t-176_2026/resuelve#8",
+      "jurisprudencia_t-331_2025/i_antecedentes#9",
+      "jurisprudencia_t-131_2026/aclaración_de_voto_de_la_magis#17"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_t-174_2026/iii_consideraciones#40",
+      "jurisprudencia_t-256_2025/ii_consideraciones#70",
+      "jurisprudencia_t-256_2024/inicio#1",
+      "jurisprudencia_t-256_2025/i_antecedentes#18",
+      "jurisprudencia_t-256_2025/i_antecedentes#7",
+      "jurisprudencia_t-256_2024/ficha",
+      "jurisprudencia_t-176_2026/resuelve#8",
+      "jurisprudencia_t-331_2025/i_antecedentes#9",
+      "jurisprudencia_t-131_2026/aclaración_de_voto_de_la_magis#17",
+      "jurisprudencia_t-257_2025/inicio#7"
+     ]
+    }
+   }
+  },
+  {
+   "id": 218,
+   "formato": "semi_open",
+   "area": "Derecho administrativo",
+   "legal_basis": "Artículo 311 y 313 de la Constitución Política",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "decreto_33_2025/art_2.1.2.1.14#14",
+      "decreto_977_2024/preambulo#4",
+      "jurisprudencia_c-534_1996/vii_consideraciones_de_la_cort#32",
+      "jurisprudencia_c-28_2018/iii_la_demanda#41",
+      "decreto_670_2025/art_2.3.2.8.2.2#2",
+      "jurisprudencia_c-375_2009/resuelve#15",
+      "ley_1152_2007/art_11",
+      "decreto_1406_2023/preambulo#1",
+      "jurisprudencia_c-15_2023/inicio#6",
+      "decreto_149_2026/preambulo#15"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-6_2002/vi_consideraciones_y_fundament#23",
+      "jurisprudencia_c-1043_2000/resuelve#10",
+      "jurisprudencia_c-340_2025/consideraciones#229",
+      "jurisprudencia_c-167_2017/iii_la_demanda#6",
+      "jurisprudencia_c-351_2009/ii_consideraciones#30",
+      "jurisprudencia_c-358_2024/i_antecedentes#13",
+      "jurisprudencia_c-99_2026/inicio#20",
+      "jurisprudencia_c-358_2024/i_antecedentes#9",
+      "jurisprudencia_c-335_2017/ii_normas_demandadas#3",
+      "jurisprudencia_c-1043_2000/consideraciones_y_fundamentos#45"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-375_2009/resuelve#15",
+      "jurisprudencia_c-1043_2000/resuelve#10",
+      "ley_1152_2007/art_11",
+      "jurisprudencia_t-213_2016/inicio#28",
+      "jurisprudencia_c-375_2009/resuelve#16",
+      "jurisprudencia_c-534_1996/vii_consideraciones_de_la_cort#42",
+      "jurisprudencia_c-351_2009/ii_consideraciones#30",
+      "jurisprudencia_c-358_2024/i_antecedentes#13",
+      "jurisprudencia_c-1043_2000/consideraciones_y_fundamentos#45",
+      "jurisprudencia_c-191_2023/vi_consideraciones_de_la_corte#15"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-191_2023/vi_consideraciones_de_la_corte#15",
+      "jurisprudencia_c-191_2023/vi_consideraciones_de_la_corte#16",
+      "jurisprudencia_c-15_2023/inicio#6",
+      "jurisprudencia_c-1043_2000/resuelve#10",
+      "jurisprudencia_c-534_1996/vii_consideraciones_de_la_cort#32",
+      "jurisprudencia_c-351_2009/ii_consideraciones#30",
+      "jurisprudencia_c-534_1996/vii_consideraciones_de_la_cort#42",
+      "jurisprudencia_c-247_2009/iii_demanda#4",
+      "jurisprudencia_c-1043_2000/consideraciones_y_fundamentos#45",
+      "jurisprudencia_c-28_2018/iii_la_demanda#41"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-191_2023/vi_consideraciones_de_la_corte#15",
+      "jurisprudencia_c-191_2023/vi_consideraciones_de_la_corte#16",
+      "jurisprudencia_c-15_2023/inicio#6",
+      "jurisprudencia_c-1043_2000/resuelve#10",
+      "jurisprudencia_c-534_1996/vii_consideraciones_de_la_cort#32",
+      "jurisprudencia_c-351_2009/ii_consideraciones#30",
+      "jurisprudencia_c-534_1996/vii_consideraciones_de_la_cort#42",
+      "jurisprudencia_c-247_2009/iii_demanda#4",
+      "jurisprudencia_c-1043_2000/consideraciones_y_fundamentos#45",
+      "jurisprudencia_c-28_2018/iii_la_demanda#41"
+     ]
+    }
+   }
+  },
+  {
+   "id": 239,
+   "formato": "semi_open",
+   "area": "Derecho comercial y sociedades",
+   "legal_basis": "Artículos 1324 y 1325 del Código de Comercio. Así como en los principios de autonomía de la voluntad privada (Artículos 16, 822 y 871).",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-18392_2017/inicio#38",
+      "jurisprudencia_c-409_2020/salvamento_de_voto_de_la_magis~2#21",
+      "jurisprudencia_t-955_2013/anexo_no_1#25",
+      "jurisprudencia_t-550_2017/resuelve#9",
+      "jurisprudencia_t-733_2013/aclaración_de_voto_del_magistr#3",
+      "jurisprudencia_c-438_2017/aclaración_de_voto_del_magistr#31",
+      "jurisprudencia_c-409_2020/salvamento_de_voto_de_la_magis~2#22",
+      "jurisprudencia_sc-2_2018/c_c#21",
+      "jurisprudencia_sc-1426_2024/vii_consideraciones#50",
+      "jurisprudencia_c-563_2015/resuelve#2"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-18392_2017/inicio#29",
+      "jurisprudencia_sc-18392_2017/inicio#34",
+      "jurisprudencia_sc-425_2024/consideraciones#26",
+      "jurisprudencia_sc-18392_2017/inicio#30",
+      "jurisprudencia_sc-1426_2024/vi_sentencia_de_casación#4",
+      "jurisprudencia_sc-18392_2017/aclaración_de_voto#1",
+      "jurisprudencia_sc-18392_2017/inicio#38",
+      "jurisprudencia_sc-1426_2024/vii_consideraciones#71",
+      "jurisprudencia_sc-18392_2017/inicio#33",
+      "jurisprudencia_sc-155_2023/ii_consideraciones#3"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-18392_2017/inicio#38",
+      "jurisprudencia_sc-18392_2017/inicio#29",
+      "jurisprudencia_sc-18392_2017/inicio#34",
+      "jurisprudencia_sc-18392_2017/inicio#30",
+      "jurisprudencia_sc-1426_2024/vii_consideraciones#50",
+      "jurisprudencia_sc-18392_2017/aclaración_de_voto~3#2",
+      "jurisprudencia_sc-18392_2017/aclaración_de_voto#1",
+      "jurisprudencia_sc-1426_2024/vii_consideraciones#23",
+      "jurisprudencia_sc-3712_2021/consideraciones~2#18",
+      "jurisprudencia_sc-18392_2017/inicio#33"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-18392_2017/inicio#34",
+      "jurisprudencia_sc-18392_2017/inicio#30",
+      "jurisprudencia_sc-18392_2017/inicio#38",
+      "jurisprudencia_sc-18392_2017/inicio#29",
+      "jurisprudencia_sc-18392_2017/aclaración_de_voto~3#2",
+      "jurisprudencia_t-550_2017/resuelve#9",
+      "jurisprudencia_t-978_2011/i_antecedentes#47",
+      "jurisprudencia_sc-425_2024/consideraciones#26",
+      "jurisprudencia_sc-18392_2017/aclaración_de_voto#1",
+      "jurisprudencia_sc-18392_2017/inicio#37"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-18392_2017/inicio#34",
+      "jurisprudencia_sc-18392_2017/inicio#30",
+      "jurisprudencia_sc-18392_2017/inicio#38",
+      "jurisprudencia_t-550_2017/resuelve#9",
+      "jurisprudencia_t-978_2011/i_antecedentes#47",
+      "jurisprudencia_sc-425_2024/consideraciones#26",
+      "jurisprudencia_sc-5230_2021/consideraciones#3",
+      "jurisprudencia_c-409_2020/salvamento_de_voto_de_la_magis~2#22",
+      "jurisprudencia_sc-3712_2021/consideraciones~2#18",
+      "jurisprudencia_sc-5683_2021/consideraciones#30"
+     ]
+    }
+   }
+  },
+  {
+   "id": 280,
+   "formato": "semi_open",
+   "area": "Derecho penal",
+   "legal_basis": "Artículo 64 del código penal colombiano",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-823_2005/ii_normas_demandadas#2",
+      "jurisprudencia_c-233_2016/vi_fundamentos_de_la_decisión#71",
+      "jurisprudencia_c-806_2002/vi_consideraciones_y_fundament#22",
+      "jurisprudencia_t-309_2012/aclaración_de_voto_del_magistr#7",
+      "jurisprudencia_c-679_1998/inicio#1",
+      "jurisprudencia_c-806_2002/resuelve#2",
+      "jurisprudencia_c-194_2005/inicio#7",
+      "jurisprudencia_c-592_1998/resuelve#7",
+      "codigo_penal_militar/anexo#287",
+      "jurisprudencia_t-640_2017/ii_consideraciones_y_fundament#20"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.14285714285714285,
+     "ndcg": 0.3333333333333333,
+     "top": [
+      "jurisprudencia_c-679_1998/vii_consideraciones_de_la_cort#2",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#6",
+      "jurisprudencia_c-328_2016/consideraciones_de_la_corte_co#44",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#44",
+      "jurisprudencia_c-806_2002/vi_consideraciones_y_fundament#18",
+      "jurisprudencia_t-265_2017/ii_consideraciones_y_fundament#18",
+      "codigo_penal/art_64#1",
+      "ley_1709_2014/art_30",
+      "codigo_penal_militar/art_64",
+      "jurisprudencia_t-19_2017/resuelve#4"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.14285714285714285,
+     "ndcg": 0.3333333333333333,
+     "top": [
+      "jurisprudencia_c-679_1998/vii_consideraciones_de_la_cort#2",
+      "jurisprudencia_c-823_2005/ii_normas_demandadas#2",
+      "jurisprudencia_t-309_2012/aclaración_de_voto_del_magistr#7",
+      "jurisprudencia_c-233_2016/vi_fundamentos_de_la_decisión#71",
+      "jurisprudencia_t-265_2017/ii_consideraciones_y_fundament#18",
+      "jurisprudencia_c-194_2005/inicio#8",
+      "codigo_penal/art_64#1",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#6",
+      "jurisprudencia_c-194_2005/inicio#7",
+      "jurisprudencia_c-549_1997/vi_2_la_libertad_provisional_y#7"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1,
+     "ndcg": 0.2890648263178879,
+     "top": [
+      "jurisprudencia_t-265_2017/ii_consideraciones_y_fundament#18",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#6",
+      "jurisprudencia_t-95_2023/ii_consideraciones_de_la_corte#15",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#44",
+      "jurisprudencia_t-640_2017/ii_consideraciones_y_fundament#57",
+      "jurisprudencia_t-19_2017/resuelve#4",
+      "jurisprudencia_c-679_1998/vii_consideraciones_de_la_cort#2",
+      "jurisprudencia_t-640_2017/resuelve#28",
+      "jurisprudencia_sp-125_2024/iv_la_demanda#1",
+      "codigo_penal/art_64#1"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1,
+     "ndcg": 0.2890648263178879,
+     "top": [
+      "jurisprudencia_t-265_2017/ii_consideraciones_y_fundament#18",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#6",
+      "jurisprudencia_t-95_2023/ii_consideraciones_de_la_corte#15",
+      "jurisprudencia_t-19_2017/ii_fundamentos_jurídicos_de_la#44",
+      "jurisprudencia_t-640_2017/ii_consideraciones_y_fundament#57",
+      "jurisprudencia_t-19_2017/resuelve#4",
+      "jurisprudencia_c-679_1998/vii_consideraciones_de_la_cort#2",
+      "jurisprudencia_t-640_2017/resuelve#28",
+      "jurisprudencia_sp-125_2024/iv_la_demanda#1",
+      "codigo_penal/art_64"
+     ]
+    }
+   }
+  },
+  {
+   "id": 442,
+   "formato": "semi_open",
+   "area": "Derecho laboral",
+   "legal_basis": "El Código sustantivo del trabajo ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "jurisprudencia_t-690_2015/iii_consideraciones_de_la_cort#60",
+      "decreto_1072_2015/art_2.2.2.2.1",
+      "codigo_sustantivo_trabajo/art_60",
+      "jurisprudencia_c-200_2019/salvamento_de_voto_del_magistr~3#22",
+      "jurisprudencia_c-148_2018/ii_norma_demandada#1",
+      "jurisprudencia_sl-2857_2023/ix_consideraciones#7",
+      "jurisprudencia_c-636_2016/intervenciones#10",
+      "jurisprudencia_c-636_2016/competencia#36",
+      "jurisprudencia_c-636_2016/competencia#35",
+      "jurisprudencia_c-636_2016/síntesis_de_la_decisión#3"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1111111111111111,
+     "ndcg": 0.3010299956639812,
+     "top": [
+      "jurisprudencia_c-1063_2000/ii_texto_de_la_norma_acusada#1",
+      "jurisprudencia_c-930_2009/competencia#3",
+      "jurisprudencia_c-636_2016/competencia#30",
+      "jurisprudencia_t-54_2018/ii_consideraciones#45",
+      "csj_sp_18-07_1973/texto#1",
+      "csj_sp_88_2507_1991/texto#26",
+      "csj_sp_88_2507_1991/texto#18",
+      "ley_50_1990/art_20",
+      "codigo_sustantivo_trabajo/art_161/notas#11",
+      "csj_sp_88_2507_1991/texto#2"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_sustantivo_trabajo/art_60",
+      "jurisprudencia_c-636_2016/competencia#30",
+      "decreto_1072_2015/art_2.2.2.2.1",
+      "jurisprudencia_c-200_2019/salvamento_de_voto_del_magistr~3#22",
+      "jurisprudencia_c-636_2016/competencia#9",
+      "jurisprudencia_c-636_2016/norma_demandada#1",
+      "jurisprudencia_c-636_2016/competencia#16",
+      "jurisprudencia_c-636_2016/competencia#1",
+      "jurisprudencia_c-636_2016/síntesis_de_la_decisión#1",
+      "jurisprudencia_c-1063_2000/ii_texto_de_la_norma_acusada#1"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_sustantivo_trabajo/art_60",
+      "jurisprudencia_t-690_2015/iii_consideraciones_de_la_cort#60",
+      "jurisprudencia_c-200_2019/salvamento_de_voto_del_magistr~3#22",
+      "jurisprudencia_t-690_2015/iii_consideraciones_de_la_cort#59",
+      "decreto_1072_2015/art_2.2.2.2.1",
+      "jurisprudencia_c-636_2016/resuelve#1",
+      "jurisprudencia_c-636_2016/norma_demandada#1",
+      "jurisprudencia_c-636_2016/competencia#9",
+      "jurisprudencia_c-636_2016/competencia#26",
+      "jurisprudencia_c-636_2016/aclaración_de_voto_del_magistr#5"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_sustantivo_trabajo/art_60",
+      "jurisprudencia_t-690_2015/iii_consideraciones_de_la_cort#60",
+      "jurisprudencia_c-200_2019/salvamento_de_voto_del_magistr~3#22",
+      "jurisprudencia_t-690_2015/iii_consideraciones_de_la_cort#59",
+      "decreto_1072_2015/art_2.2.2.2.1",
+      "jurisprudencia_c-636_2016/resuelve#1",
+      "jurisprudencia_c-636_2016/norma_demandada#1",
+      "jurisprudencia_c-636_2016/competencia#9",
+      "jurisprudencia_t-54_2018/ii_consideraciones#45",
+      "jurisprudencia_c-280_1996/iii_fundamento_jurídico#26"
+     ]
+    }
+   }
+  },
+  {
+   "id": 453,
+   "formato": "semi_open",
+   "area": "Derecho constitucional",
+   "legal_basis": "Sentencia C-468 de 2024, sentencia C-332 de 2025 y SU-016 de 2020",
+   "n_oro": 3,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5518331289811786,
+     "top": [
+      "jurisprudencia_t-121_2017/ii_consideraciones_y_fundament#56",
+      "jurisprudencia_c-408_2024/intervenciones#10",
+      "jurisprudencia_su-16_2020/aclaración_de_voto_de_la_magis#1",
+      "jurisprudencia_c-408_2024/competencia#47",
+      "jurisprudencia_c-468_2024/inicio#45",
+      "jurisprudencia_c-408_2024/intervenciones#11",
+      "jurisprudencia_c-408_2024/competencia#44",
+      "jurisprudencia_su-16_2020/ii_consideraciones_de_la_corte#16",
+      "jurisprudencia_t-228_2026/ii_consideraciones#64",
+      "jurisprudencia_c-332_2025/iii_la_demanda#2"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.6666666666666666,
+     "rr": 0.25,
+     "ndcg": 0.3501483019834802,
+     "top": [
+      "jurisprudencia_c-148_2022/vi_consideraciones_de_la_corte#53",
+      "jurisprudencia_c-408_2024/competencia#108",
+      "jurisprudencia_c-148_2022/vi_consideraciones_de_la_corte#52",
+      "jurisprudencia_c-332_2025/vii_análisis_de_los_cargos#29",
+      "jurisprudencia_c-148_2022/aclaración_de_voto_de_la_magis#19",
+      "jurisprudencia_c-283_2014/aclaración_de_voto_de_los_magi#49",
+      "jurisprudencia_c-343_2017/intervenciones#10",
+      "jurisprudencia_c-468_2024/aclaración_de_voto_de_la_magis#26",
+      "jurisprudencia_c-322_2023/salvamento_de_voto_del_magistr#85",
+      "jurisprudencia_c-45_2019/intervenciones#18"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.619668607939653,
+     "top": [
+      "jurisprudencia_c-408_2024/intervenciones#11",
+      "jurisprudencia_su-16_2020/aclaración_de_voto_de_la_magis#1",
+      "jurisprudencia_c-148_2022/vi_consideraciones_de_la_corte#53",
+      "jurisprudencia_c-408_2024/intervenciones#10",
+      "jurisprudencia_c-322_2023/salvamento_de_voto_del_magistr#83",
+      "jurisprudencia_c-332_2025/vi_consideraciones_normativas#14",
+      "jurisprudencia_c-468_2024/inicio#45",
+      "jurisprudencia_c-148_2022/vi_consideraciones_de_la_corte#52",
+      "jurisprudencia_c-45_2019/aclaración_de_voto_de_la_magis#14",
+      "jurisprudencia_su-16_2020/ii_consideraciones_de_la_corte#16"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.6666666666666666,
+     "rr": 0.5,
+     "ndcg": 0.5307212739772434,
+     "top": [
+      "jurisprudencia_t-121_2017/ii_consideraciones_y_fundament#115",
+      "jurisprudencia_c-332_2025/vii_análisis_de_los_cargos#29",
+      "jurisprudencia_c-468_2024/inicio#34",
+      "jurisprudencia_c-332_2025/vi_consideraciones_normativas#14",
+      "jurisprudencia_t-228_2026/ii_consideraciones#62",
+      "jurisprudencia_t-228_2026/ii_consideraciones#44",
+      "jurisprudencia_t-228_2026/ii_consideraciones#78",
+      "jurisprudencia_t-121_2017/ii_consideraciones_y_fundament#56",
+      "jurisprudencia_c-468_2024/inicio#45",
+      "jurisprudencia_t-228_2026/ii_consideraciones#79"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.6666666666666666,
+     "recall_docs": 0.6666666666666666,
+     "rr": 0.5,
+     "ndcg": 0.5307212739772434,
+     "top": [
+      "jurisprudencia_t-121_2017/ii_consideraciones_y_fundament#115",
+      "jurisprudencia_c-332_2025/vii_análisis_de_los_cargos#29",
+      "jurisprudencia_c-468_2024/inicio#34",
+      "jurisprudencia_c-332_2025/vi_consideraciones_normativas#14",
+      "jurisprudencia_t-228_2026/ii_consideraciones#62",
+      "jurisprudencia_t-228_2026/ii_consideraciones#44",
+      "jurisprudencia_t-228_2026/ii_consideraciones#78",
+      "jurisprudencia_t-121_2017/ii_consideraciones_y_fundament#56",
+      "jurisprudencia_c-468_2024/inicio#45",
+      "jurisprudencia_c-45_2019/intervenciones#18"
+     ]
+    }
+   }
+  },
+  {
+   "id": 472,
+   "formato": "semi_open",
+   "area": "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+   "legal_basis": "Ley 1340 de 2009",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_c-432_2010/inicio#4",
+      "jurisprudencia_c-194_2023/ii_consideraciones#32",
+      "jurisprudencia_c-258_2023/inicio#2",
+      "ley_1340_2009/art_9#2",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#40",
+      "jurisprudencia_c-63_2021/consideraciones#204",
+      "jurisprudencia_c-854_2005/v_concepto_del_procurador_gene#3",
+      "jurisprudencia_c-228_2010/iii_la_demanda#1",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#4"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "ley_1340_2009/art_9#1",
+      "jurisprudencia_c-228_2010/ii_texto_de_las_normas_demanda#1",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#26",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#27",
+      "ley_1340_2009/art_9#2",
+      "ley_1340_2009/art_10#1",
+      "ley_155_1959/art_4#1",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#72",
+      "jurisprudencia_c-63_2021/consideraciones#204",
+      "jurisprudencia_c-1718_2000/i_texto_de_la_norma_acusada#1"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#27",
+      "ley_1340_2009/art_9#2",
+      "jurisprudencia_c-63_2021/consideraciones#204",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#72",
+      "jurisprudencia_c-228_2010/iii_la_demanda#1",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#37",
+      "jurisprudencia_c-1718_2000/i_texto_de_la_norma_acusada#1",
+      "decreto_4886_2011/art_1#10",
+      "decreto_4886_2011/art_1#3",
+      "jurisprudencia_c-228_2010/iii_la_demanda#4"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#26",
+      "ley_1340_2009/art_9#2",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#27",
+      "ley_1340_2009/art_9#1",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#72",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#73",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#68",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#37",
+      "jurisprudencia_c-228_2010/iii_la_demanda#1",
+      "jurisprudencia_c-228_2010/ii_texto_de_las_normas_demanda#1"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#26",
+      "ley_1340_2009/art_9",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#72",
+      "jurisprudencia_c-63_2021/consideraciones#204",
+      "decreto_1122_1999/art_239",
+      "ley_2010_2019/art_152",
+      "jurisprudencia_su-133_2017/salvamento_de_voto_de_los_magi#17",
+      "jurisprudencia_c-63_2021/consideraciones#151",
+      "jurisprudencia_c-63_2021/consideraciones#130"
+     ]
+    }
+   }
+  },
+  {
+   "id": 490,
+   "formato": "semi_open",
+   "area": "Derecho de familia",
+   "legal_basis": "1796 del Código Civil. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "jurisprudencia_t-256_2023/ii_consideraciones#14",
+      "jurisprudencia_t-256_2023/ii_consideraciones#16",
+      "codigo_civil/art_1781/notas",
+      "codigo_civil/art_1820/notas",
+      "jurisprudencia_t-303_2014/resuelve#4",
+      "jurisprudencia_sc-93_2023/i_antecedentes#4",
+      "jurisprudencia_c-278_2014/i_antecedentes#13",
+      "codigo_civil/art_1781/notas#2",
+      "jurisprudencia_sc-93_2023/consideraciones~3#3",
+      "jurisprudencia_sc-93_2023/consideraciones~3#9"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#24",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#26",
+      "jurisprudencia_c-515_2019/competencia#27",
+      "jurisprudencia_sc-996_2024/consideraciones#21",
+      "jurisprudencia_c-278_2014/ii_consideraciones#47",
+      "jurisprudencia_sc-12469_2016/salvamento_de_voto~2#18",
+      "jurisprudencia_sc-1422_2025/consideraciones#5",
+      "jurisprudencia_sc-4027_2021/salvamento_de_voto#5",
+      "jurisprudencia_sc-5226_2021/aclaración_de_voto#5",
+      "jurisprudencia_sc-5_2021/aclaración_de_voto~2#11"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.1111111111111111,
+     "ndcg": 0.3010299956639812,
+     "top": [
+      "jurisprudencia_t-256_2023/ii_consideraciones#16",
+      "jurisprudencia_t-256_2023/ii_consideraciones#14",
+      "jurisprudencia_c-278_2014/i_antecedentes#13",
+      "jurisprudencia_sc-93_2023/consideraciones~3#9",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#24",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#26",
+      "jurisprudencia_sc-93_2023/consideraciones~3#3",
+      "jurisprudencia_t-256_2023/ii_consideraciones#15",
+      "codigo_civil/art_1781/notas#2",
+      "codigo_civil/art_1781#1"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-14428_2016/iii_consideraciones#17",
+      "jurisprudencia_t-303_2014/resuelve#4",
+      "jurisprudencia_sc-7_2021/iv_consideraciones#37",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#26",
+      "jurisprudencia_t-397_2015/resuelve#17",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#24",
+      "jurisprudencia_t-256_2023/ii_consideraciones#14",
+      "jurisprudencia_sc-93_2023/consideraciones~3#3",
+      "jurisprudencia_sc-93_2023/consideraciones~3#9",
+      "jurisprudencia_t-256_2023/ii_consideraciones#16"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-14428_2016/iii_consideraciones#17",
+      "jurisprudencia_t-303_2014/resuelve#4",
+      "jurisprudencia_sc-7_2021/iv_consideraciones#37",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#26",
+      "jurisprudencia_t-397_2015/resuelve#17",
+      "jurisprudencia_sc-93_2023/aclaración_de_voto#24",
+      "jurisprudencia_t-256_2023/ii_consideraciones#14",
+      "jurisprudencia_sc-93_2023/consideraciones~3#3",
+      "jurisprudencia_t-256_2023/ii_consideraciones#16",
+      "jurisprudencia_c-278_2014/i_antecedentes#13"
+     ]
+    }
+   }
+  },
+  {
+   "id": 563,
+   "formato": "semi_open",
+   "area": "Derecho administrativo",
+   "legal_basis": "Sentencia SU-277/25",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-277_2025/ii_consideraciones#65",
+      "jurisprudencia_su-277_2025/ii_consideraciones#93",
+      "jurisprudencia_su-277_2025/ii_consideraciones#76",
+      "jurisprudencia_su-277_2025/ii_consideraciones#105",
+      "jurisprudencia_t-260_2026/aclaración_de_voto_del_magistr#18",
+      "jurisprudencia_su-277_2025/ii_consideraciones#104",
+      "jurisprudencia_t-774_2015/salvamento_parcial_de_voto_del#59",
+      "jurisprudencia_su-277_2025/ii_consideraciones#50",
+      "jurisprudencia_t-252_2024/aclaración_de_voto_del_magistr#129",
+      "jurisprudencia_t-114_2019/iii_consideraciones#16"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "jurisprudencia_t-288_2020/ii_consideraciones#23",
+      "jurisprudencia_c-870_2014/iii_pronunciamiento_de_la_cort#112",
+      "jurisprudencia_su-277_2025/salvamento_de_voto_del_magistr#18",
+      "jurisprudencia_t-345_2018/ii_consideraciones#26",
+      "jurisprudencia_t-564_2011/tramite_de_cumplimiento_fallo_~2#2",
+      "jurisprudencia_t-4_2023/ii_consideraciones#68",
+      "jurisprudencia_t-760_2008/inicio#15",
+      "jurisprudencia_t-760_2008/i_antecedentes#1",
+      "jurisprudencia_t-774_2015/salvamento_parcial_de_voto_del#59",
+      "jurisprudencia_t-564_2012/resuelve#5"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_t-774_2015/salvamento_parcial_de_voto_del#59",
+      "jurisprudencia_su-277_2025/salvamento_de_voto_del_magistr#18",
+      "jurisprudencia_su-277_2025/ii_consideraciones#93",
+      "jurisprudencia_su-277_2025/ii_consideraciones#95",
+      "jurisprudencia_su-277_2025/ii_consideraciones#96",
+      "jurisprudencia_su-277_2025/i_antecedentes#61",
+      "jurisprudencia_c-75_2026/salvamento_parcial_de_voto_del#41",
+      "jurisprudencia_c-75_2026/vi_consideraciones_de_la_corte#68",
+      "jurisprudencia_su-277_2025/ii_consideraciones#65",
+      "jurisprudencia_t-288_2020/ii_consideraciones#23"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-277_2025/ii_consideraciones#93",
+      "jurisprudencia_t-774_2015/salvamento_parcial_de_voto_del#59",
+      "jurisprudencia_su-277_2025/ii_consideraciones#95",
+      "jurisprudencia_t-65_2023/resuelve~2#11",
+      "jurisprudencia_t-53_2022/i_antecedentes#92",
+      "jurisprudencia_su-277_2025/ii_consideraciones#65",
+      "jurisprudencia_c-313_2014/v_examen_de_fondo_del_proyecto#228",
+      "jurisprudencia_su-74_2020/iii_consideraciones#105",
+      "jurisprudencia_su-277_2025/ii_consideraciones#76",
+      "jurisprudencia_su-277_2025/i_antecedentes#61"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-277_2025/ii_consideraciones#93",
+      "jurisprudencia_t-774_2015/salvamento_parcial_de_voto_del#59",
+      "jurisprudencia_su-277_2025/ii_consideraciones#95",
+      "jurisprudencia_t-65_2023/resuelve~2#11",
+      "jurisprudencia_t-53_2022/i_antecedentes#92",
+      "jurisprudencia_su-277_2025/ii_consideraciones#65",
+      "jurisprudencia_c-313_2014/v_examen_de_fondo_del_proyecto#228",
+      "jurisprudencia_su-74_2020/iii_consideraciones#105",
+      "jurisprudencia_c-126_2020/aclaración_de_voto_del_magistr#6",
+      "jurisprudencia_t-760_2008/ficha"
+     ]
+    }
+   }
+  },
+  {
+   "id": 589,
+   "formato": "semi_open",
+   "area": "Derecho procesal",
+   "legal_basis": "Artículo 60 del Código General del Proceso. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-357_2021/ii_consideraciones#3",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#6",
+      "jurisprudencia_sc-3956_2022/consideraciones#8",
+      "jurisprudencia_sc-200_2023/iv_consideraciones#17",
+      "jurisprudencia_sc-5635_2018/consideraciones#11",
+      "jurisprudencia_sc-18555_2016/antecedentes#10",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#4",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#8",
+      "jurisprudencia_sc-200_2023/iv_consideraciones#16",
+      "jurisprudencia_sc-5635_2018/consideraciones#10"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-5635_2018/consideraciones#11",
+      "jurisprudencia_sc-107_2023/consideraciones#4",
+      "jurisprudencia_sc-200_2023/iv_consideraciones#9",
+      "jurisprudencia_sc-4159_2021/inicio#16",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#3",
+      "jurisprudencia_sc-5635_2018/consideraciones#10",
+      "codigo_procedimiento_civil/art_50/notas",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#6",
+      "jurisprudencia_sc-2879_2022/consideraciones#7",
+      "codigo_procedimiento_civil/art_50"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-5635_2018/consideraciones#11",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#6",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#3",
+      "jurisprudencia_sc-5635_2018/consideraciones#10",
+      "jurisprudencia_sc-200_2023/iv_consideraciones#17",
+      "jurisprudencia_sc-3956_2022/consideraciones#8",
+      "jurisprudencia_sc-107_2023/consideraciones#4",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#4",
+      "jurisprudencia_t-357_2021/ii_consideraciones#3",
+      "jurisprudencia_sc-200_2023/iv_consideraciones#9"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_sc-5635_2018/consideraciones#10",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#6",
+      "jurisprudencia_sc-5635_2018/consideraciones#11",
+      "codigo_general_proceso/art_60",
+      "ley_2452_2025/art_44",
+      "jurisprudencia_sc-4159_2021/inicio#16",
+      "jurisprudencia_sc-276_2023/consideraciones#4",
+      "jurisprudencia_t-357_2021/ii_consideraciones#3",
+      "jurisprudencia_sc-1644_2025/consideraciones#40",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#3"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_sc-5635_2018/consideraciones#10",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#6",
+      "jurisprudencia_sc-5635_2018/consideraciones#11",
+      "codigo_general_proceso/art_60",
+      "ley_2452_2025/art_44",
+      "jurisprudencia_sc-4159_2021/inicio#16",
+      "jurisprudencia_sc-276_2023/consideraciones#4",
+      "jurisprudencia_t-357_2021/ii_consideraciones#3",
+      "jurisprudencia_sc-1644_2025/consideraciones#40",
+      "jurisprudencia_sl-1717_2024/vii_consideraciones#3"
+     ]
+    }
+   }
+  },
+  {
+   "id": 661,
+   "formato": "semi_open",
+   "area": "Derecho tributario",
+   "legal_basis": "Artículos 29 y 338 de la Constitución Política, sentencia C-89112 de la Corte Constitucional. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-94_2021/inicio#1",
+      "jurisprudencia_c-56_2019/inicio#2",
+      "jurisprudencia_c-56_2019/consideraciones_de_la_corte_co#33",
+      "jurisprudencia_c-822_2011/ii_consideraciones#74",
+      "jurisprudencia_c-1295_2001/vi_consideraciones_y_fundament#12",
+      "jurisprudencia_c-602_2015/inicio#3",
+      "jurisprudencia_c-363_2023/vi_consideraciones_de_la_corte#3",
+      "jurisprudencia_c-1295_2001/inicio#1",
+      "jurisprudencia_c-60_2018/inicio#1",
+      "jurisprudencia_c-175_2020/vi_consideraciones_de_la_corte#61"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-740_1999/vi_consideraciones_y_fundament#10",
+      "jurisprudencia_c-891_2012/inicio#34",
+      "jurisprudencia_c-209_2016/salvamento_de_voto_del_magistr#10",
+      "jurisprudencia_c-117_2024/vii_consideraciones_de_la_cort#18",
+      "jurisprudencia_c-19_2022/demanda_de_inconstitucionalida#2",
+      "jurisprudencia_c-891_2012/inicio#32",
+      "jurisprudencia_c-822_2011/ii_consideraciones#52",
+      "jurisprudencia_c-19_2022/ii_consideraciones#21",
+      "jurisprudencia_c-449_2015/inicio#3",
+      "jurisprudencia_c-873_2002/vi_consideraciones_y_fundament#17"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-740_1999/vi_consideraciones_y_fundament#10",
+      "jurisprudencia_c-369_2000/inicio#2",
+      "jurisprudencia_c-117_2024/vii_consideraciones_de_la_cort#18",
+      "jurisprudencia_c-19_2022/demanda_de_inconstitucionalida#2",
+      "jurisprudencia_c-389_2023/inicio#3",
+      "jurisprudencia_c-36_2024/consideraciones_de_la_corte_co#12",
+      "jurisprudencia_c-19_2022/ii_consideraciones#20",
+      "jurisprudencia_c-891_2012/inicio#31",
+      "jurisprudencia_c-94_2021/inicio#1",
+      "jurisprudencia_c-56_2019/inicio#2"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-389_2023/inicio#3",
+      "jurisprudencia_c-384_2023/vi_consideraciones_de_la_corte#56",
+      "jurisprudencia_c-891_2012/inicio#32",
+      "jurisprudencia_c-891_2012/inicio#3",
+      "jurisprudencia_c-449_2015/inicio#3",
+      "jurisprudencia_c-891_2012/inicio#34",
+      "jurisprudencia_c-209_2016/salvamento_de_voto_del_magistr#10",
+      "jurisprudencia_c-891_2012/inicio#31",
+      "jurisprudencia_c-384_2023/inicio#5",
+      "jurisprudencia_c-822_2011/ii_consideraciones#52"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-389_2023/inicio#3",
+      "jurisprudencia_c-384_2023/vi_consideraciones_de_la_corte#56",
+      "jurisprudencia_c-891_2012/inicio#32",
+      "jurisprudencia_c-891_2012/inicio#3",
+      "jurisprudencia_c-449_2015/inicio#3",
+      "jurisprudencia_c-891_2012/inicio#34",
+      "jurisprudencia_c-209_2016/salvamento_de_voto_del_magistr#10",
+      "jurisprudencia_c-384_2023/inicio#5",
+      "jurisprudencia_c-822_2011/ii_consideraciones#52",
+      "jurisprudencia_c-873_2002/vi_consideraciones_y_fundament#17"
+     ]
+    }
+   }
+  },
+  {
+   "id": 674,
+   "formato": "semi_open",
+   "area": "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+   "legal_basis": "Artículos 3, 23 y 24 del Estatuto del Consumidor",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.16666666666666666,
+     "ndcg": 0.3562071871080222,
+     "top": [
+      "jurisprudencia_t-584_2023/resuelve#29",
+      "jurisprudencia_t-584_2023/ii_consideraciones#43",
+      "jurisprudencia_sc-4904_2021/salvamento_de_voto#14",
+      "jurisprudencia_sc-6709_2015/salvamento_de_voto#13",
+      "jurisprudencia_t-282_2016/inicio#2",
+      "estatuto_consumidor/art_5#1",
+      "jurisprudencia_t-902_2013/ii_consideraciones_y_fundament#38",
+      "jurisprudencia_t-568_2015/resuelve#17",
+      "jurisprudencia_t-227_2016/iii_consideraciones_de_la_cort#30",
+      "jurisprudencia_sc-5679_2018/consideraciones~3#63"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#25",
+      "jurisprudencia_sc-10300_2017/salvamento_de_voto#8",
+      "jurisprudencia_t-94_2019/vi_fundamentos_jurídicos_de_la#15",
+      "jurisprudencia_t-240_2016/inicio#76",
+      "jurisprudencia_sc-5679_2018/salvamento_de_voto_de_la_magis#38",
+      "jurisprudencia_sl-15_2025/x_consideraciones#6",
+      "jurisprudencia_sc-4126_2021/consideraciones~2#9",
+      "jurisprudencia_sc-10048_2014/consideraciones~2#94",
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#24",
+      "jurisprudencia_sc-5681_2018/iii_sentencia_sustitutiva#32"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#24",
+      "jurisprudencia_t-770_2015/inicio#68",
+      "jurisprudencia_t-227_2016/iii_consideraciones_de_la_cort#32",
+      "jurisprudencia_t-227_2016/iii_consideraciones_de_la_cort#31",
+      "jurisprudencia_sc-5679_2018/salvamento_de_voto_de_la_magis#38",
+      "jurisprudencia_t-370_2015/ii_consideraciones#30",
+      "jurisprudencia_t-240_2016/inicio#95",
+      "jurisprudencia_t-584_2023/resuelve#29",
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#25",
+      "jurisprudencia_sc-10300_2017/salvamento_de_voto#8"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_sc-10300_2017/salvamento_de_voto#8",
+      "estatuto_consumidor/art_42",
+      "jurisprudencia_sc-5679_2018/salvamento_de_voto_de_la_magis#38",
+      "jurisprudencia_sc-4527_2020/consideraciones#16",
+      "jurisprudencia_sc-5681_2018/iii_sentencia_sustitutiva#32",
+      "jurisprudencia_sc-10300_2017/salvamento_de_voto#6",
+      "jurisprudencia_t-94_2019/resuelve#5",
+      "ley_1328_2009/art_11",
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#24",
+      "jurisprudencia_t-94_2019/vi_fundamentos_jurídicos_de_la#15"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_sc-10300_2017/salvamento_de_voto#8",
+      "estatuto_consumidor/art_42",
+      "jurisprudencia_sc-5679_2018/salvamento_de_voto_de_la_magis#38",
+      "jurisprudencia_sc-4527_2020/consideraciones#16",
+      "jurisprudencia_sc-5681_2018/iii_sentencia_sustitutiva#32",
+      "jurisprudencia_sc-10300_2017/salvamento_de_voto#6",
+      "jurisprudencia_t-94_2019/resuelve#5",
+      "ley_1328_2009/art_11",
+      "jurisprudencia_t-591_2017/ii_fundamentos_jurídicos_de_la#24",
+      "jurisprudencia_t-94_2019/vi_fundamentos_jurídicos_de_la#15"
+     ]
+    }
+   }
+  },
+  {
+   "id": 697,
+   "formato": "semi_open",
+   "area": "Derecho comercial y sociedades",
+   "legal_basis": "caso francés de Dow Chemical",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-5176_2020/consideraciones~2#15",
+      "jurisprudencia_su-1185_2001/iii_fundamentos_juridicos#10",
+      "jurisprudencia_c-674_2017/aclaración_de_voto_del_magistr~3#321",
+      "jurisprudencia_t-769_2015/aclaración_de_voto_del_magistr#15",
+      "jurisprudencia_su-1010_2008/iii_fundamentos_jurídicos#6",
+      "jurisprudencia_su-120_2003/ii_consideraciones_y_fundament#31",
+      "jurisprudencia_su-837_2002/ii_consideraciones_y_fundament#37",
+      "jurisprudencia_t-117_2016/antecedentes#49",
+      "jurisprudencia_t-733_2017/d_aspectos_probatorios#271",
+      "jurisprudencia_t-610_2011/inicio#8"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_sc-5683_2021/consideraciones#69",
+      "jurisprudencia_c-488_2024/inicio#141",
+      "ley_222_1995/art_28",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#43",
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#25",
+      "jurisprudencia_sc-877_2022/consideraciones#47",
+      "jurisprudencia_sc-168_2023/consideraciones#43",
+      "jurisprudencia_c-488_2024/inicio#144",
+      "jurisprudencia_c-898_2005/vi_consideraciones_y_fundament#13",
+      "jurisprudencia_c-200_2020/iv_consideraciones_de_la_corte#69"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#49",
+      "jurisprudencia_sc-5176_2020/consideraciones~2#15",
+      "jurisprudencia_sc-5683_2021/consideraciones#69",
+      "jurisprudencia_c-488_2024/inicio#141",
+      "jurisprudencia_su-1185_2001/iii_fundamentos_juridicos#10",
+      "jurisprudencia_c-674_2017/aclaración_de_voto_del_magistr~3#321",
+      "ley_222_1995/art_28",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#43",
+      "jurisprudencia_t-769_2015/aclaración_de_voto_del_magistr#15",
+      "jurisprudencia_c-116_2008/vi_fundamentos_de_la_decisión#25"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_su-1185_2001/iii_fundamentos_juridicos#10",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#42",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#49",
+      "jurisprudencia_su-1010_2008/iii_fundamentos_jurídicos#6",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#43",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#50",
+      "jurisprudencia_c-865_2004/resuelve#29",
+      "jurisprudencia_c-330_2019/consideraciones#10",
+      "jurisprudencia_t-769_2015/aclaración_de_voto_del_magistr#15",
+      "jurisprudencia_c-488_2024/inicio#144"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_su-1185_2001/iii_fundamentos_juridicos#10",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#42",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#49",
+      "jurisprudencia_su-1010_2008/iii_fundamentos_jurídicos#6",
+      "jurisprudencia_c-569_2004/vi_consideraciones_y_fundament#43",
+      "jurisprudencia_c-865_2004/resuelve#29",
+      "jurisprudencia_c-330_2019/consideraciones#10",
+      "jurisprudencia_t-769_2015/aclaración_de_voto_del_magistr#15",
+      "jurisprudencia_c-488_2024/inicio#144",
+      "jurisprudencia_t-610_2011/inicio#8"
+     ]
+    }
+   }
+  },
+  {
+   "id": 857,
+   "formato": "semi_open",
+   "area": "Derecho administrativo",
+   "legal_basis": "Doctrina. ",
+   "n_oro": 0,
+   "cobertura": null,
+   "etapas": {
+    "bm25": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-1038_2002/vi_consideraciones_y_fundament#32",
+      "jurisprudencia_c-102_2011/ii_consideraciones#45",
+      "jurisprudencia_c-285_2016/salvamento_parcial_de_voto_de_#17",
+      "jurisprudencia_c-193_2020/v_consideraciones_de_la_corte_#40",
+      "jurisprudencia_c-1493_2000/vi_consideraciones_y_fundament#24",
+      "jurisprudencia_t-462_2015/ii_consideraciones_de_la_corte#16",
+      "constitucion/art_113",
+      "jurisprudencia_c-246_2004/vi_consideraciones#13",
+      "jurisprudencia_c-699_2016/vi_consideraciones_y_fundament#112",
+      "jurisprudencia_c-159_2016/vi_consideraciones_y_fundament#47"
+     ]
+    },
+    "denso": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-1159_2008/inicio#3",
+      "jurisprudencia_c-863_2012/vi_fundamentos_de_la_decisión#23",
+      "jurisprudencia_c-1120_2005/vi_consideraciones_y_fundament#16",
+      "jurisprudencia_c-623_2015/aclaración_de_voto_de_la_magis#14",
+      "jurisprudencia_c-1092_2003/vii_decision#7",
+      "jurisprudencia_c-102_2011/ii_consideraciones#45",
+      "jurisprudencia_c-1641_2000/vi_consideraciones_y_fundament#23",
+      "jurisprudencia_c-189_1998/vii_fundamento_jurídico#24",
+      "jurisprudencia_c-189_1998/inicio#4",
+      "jurisprudencia_c-910_2007/aclaracion_de_voto_a_la_senten#12"
+     ]
+    },
+    "rrf": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-102_2011/ii_consideraciones#45",
+      "jurisprudencia_c-246_2004/vi_consideraciones#13",
+      "jurisprudencia_c-1038_2002/vi_consideraciones_y_fundament#32",
+      "jurisprudencia_c-1120_2005/vi_consideraciones_y_fundament#16",
+      "constitucion/art_113",
+      "jurisprudencia_c-1092_2003/vii_decision#7",
+      "jurisprudencia_c-189_1998/vii_fundamento_jurídico#13",
+      "jurisprudencia_c-911_2007/viii_consideraciones_y_fundame#6",
+      "jurisprudencia_c-830_2001/vi_consideraciones_y_fundament#2",
+      "jurisprudencia_c-1159_2008/inicio#3"
+     ]
+    },
+    "rerank": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-1092_2003/vii_decision#7",
+      "jurisprudencia_c-888_2004/aclaración_de_voto_a_la_senten#4",
+      "jurisprudencia_c-102_2011/ii_consideraciones#45",
+      "jurisprudencia_c-1159_2008/inicio#3",
+      "jurisprudencia_c-1038_2002/vi_consideraciones_y_fundament#32",
+      "jurisprudencia_c-224_2013/aclaración_de_voto_de_la_magis#14",
+      "jurisprudencia_c-224_2013/inicio#5",
+      "jurisprudencia_c-1120_2005/vi_consideraciones_y_fundament#16",
+      "jurisprudencia_c-863_2012/vi_fundamentos_de_la_decisión#23",
+      "jurisprudencia_c-699_2016/vi_consideraciones_y_fundament#112"
+     ]
+    },
+    "final": {
+     "recall_citas": null,
+     "recall_docs": null,
+     "rr": 0.0,
+     "ndcg": null,
+     "top": [
+      "jurisprudencia_c-1092_2003/vii_decision#7",
+      "jurisprudencia_c-888_2004/aclaración_de_voto_a_la_senten#4",
+      "jurisprudencia_c-102_2011/ii_consideraciones#45",
+      "jurisprudencia_c-1159_2008/inicio#3",
+      "jurisprudencia_c-1038_2002/vi_consideraciones_y_fundament#32",
+      "jurisprudencia_c-224_2013/aclaración_de_voto_de_la_magis#14",
+      "jurisprudencia_c-224_2013/inicio#5",
+      "jurisprudencia_c-1120_2005/vi_consideraciones_y_fundament#16",
+      "jurisprudencia_c-863_2012/vi_fundamentos_de_la_decisión#23",
+      "jurisprudencia_c-699_2016/vi_consideraciones_y_fundament#112"
+     ]
+    }
+   }
+  },
+  {
+   "id": 865,
+   "formato": "semi_open",
+   "area": "Derecho de familia",
+   "legal_basis": "artículo 113 del Código Civil",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.25,
+     "ndcg": 0.43067655807339306,
+     "top": [
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#36",
+      "jurisprudencia_c-577_2011/v_concepto_del_procurador_gene#9",
+      "jurisprudencia_c-577_2011/iii_las_demandas#2",
+      "codigo_civil/art_113/notas",
+      "jurisprudencia_c-886_2010/salvamento_de_voto_de_los_magi#11",
+      "jurisprudencia_c-74_2004/v_concepto_del_procurador_gene#4",
+      "jurisprudencia_c-577_2011/iii_las_demandas#3",
+      "jurisprudencia_c-577_2011/vi_consideraciones_de_la_corte#223",
+      "jurisprudencia_sc-4829_2018/consideraciones~2#19",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#35"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-358_1916/i_código_civil#1",
+      "jurisprudencia_c-358_2016/i_código_civil#1",
+      "jurisprudencia_c-401_1999/antecedentes#11",
+      "jurisprudencia_c-577_2011/ii_los_textos_demandados#1",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#45",
+      "jurisprudencia_c-821_2005/vi_consideraciones_y_fundament#24",
+      "jurisprudencia_c-358_1916/vi_consideraciones_y_fundament#26",
+      "jurisprudencia_sc-9_2024/consideraciones#54",
+      "jurisprudencia_sc-5_2021/aclaración_de_voto#17",
+      "jurisprudencia_c-358_2016/vi_consideraciones_y_fundament#26"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_civil/art_113/notas",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#45",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#44",
+      "jurisprudencia_c-358_1916/i_código_civil#1",
+      "jurisprudencia_c-358_2016/i_código_civil#1",
+      "codigo_civil/art_113",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#36",
+      "jurisprudencia_c-401_1999/antecedentes#11",
+      "jurisprudencia_c-886_2010/i_antecedentes#19",
+      "jurisprudencia_c-886_2010/ii_consideraciones#19"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-5_2021/aclaración_de_voto#17",
+      "jurisprudencia_sc-2222_2020/aclaración_de_voto#8",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#45",
+      "jurisprudencia_sc-9_2024/consideraciones#54",
+      "jurisprudencia_c-271_2003/vi_consideraciones_de_la_corte#12",
+      "jurisprudencia_c-394_2017/inicio#9",
+      "jurisprudencia_c-577_2011/iv_intervenciones#9",
+      "jurisprudencia_c-358_2016/vi_consideraciones_y_fundament#26",
+      "jurisprudencia_c-358_1916/vi_consideraciones_y_fundament#26",
+      "jurisprudencia_c-577_2011/iv_intervenciones#10"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sc-5_2021/aclaración_de_voto#17",
+      "jurisprudencia_sc-2222_2020/aclaración_de_voto#8",
+      "jurisprudencia_su-214_2016/salvamento_de_voto_del_magistr#45",
+      "jurisprudencia_sc-9_2024/consideraciones#54",
+      "jurisprudencia_c-271_2003/vi_consideraciones_de_la_corte#12",
+      "jurisprudencia_c-394_2017/inicio#9",
+      "jurisprudencia_c-577_2011/iv_intervenciones#9",
+      "jurisprudencia_c-358_2016/vi_consideraciones_y_fundament#26",
+      "jurisprudencia_c-358_1916/vi_consideraciones_y_fundament#26",
+      "jurisprudencia_c-577_2011/iv_intervenciones#10"
+     ]
+    }
+   }
+  },
+  {
+   "id": 879,
+   "formato": "semi_open",
+   "area": "Derecho procesal",
+   "legal_basis": "Código General del Proceso. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-102_2015/inicio#2",
+      "jurisprudencia_sl-2143_2021/ii_sentencia_de_primera_instan#1",
+      "jurisprudencia_sc-9072_2014/inicio#4",
+      "jurisprudencia_t-116_2014/ii_consideraciones_y_fundament#39",
+      "jurisprudencia_t-344_2020/i_antecedentes#9",
+      "jurisprudencia_sl-4259_2020/xx_consideraciones#4",
+      "jurisprudencia_c-102_2015/vi_consideraciones_de_la_corte#9",
+      "ley_1504_2011/art_1#2",
+      "jurisprudencia_t-176_2012/iii_revisión_por_la_corte_cons#2",
+      "jurisprudencia_sp-2110_2024/vi_consideraciones#50"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_general_proceso/art_431",
+      "jurisprudencia_c-95_2017/iv_consideraciones_de_la_corte#11",
+      "codigo_general_proceso/art_421#1",
+      "jurisprudencia_sp-295_2023/consideraciones_de_la_corte#6",
+      "ley_2452_2025/art_288",
+      "jurisprudencia_c-31_2019/antecedentes#3",
+      "jurisprudencia_c-159_2016/vi_consideraciones_y_fundament#44",
+      "jurisprudencia_sc-3075_2024/consideraciones#33",
+      "jurisprudencia_sl-2858_2023/xv_decisión#9",
+      "jurisprudencia_su-41_2018/resuelve#3"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_c-726_2014/vi_consideraciones#15",
+      "codigo_general_proceso/art_431",
+      "jurisprudencia_c-102_2015/inicio#2",
+      "jurisprudencia_c-95_2017/iv_consideraciones_de_la_corte#11",
+      "jurisprudencia_sl-2143_2021/ii_sentencia_de_primera_instan#1",
+      "codigo_general_proceso/art_421#1",
+      "jurisprudencia_sc-9072_2014/inicio#4",
+      "jurisprudencia_sp-295_2023/consideraciones_de_la_corte#6",
+      "jurisprudencia_t-116_2014/ii_consideraciones_y_fundament#39",
+      "jurisprudencia_t-344_2020/i_antecedentes#9"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-344_2020/i_antecedentes#9",
+      "jurisprudencia_sc-3941_2020/iv_consideraciones#73",
+      "jurisprudencia_sp-2110_2024/vi_consideraciones#50",
+      "jurisprudencia_t-281_2015/salvamento_de_voto_del_magistr#3",
+      "jurisprudencia_t-751_2011/i_antecedentes#3",
+      "jurisprudencia_sp-230_2022/inicio#53",
+      "jurisprudencia_t-837_2011/i_antecedentes#1",
+      "jurisprudencia_sp-10525_2015/actuación_procesal#32",
+      "jurisprudencia_sc-9072_2014/inicio#3",
+      "jurisprudencia_sc-1170_2022/consideraciones#19"
+     ]
+    },
+    "final": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-344_2020/i_antecedentes#9",
+      "jurisprudencia_sc-3941_2020/iv_consideraciones#73",
+      "jurisprudencia_sp-2110_2024/vi_consideraciones#50",
+      "jurisprudencia_t-281_2015/salvamento_de_voto_del_magistr#3",
+      "jurisprudencia_t-751_2011/i_antecedentes#3",
+      "jurisprudencia_sp-230_2022/inicio#53",
+      "jurisprudencia_t-837_2011/i_antecedentes#1",
+      "jurisprudencia_sp-10525_2015/actuación_procesal#32",
+      "jurisprudencia_sc-9072_2014/inicio#3",
+      "jurisprudencia_sc-1170_2022/consideraciones#19"
+     ]
+    }
+   }
+  },
+  {
+   "id": 919,
+   "formato": "semi_open",
+   "area": "Derecho civil",
+   "legal_basis": "Sentencia SU-455 de 2020 de la Corte Constitucional. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_t-390_2025/resuelve#243",
+      "jurisprudencia_su-455_2020/i_antecedentes#33",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#43",
+      "jurisprudencia_t-226_2022/resuelve#5",
+      "jurisprudencia_t-356_2022/resuelve#9",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#45",
+      "jurisprudencia_su-29_2024/ii_consideraciones#13",
+      "jurisprudencia_su-455_2020/iii_decisión#1",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#1",
+      "jurisprudencia_su-313_2020/m_p_luis_guillermo_guerrero_pé#3"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-455_2020/iii_decisión#1",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#42",
+      "jurisprudencia_su-454_2020/inicio#4",
+      "jurisprudencia_su-454_2020/i_sentencia#1",
+      "jurisprudencia_su-454_2020/anexo#41",
+      "jurisprudencia_su-495_2020/iii_decisión#1",
+      "jurisprudencia_su-454_2020/iv_decisión#1",
+      "jurisprudencia_c-35_2020/inicio#2",
+      "jurisprudencia_su-449_2020/iii_decisión#1",
+      "jurisprudencia_su-446_2011/inicio#145"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-455_2020/iii_decisión#1",
+      "jurisprudencia_su-455_2020/i_antecedentes#33",
+      "jurisprudencia_su-455_2020/ficha",
+      "jurisprudencia_t-390_2025/resuelve#243",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#42",
+      "jurisprudencia_su-454_2020/inicio#4",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#43",
+      "jurisprudencia_su-454_2020/i_sentencia#1",
+      "jurisprudencia_t-226_2022/resuelve#5",
+      "jurisprudencia_su-454_2020/anexo#41"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#45",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#46",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#1",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#51",
+      "jurisprudencia_su-455_2020/ficha",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#2",
+      "jurisprudencia_c-173_2020/vi_consideraciones#3",
+      "jurisprudencia_su-455_2020/i_antecedentes#28",
+      "jurisprudencia_c-201_2020/ii_consideraciones#3",
+      "jurisprudencia_su-455_2020/i_antecedentes#18"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#45",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#46",
+      "jurisprudencia_su-455_2020/ii_consideraciones_de_la_corte#1",
+      "jurisprudencia_c-173_2020/vi_consideraciones#3",
+      "jurisprudencia_c-201_2020/ii_consideraciones#3",
+      "jurisprudencia_su-29_2024/ii_consideraciones#13",
+      "jurisprudencia_su-7_2023/aclaración_de_voto_de_la_magis~2#19",
+      "jurisprudencia_c-213_2020/ii_consideraciones#3",
+      "jurisprudencia_c-50_2020/vi_consideraciones_de_la_corte#4",
+      "jurisprudencia_c-394_2020/competencia#3"
+     ]
+    }
+   }
+  },
+  {
+   "id": 946,
+   "formato": "semi_open",
+   "area": "Derecho de familia",
+   "legal_basis": " Sentencia C-039 de 2025 de la Corte Constitucional",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-39_2025/aclaración_de_voto_del_magistr#2",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_del_magistr#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#8",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#3",
+      "jurisprudencia_c-39_2025/vi_consideraciones#19",
+      "jurisprudencia_c-39_2025/anexo_i_resumen_de_las_interve#12",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#4",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#9",
+      "jurisprudencia_c-39_2025/vi_consideraciones#18"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "jurisprudencia_c-399_1995/iii_decisión#1",
+      "jurisprudencia_c-395_2011/inicio#15",
+      "jurisprudencia_c-39_2025/vii_decisión#1",
+      "jurisprudencia_c-395_2020/vi_decisión#1",
+      "jurisprudencia_c-39_1995/v_decision#1",
+      "jurisprudencia_c-399_1999/decisión#1",
+      "jurisprudencia_c-395_2012/vii_decision#1",
+      "jurisprudencia_c-393_2016/inicio#3",
+      "jurisprudencia_c-399_2006/vii_decision#1",
+      "jurisprudencia_c-392_2019/inicio#6"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-39_2025/vii_decisión#1",
+      "jurisprudencia_c-39_2025/vi_consideraciones_13#1",
+      "jurisprudencia_c-399_1995/iii_decisión#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_del_magistr#2",
+      "jurisprudencia_c-39_2025/ficha",
+      "jurisprudencia_c-395_2011/inicio#15",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_del_magistr#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#8",
+      "jurisprudencia_c-395_2020/vi_decisión#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#1"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-39_2025/aclaración_de_voto_del_magistr#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#4",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#3",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#8",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#9",
+      "jurisprudencia_c-39_2025/ficha",
+      "jurisprudencia_c-273_2025/ii_consideraciones#10",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#7",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#5"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-39_2025/aclaración_de_voto_del_magistr#1",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#4",
+      "jurisprudencia_c-39_2025/aclaración_de_voto_de_la_magis#3",
+      "jurisprudencia_c-273_2025/ii_consideraciones#10",
+      "jurisprudencia_c-216_2025/consideraciones#12",
+      "jurisprudencia_su-63_2025/ii_consideraciones_y_fundament~2#10",
+      "jurisprudencia_t-573_2016/resuelve#47",
+      "jurisprudencia_t-93_2026/resuelve#10",
+      "jurisprudencia_t-178_2025/resuelve#10",
+      "jurisprudencia_c-395_2011/inicio#15"
+     ]
+    }
+   }
+  },
+  {
+   "id": 960,
+   "formato": "semi_open",
+   "area": "Derecho de los mercados [competencia, consumidor, datos personales y propiedad intelectual]",
+   "legal_basis": "Artículo 45 del Decreto 2153 de 1992",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-616_2001/inicio#6",
+      "jurisprudencia_c-32_2025/resuelve#9",
+      "jurisprudencia_c-63_2021/consideraciones#209",
+      "jurisprudencia_c-1041_2007/inicio#4",
+      "jurisprudencia_c-432_2010/inicio#7",
+      "jurisprudencia_c-63_2021/inicio#4",
+      "jurisprudencia_c-228_2010/inicio#8",
+      "jurisprudencia_c-172_2014/vi_consideraciones_de_la_corte#61",
+      "jurisprudencia_c-1041_2007/la_demanda#10",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#24"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1041_2007/inicio#4",
+      "jurisprudencia_c-1041_2007/vi_consideraciones_y_fundament#42",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#20",
+      "jurisprudencia_c-432_2010/vii_consideraciones_y_fundamen#95",
+      "jurisprudencia_c-432_2010/inicio#7",
+      "jurisprudencia_c-432_2010/vii_consideraciones_y_fundamen#96",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#24",
+      "jurisprudencia_c-228_2010/inicio#9",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#20",
+      "jurisprudencia_c-80_2023/consideraciones#23"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1041_2007/inicio#4",
+      "jurisprudencia_c-432_2010/inicio#7",
+      "jurisprudencia_c-616_2001/inicio#6",
+      "jurisprudencia_c-1041_2007/vi_consideraciones_y_fundament#42",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#24",
+      "jurisprudencia_c-432_2010/vii_consideraciones_y_fundamen#96",
+      "jurisprudencia_c-1041_2007/la_demanda#3",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#20",
+      "jurisprudencia_c-80_2023/consideraciones#23",
+      "jurisprudencia_c-616_2001/inicio#7"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1041_2007/vi_consideraciones_y_fundament#42",
+      "jurisprudencia_c-1041_2007/inicio#4",
+      "jurisprudencia_c-228_2010/inicio#9",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#20",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#24",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#25",
+      "jurisprudencia_c-150_2003/resuelve#41",
+      "jurisprudencia_c-616_2001/inicio#6",
+      "jurisprudencia_c-352_1998/resuelve#11",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#23"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-1041_2007/vi_consideraciones_y_fundament#42",
+      "jurisprudencia_c-1041_2007/inicio#4",
+      "jurisprudencia_c-228_2010/inicio#9",
+      "jurisprudencia_c-228_2010/vi_consideraciones_y_fundament#20",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#24",
+      "jurisprudencia_c-616_2001/vi_consideraciones_de_la_corte#25",
+      "jurisprudencia_c-150_2003/resuelve#41",
+      "jurisprudencia_c-616_2001/inicio#6",
+      "jurisprudencia_c-352_1998/resuelve#11",
+      "jurisprudencia_c-80_2023/consideraciones#23"
+     ]
+    }
+   }
+  },
+  {
+   "id": 991,
+   "formato": "semi_open",
+   "area": "Derecho tributario",
+   "legal_basis": "Sentencia C-891 del 2012 de la Corte Constitucional",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-395_2012/vi_consideraciones_y_fundament#3",
+      "jurisprudencia_c-395_2012/vi_consideraciones_y_fundament#14",
+      "jurisprudencia_c-395_2012/resuelve#2",
+      "jurisprudencia_t-1096_2012/aclaración_de_voto_de_la_magis#24",
+      "jurisprudencia_c-278_2019/salvamento_de_voto_del_magistr#4",
+      "jurisprudencia_c-644_2017/aclaración_de_voto_de_la_magis#59",
+      "jurisprudencia_c-602_2015/vi_consideraciones_de_la_corte#4",
+      "jurisprudencia_c-49_2012/ii_consideraciones#25",
+      "jurisprudencia_c-395_2012/vi_consideraciones_y_fundament#84",
+      "jurisprudencia_c-568_2019/resuelve#7"
+     ]
+    },
+    "denso": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-89_2018/inicio#3",
+      "jurisprudencia_c-819_2012/inicio#9",
+      "jurisprudencia_c-89_1998/decision#1",
+      "jurisprudencia_c-891_1999/inicio#4",
+      "jurisprudencia_c-898_2001/vii_decision#1",
+      "jurisprudencia_c-899_2009/inicio#2",
+      "jurisprudencia_c-819_2010/vii_decisión#1",
+      "jurisprudencia_c-817_1999/inicio#3",
+      "jurisprudencia_su-891_2007/iv_decisión#1",
+      "jurisprudencia_c-895_2012/decision#1"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "jurisprudencia_c-395_2012/vi_consideraciones_y_fundament#3",
+      "jurisprudencia_c-891_2012/ficha",
+      "jurisprudencia_c-89_2018/inicio#3",
+      "jurisprudencia_c-395_2012/vi_consideraciones_y_fundament#14",
+      "jurisprudencia_c-819_2012/inicio#9",
+      "jurisprudencia_c-395_2012/resuelve#2",
+      "jurisprudencia_c-89_1998/decision#1",
+      "jurisprudencia_c-891_1999/inicio#4",
+      "jurisprudencia_t-1096_2012/aclaración_de_voto_de_la_magis#24",
+      "jurisprudencia_c-278_2019/salvamento_de_voto_del_magistr#4"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "jurisprudencia_t-1093_2012/ii_fundamentos_de_la_decisión#68",
+      "jurisprudencia_t-1095_2012/ii_fundamentos_de_la_decisión#66",
+      "jurisprudencia_t-1096_2012/ii_fundamentos_de_la_decisión#73",
+      "jurisprudencia_t-259_2012/ii_fundamentos_de_la_decisión#66",
+      "jurisprudencia_c-891_2012/inicio#1",
+      "jurisprudencia_c-891_2012/ficha",
+      "jurisprudencia_t-1096_2012/aclaración_de_voto_de_la_magis#24",
+      "jurisprudencia_c-49_2012/ii_consideraciones#25",
+      "jurisprudencia_c-602_2015/vi_consideraciones_de_la_corte#4",
+      "jurisprudencia_c-101_2022/inicio#62"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.2,
+     "ndcg": 0.38685280723454163,
+     "top": [
+      "jurisprudencia_t-1093_2012/ii_fundamentos_de_la_decisión#68",
+      "jurisprudencia_t-1095_2012/ii_fundamentos_de_la_decisión#66",
+      "jurisprudencia_t-1096_2012/ii_fundamentos_de_la_decisión#73",
+      "jurisprudencia_t-259_2012/ii_fundamentos_de_la_decisión#66",
+      "jurisprudencia_c-891_2012/inicio#1",
+      "jurisprudencia_c-891_2012/ficha",
+      "jurisprudencia_t-1096_2012/aclaración_de_voto_de_la_magis#24",
+      "jurisprudencia_c-49_2012/ii_consideraciones#25",
+      "jurisprudencia_c-602_2015/vi_consideraciones_de_la_corte#4",
+      "jurisprudencia_c-101_2022/inicio#62"
+     ]
+    }
+   }
+  },
+  {
+   "id": 1005,
+   "formato": "semi_open",
+   "area": "Derecho constitucional",
+   "legal_basis": "Constitución Política. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-376_1994/resuelve#4",
+      "jurisprudencia_c-179_1994/v_consideraciones_de_la_corte#282",
+      "jurisprudencia_c-196_2001/vii_consideraciones_y_fundamen#3",
+      "jurisprudencia_c-192_1997/vi_fundamento_jurídico#4",
+      "jurisprudencia_c-271_1993/resuelve#3",
+      "jurisprudencia_c-935_2004/vii_decision#16",
+      "jurisprudencia_c-261_1993/viii_decision#3",
+      "jurisprudencia_c-206_1993/ii_consideraciones_de_la_corte#27",
+      "jurisprudencia_c-486_2002/iii_consideraciones_de_la_cort#7",
+      "jurisprudencia_c-161_2020/v_consideraciones_de_la_corte_#115"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-581_1997/vi_consideraciones_de_la_corte#8",
+      "jurisprudencia_c-935_2004/vii_decision#16",
+      "jurisprudencia_c-685_1996/inicio#5",
+      "jurisprudencia_c-196_2001/resuelve#46",
+      "jurisprudencia_c-6_2012/vi_consideraciones_y_fundament#19",
+      "jurisprudencia_c-923_2000/ii_las_objeciones#7",
+      "jurisprudencia_c-685_1996/vi_fundamento_jurídico#18",
+      "jurisprudencia_c-148_2003/v_fundamentos_de_la_decisión#6",
+      "ley_38_1989/art_66",
+      "jurisprudencia_c-357_1994/iii_consideraciones_de_la_cort#34"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-935_2004/vii_decision#16",
+      "jurisprudencia_c-685_1996/inicio#5",
+      "jurisprudencia_c-179_1994/v_consideraciones_de_la_corte#282",
+      "jurisprudencia_c-148_2003/v_fundamentos_de_la_decisión#6",
+      "jurisprudencia_c-483_2002/vi_consideraciones_y_fundament#7",
+      "jurisprudencia_c-196_2001/vii_consideraciones_y_fundamen#5",
+      "jurisprudencia_c-581_1997/vi_consideraciones_de_la_corte#8",
+      "jurisprudencia_c-6_2012/vi_consideraciones_y_fundament#19",
+      "jurisprudencia_c-376_1994/resuelve#4",
+      "jurisprudencia_c-6_2012/vi_consideraciones_y_fundament#65"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-192_1997/vi_fundamento_jurídico#4",
+      "jurisprudencia_c-713_2008/iii_consideraciones_y_fundamen#123",
+      "jurisprudencia_c-581_1997/vi_consideraciones_de_la_corte#8",
+      "jurisprudencia_c-36_2023/vi_consideraciones_de_la_corte#34",
+      "jurisprudencia_c-483_2002/vi_consideraciones_y_fundament#7",
+      "jurisprudencia_c-1249_2001/vi_consideraciones_de_la_corte#17",
+      "jurisprudencia_c-923_2000/ii_las_objeciones#7",
+      "jurisprudencia_c-148_2003/v_fundamentos_de_la_decisión#6",
+      "jurisprudencia_c-36_2023/vi_consideraciones_de_la_corte#32",
+      "jurisprudencia_c-486_2002/iii_consideraciones_de_la_cort#7"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-192_1997/vi_fundamento_jurídico#4",
+      "jurisprudencia_c-713_2008/iii_consideraciones_y_fundamen#123",
+      "jurisprudencia_c-581_1997/vi_consideraciones_de_la_corte#8",
+      "jurisprudencia_c-36_2023/vi_consideraciones_de_la_corte#34",
+      "jurisprudencia_c-483_2002/vi_consideraciones_y_fundament#7",
+      "jurisprudencia_c-1249_2001/vi_consideraciones_de_la_corte#17",
+      "jurisprudencia_c-923_2000/ii_las_objeciones#7",
+      "jurisprudencia_c-148_2003/v_fundamentos_de_la_decisión#6",
+      "jurisprudencia_c-36_2023/vi_consideraciones_de_la_corte#32",
+      "jurisprudencia_c-486_2002/iii_consideraciones_de_la_cort#7"
+     ]
+    }
+   }
+  },
+  {
+   "id": 1015,
+   "formato": "semi_open",
+   "area": "Derecho penal",
+   "legal_basis": "Sentencia C-355 de 2006",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#228",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#172",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#227",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#159",
+      "jurisprudencia_c-322_2023/vii_consideraciones#3",
+      "jurisprudencia_c-88_2020/v_concepto_del_procurador_gene#9",
+      "jurisprudencia_c-355_2006/aclaración_de_voto_del_magistr#171",
+      "jurisprudencia_c-355_2006/aclaración_de_voto_del_magistr#161",
+      "jurisprudencia_c-55_2022/salvamento_de_voto#59",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#98"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "jurisprudencia_su-96_2018/anexo_1#148",
+      "jurisprudencia_c-88_2020/salvamento_de_voto_conjunto_de#128",
+      "jurisprudencia_c-355_2006/ii_normas_demandadas#1",
+      "jurisprudencia_c-355_2006/vi_consideraciones_y_fundament#166",
+      "jurisprudencia_c-355_2006/vi_consideraciones_y_fundament#182",
+      "jurisprudencia_c-355_2006/aclaración_de_voto_del_magistr#3",
+      "jurisprudencia_c-355_2006/anexo#9",
+      "jurisprudencia_c-355_2006/vi_consideraciones_y_fundament#27",
+      "jurisprudencia_c-341_2017/concepto_del_procurador#5",
+      "jurisprudencia_c-355_2006/inicio#19"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#98",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#172",
+      "jurisprudencia_c-17_2026/consideraciones#34",
+      "jurisprudencia_c-322_2023/vii_consideraciones#3",
+      "jurisprudencia_c-355_2006/ii_el_caso_concreto#39",
+      "jurisprudencia_c-88_2020/salvamento_de_voto_conjunto_de#128",
+      "jurisprudencia_c-355_2006/vi_consideraciones_y_fundament#182",
+      "jurisprudencia_c-355_2006/anexo#9",
+      "jurisprudencia_su-96_2018/anexo_1#148",
+      "jurisprudencia_c-17_2026/consideraciones#33"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#172",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#224",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#227",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#98",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#268",
+      "jurisprudencia_c-355_2006/aclaración_de_voto_del_magistr#171",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#159",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#228",
+      "jurisprudencia_c-355_2006/v_concepto_del_procurador_gene#72",
+      "jurisprudencia_c-355_2006/aclaración_de_voto_del_magistr#161"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#172",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#224",
+      "jurisprudencia_c-355_2006/salvamento_de_voto_del_magistr#227",
+      "jurisprudencia_c-55_2022/salvamento_de_voto#59",
+      "jurisprudencia_su-96_2018/iii_consideraciones_de_la_cort#42",
+      "jurisprudencia_su-96_2018/anexo_1#148",
+      "jurisprudencia_su-96_2018/ii_razones_por_las_cuales_me_a#5",
+      "jurisprudencia_t-284_2020/ii_consideraciones#7",
+      "jurisprudencia_c-66_2023/consideraciones#24",
+      "jurisprudencia_c-322_2023/vii_consideraciones#3"
+     ]
+    }
+   }
+  },
+  {
+   "id": 1065,
+   "formato": "semi_open",
+   "area": "Derecho penal",
+   "legal_basis": "Artículo 20 del Código Penal. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#1",
+      "jurisprudencia_sp-3477_2019/ii_audiencia_de_sustentación#1",
+      "jurisprudencia_sp-321_2025/vii_consideraciones_de_la_cort#45",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#2",
+      "jurisprudencia_c-652_2003/inicio#3",
+      "jurisprudencia_sp-64_2023/c_p#42",
+      "codigo_penal_1980/art_144/notas#2",
+      "jurisprudencia_c-200_1998/consideraciones_de_la_corte#2",
+      "jurisprudencia_sp-321_2025/vii_consideraciones_de_la_cort#44",
+      "jurisprudencia_sp-3477_2019/ii_audiencia_de_sustentación#2"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sp-64_2023/cargo_segundo#45",
+      "jurisprudencia_c-437_2023/consideraciones#64",
+      "jurisprudencia_sp-2021_2024/vii_consideraciones_de_la_cort#14",
+      "jurisprudencia_c-272_2011/salvamento_parcial_de_voto_del~2#17",
+      "jurisprudencia_c-128_2003/vi_consideraciones_y_fundament#35",
+      "jurisprudencia_su-214_2022/ii_consideraciones#53",
+      "jurisprudencia_sp-4180_2018/la_demanda#7",
+      "jurisprudencia_c-652_2003/vi_consideraciones_y_fundament#44",
+      "jurisprudencia_c-128_2003/vi_consideraciones_y_fundament#39",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#2"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#2",
+      "jurisprudencia_sp-64_2023/cargo_segundo#45",
+      "jurisprudencia_c-944_2012/resuelve#11",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#1",
+      "jurisprudencia_sp-4180_2018/la_demanda#7",
+      "jurisprudencia_sp-70_2023/iv_consideraciones#4",
+      "jurisprudencia_c-128_2003/vi_consideraciones_y_fundament#39",
+      "jurisprudencia_sp-64_2023/cargo_segundo#87",
+      "jurisprudencia_sp-15530_2015/inicio#4",
+      "jurisprudencia_sp-8415_2015/consideraciones_de_la_corte#4"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sp-321_2025/vii_consideraciones_de_la_cort#45",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#1",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#2",
+      "jurisprudencia_c-652_2003/vi_consideraciones_y_fundament#44",
+      "jurisprudencia_sp-64_2023/cargo_segundo#45",
+      "jurisprudencia_sp-70_2023/iv_consideraciones#4",
+      "jurisprudencia_sp-321_2025/vii_consideraciones_de_la_cort#44",
+      "jurisprudencia_sp-3024_2022/vii_consideraciones_de_la_cort#39",
+      "jurisprudencia_sp-20949_2017/inicio#90",
+      "jurisprudencia_sp-203_2025/consideraciones#13"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sp-321_2025/vii_consideraciones_de_la_cort#45",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#1",
+      "jurisprudencia_sp-3463_2019/concepto_del_ministerio_públic#2",
+      "jurisprudencia_c-652_2003/vi_consideraciones_y_fundament#44",
+      "jurisprudencia_sp-64_2023/cargo_segundo#45",
+      "jurisprudencia_sp-70_2023/iv_consideraciones#4",
+      "jurisprudencia_sp-321_2025/vii_consideraciones_de_la_cort#44",
+      "jurisprudencia_sp-3024_2022/vii_consideraciones_de_la_cort#39",
+      "jurisprudencia_sp-20949_2017/inicio#90",
+      "jurisprudencia_sp-203_2025/consideraciones#13"
+     ]
+    }
+   }
+  },
+  {
+   "id": 1073,
+   "formato": "semi_open",
+   "area": "Derecho laboral",
+   "legal_basis": "Artículo 53 de la Constitución Política. \nArtículos 23 y 34 del Código Sustantivo del Trabajo. ",
+   "n_oro": 2,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 0.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_sl-3345_2021/ii_consideraciones#15",
+      "jurisprudencia_t-157_2014/i_antecedentes#25",
+      "jurisprudencia_sl-4322_2021/i_antecedentes#2",
+      "jurisprudencia_t-391_2021/ii_consideraciones#35",
+      "jurisprudencia_sl-632_2024/i_antecedentes#2",
+      "jurisprudencia_sl-3460_2024/i_antecedentes#2",
+      "jurisprudencia_t-391_2021/i_antecedentes#1",
+      "jurisprudencia_sl-1439_2021/i_antecedentes#2",
+      "jurisprudencia_t-346_2025/ii_consideraciones#67",
+      "jurisprudencia_t-118_2018/i_antecedentes#14"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_c-614_2009/inicio#68",
+      "jurisprudencia_c-645_2011/vi_consideraciones_de_la_corte#34",
+      "jurisprudencia_t-287_2011/inicio#45",
+      "jurisprudencia_t-173_2011/iii_consideraciones_y_fundamen#8",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#19",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#32",
+      "jurisprudencia_t-461_2012/resuelve#11",
+      "jurisprudencia_t-461_2012/v_consideraciones_de_la_corte_#8",
+      "jurisprudencia_c-645_2011/vi_consideraciones_de_la_corte#43",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#29"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 0.5,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-284_2019/ii_consideraciones_de_la_corte#61",
+      "jurisprudencia_c-614_2009/inicio#68",
+      "jurisprudencia_sl-3345_2021/ii_consideraciones#15",
+      "jurisprudencia_c-645_2011/vi_consideraciones_de_la_corte#34",
+      "jurisprudencia_t-157_2014/i_antecedentes#25",
+      "jurisprudencia_sl-4322_2021/i_antecedentes#2",
+      "jurisprudencia_t-287_2011/inicio#45",
+      "jurisprudencia_t-173_2011/iii_consideraciones_y_fundamen#8",
+      "jurisprudencia_t-391_2021/ii_consideraciones#35",
+      "jurisprudencia_sl-632_2024/i_antecedentes#2"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#32",
+      "jurisprudencia_t-287_2011/inicio#45",
+      "jurisprudencia_t-284_2019/ii_consideraciones_de_la_corte#61",
+      "jurisprudencia_t-346_2025/ii_consideraciones#67",
+      "jurisprudencia_t-173_2011/iii_consideraciones_y_fundamen#8",
+      "jurisprudencia_t-173_2011/inicio#1",
+      "jurisprudencia_c-614_2009/inicio#68",
+      "jurisprudencia_t-287_2011/inicio#46",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#19",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#29"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 0.0,
+     "rr": 0.0,
+     "ndcg": 0.0,
+     "top": [
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#32",
+      "jurisprudencia_t-287_2011/inicio#45",
+      "jurisprudencia_t-284_2019/ii_consideraciones_de_la_corte#61",
+      "jurisprudencia_t-346_2025/ii_consideraciones#67",
+      "jurisprudencia_t-173_2011/iii_consideraciones_y_fundamen#8",
+      "jurisprudencia_t-173_2011/inicio#1",
+      "jurisprudencia_c-614_2009/inicio#68",
+      "jurisprudencia_t-287_2011/inicio#46",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#19",
+      "jurisprudencia_t-166_2011/iii_consideraciones_y_fundamen#29"
+     ]
+    }
+   }
+  },
+  {
+   "id": 1089,
+   "formato": "semi_open",
+   "area": "Derecho procesal",
+   "legal_basis": "Artículo 246 del CPACA. ",
+   "n_oro": 1,
+   "cobertura": 1.0,
+   "etapas": {
+    "bm25": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.5,
+     "ndcg": 0.6309297535714575,
+     "top": [
+      "ley_2080_2021/art_66#1",
+      "codigo_procedimiento_administrativo/art_246#1",
+      "ley_2080_2021/art_64",
+      "jurisprudencia_c-284_2014/resuelve#24",
+      "jurisprudencia_ce-11001-03-15-000-2020-05298-00_2021/inicio#11",
+      "codigo_procedimiento_administrativo/art_244",
+      "codigo_procedimiento_administrativo/art_246/notas",
+      "jurisprudencia_t-112_2020/resuelve#9",
+      "jurisprudencia_su-1067_2000/resuelve#6",
+      "jurisprudencia_su-1067_2000/resuelve#7"
+     ]
+    },
+    "denso": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 0.3333333333333333,
+     "ndcg": 0.5,
+     "top": [
+      "codigo_contencioso_administrativo/art_213",
+      "jurisprudencia_ce-50001-23-31-000-1997-06093-01_2012/inicio#3",
+      "codigo_procedimiento_administrativo/art_244",
+      "codigo_procedimiento_administrativo/art_247#1",
+      "jurisprudencia_t-78_2022/resuelve#13",
+      "jurisprudencia_c-532_2015/inicio#7",
+      "ley_2080_2021/art_64",
+      "jurisprudencia_c-512_2013/resuelve#3",
+      "codigo_general_proceso/art_371",
+      "jurisprudencia_c-803_2000/ii_norma_demandada#2"
+     ]
+    },
+    "rrf": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_procedimiento_administrativo/art_244",
+      "ley_2080_2021/art_64",
+      "codigo_contencioso_administrativo/art_213/notas",
+      "codigo_contencioso_administrativo/art_213",
+      "codigo_general_proceso/art_318",
+      "jurisprudencia_t-211_2022/resuelve#11",
+      "codigo_contencioso_administrativo/art_212/notas",
+      "jurisprudencia_c-315_2012/consideraciones_y_fundamentos#35",
+      "jurisprudencia_c-284_2014/resuelve#24",
+      "ley_1828_2017/art_42"
+     ]
+    },
+    "rerank": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_procedimiento_administrativo/art_246/notas",
+      "jurisprudencia_t-112_2020/resuelve#9",
+      "jurisprudencia_ce-11001-03-15-000-2020-05298-00_2021/inicio#11",
+      "codigo_general_proceso/art_318",
+      "ley_2080_2021/art_64",
+      "jurisprudencia_t-211_2022/resuelve#11",
+      "jurisprudencia_t-271_2020/salvamento_de_voto_del_magistr#17",
+      "jurisprudencia_t-880_2013/iii_consideraciones#23",
+      "codigo_procedimiento_administrativo/art_244",
+      "codigo_procedimiento_administrativo/art_246#1"
+     ]
+    },
+    "final": {
+     "recall_citas": 1.0,
+     "recall_docs": 1.0,
+     "rr": 1.0,
+     "ndcg": 1.0,
+     "top": [
+      "codigo_procedimiento_administrativo/art_246/notas",
+      "jurisprudencia_t-112_2020/resuelve#9",
+      "jurisprudencia_ce-11001-03-15-000-2020-05298-00_2021/inicio#11",
+      "codigo_general_proceso/art_318",
+      "ley_2080_2021/art_64",
+      "jurisprudencia_t-211_2022/resuelve#11",
+      "jurisprudencia_t-271_2020/salvamento_de_voto_del_magistr#17",
+      "jurisprudencia_t-880_2013/iii_consideraciones#23",
+      "codigo_procedimiento_administrativo/art_244",
+      "codigo_procedimiento_administrativo/art_246"
+     ]
+    }
+   }
+  }
+ ],
+ "config": {
+  "nombre": "todo__qwen3-emb-0.6b__bm25__bge-reranker-v2-m3",
+  "bm25": "/home/sgomezo2/Samu-Enjoyer/corpus/indices/bm25_todo",
+  "denso": "/home/sgomezo2/Samu-Enjoyer/corpus/indices/qwen3-emb-0.6b_todo",
+  "reranker": "bge-reranker-v2-m3",
+  "candidatos": 100,
+  "n_rerank": 50,
+  "k": 10,
+  "max_por_doc": 3,
+  "penal_derogado": 0.15,
+  "penal_prioridad_baja": 0.05,
+  "usar_citas": true,
+  "expandir_articulo": true,
+  "penal_tipo": {},
+  "bonus_prioridad_alta": 0.0,
+  "max_sentencias": null,
+  "device": "cuda:0",
+  "fecha": "2026-10-01T07:10:28"
+ }
+}
