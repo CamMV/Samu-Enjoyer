@@ -73,6 +73,21 @@ _FORMATO_INSTRUCCIONES = {
 }
 
 
+# Tope de caracteres por pasaje DENTRO del prompt (escritor y juez). Un artículo partido se entrega
+# reunido y algunos decretos guardan anexos enteros en un solo artículo: hubo prompts de 66k-159k
+# tokens contra el contexto de 16k. 10 × 3.000 caracteres ≈ 9k tokens. Se conserva el inicio
+# (encabezado y texto del artículo; lo que se pierde suele ser notas de vigencia). En
+# submissions.jsonl los pasajes van completos.
+MAX_CHARS_PASAJE = int(os.environ.get("MAX_CHARS_PASAJE", "3000"))
+
+
+def texto_para_prompt(p: CanonicalPassage) -> str:
+    texto = p.texto or ""
+    if len(texto) <= MAX_CHARS_PASAJE:
+        return texto
+    return texto[:MAX_CHARS_PASAJE].rsplit(" ", 1)[0] + " […recortado]"
+
+
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
@@ -80,7 +95,7 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     bloques = []
     for p in pasajes:
         vig = p.metadatos.get("vigencia", "desconocida")
-        bloques.append(f"[{p.id}] (vigencia: {vig})\n{p.texto}")
+        bloques.append(f"[{p.id}] (vigencia: {vig})\n{texto_para_prompt(p)}")
     partes = [
         f"Área: {flags.get('area')} | Tema: {flags.get('tema')} | Sub-tarea: {flags.get('sub_tarea')}",
         "PASAJES:\n" + ("\n\n".join(bloques) if bloques else "(ninguno)"),
