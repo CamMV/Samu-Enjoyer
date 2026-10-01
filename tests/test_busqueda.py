@@ -147,8 +147,6 @@ def test_monto_en_pesos_asegura_el_decreto_del_salario_minimo():
     sin = [p["chunk_id"] for p in r._seleccionar(orden, datos)]
     con = [p["chunk_id"] for p in r._seleccionar(orden, datos, forzados=["decreto_1572_2024/art_1"])]
     assert "decreto_1572_2024/art_1" not in sin and con[-1] == "decreto_1572_2024/art_1" and len(con) == 10
-<<<<<<< Updated upstream
-=======
 
 
 def test_bm25_solo_en_las_cerradas():
@@ -161,4 +159,3 @@ def test_bm25_solo_en_las_cerradas():
     assert cerrada.etapas["bm25"] == ["ley_1/art_1"]
     sin_opcion = _rec(Config(normas=0, usar_citas=False), bm25, almacen).buscar_item({"pregunta": "leasing"})
     assert sin_opcion.etapas["bm25"] == ["ley_1/art_1"]  # apagada: BM25 en todas
->>>>>>> Stashed changes

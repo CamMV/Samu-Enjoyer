@@ -103,15 +103,12 @@ class Config:
     # entran al top-k aunque el reranker los baje (p. ej. "Fintech": 1.º en BM25 de normas, puesto 48
     # tras el reranker). Respetan los topes por documento y de sentencias. 0 = no se usa.
     lideres: int = 0
-<<<<<<< Updated upstream
-=======
     # BM25 solo en las cerradas: en semiabiertas y abiertas (lenguaje natural) BM25 mete pasajes que
     # comparten palabras pero no tema; en las cerradas las opciones traen términos exactos ("Ley 472",
     # "falsa motivación") y BM25 sí ayuda. Banco (50 preguntas, A40), recall_citas / recall_docs:
     # combinado: cerradas 0,962 / 0,808, semiabiertas 0,965 / 0,861; solo HNSW: cerradas 0,923 / 0,769,
     # semiabiertas 0,986 / 0,944. El formato es un dato de la pregunta: la elección es determinista.
     bm25_solo_cerradas: bool = False
->>>>>>> Stashed changes
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -231,16 +228,6 @@ class Recuperador:
         opciones = item.get("opciones") if isinstance(item.get("opciones"), dict) else {}
         pregunta = item.get("pregunta", "").strip()
         extras = [(k, f"{pregunta}\n{k}) {v}") for k, v in sorted(opciones.items())]
-<<<<<<< Updated upstream
-        return self.buscar(consulta_de(item), extras, opciones, pregunta)
-
-    def buscar(self, consulta: str, extras: list[tuple[str, str]] = (), opciones: dict | None = None,
-               pregunta: str | None = None) -> Resultado:
-        """`extras`: (nombre, consulta) por opción ("pregunta + opción X"); con `por_opcion` cada una
-        aporta su lista de BM25 y de HNSW a la fusión, y con `rerank_opciones` el reranker también
-        puntúa contra cada una. `opciones`: las de la cerrada (para `solo_opciones`). `pregunta`: el
-        enunciado sin opciones, con el que se busca dentro de las normas citadas."""
-=======
         usar_bm25 = bool(opciones) or not self.cfg.bm25_solo_cerradas
         return self.buscar(consulta_de(item), extras, opciones, pregunta, usar_bm25)
 
@@ -251,7 +238,6 @@ class Recuperador:
         puntúa contra cada una. `opciones`: las de la cerrada (para `solo_opciones`). `pregunta`: el
         enunciado sin opciones, con el que se busca dentro de las normas citadas. `usar_bm25`: False =
         sin las listas de BM25 (ver `bm25_solo_cerradas`)."""
->>>>>>> Stashed changes
         cfg, t, etapas = self.cfg, {}, {}
         t0 = time.perf_counter()
         citadas = chunks_citados(consulta, self.almacen) if cfg.usar_citas else []
