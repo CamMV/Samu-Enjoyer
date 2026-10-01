@@ -109,6 +109,49 @@ def textos_para_prompt(pasajes: list[CanonicalPassage]) -> list[str]:
     return salida
 
 
+# --- Calculadora de montos (determinista, sin LLM) ----------------------------------------
+# Los umbrales legales (cuantías, multas, topes) están en salarios mínimos y las preguntas dan pesos.
+# Un modelo de 8B hace bien la división pero compara mal (pregunta 528: calcula 21,07 smlmv y elige
+# "mayor cuantía", que exige más de 150). El sistema hace la aritmética y la comparación con los
+# umbrales que traen los pasajes, y se la entrega al modelo como dato.
+_MONTO_RE = re.compile(r"\$\s*(\d{1,3}(?:[.,]\d{3}){2,})|\b(\d{1,3}(?:[.,]\d{3}){2,})\s*(?:COP|pesos)\b", re.I)
+_SMLMV_RE = re.compile(r"salario m[ií]nimo (?:legal )?mensual(?: legal)?(?: vigente)? para el año (\d{4})"
+                       r".{0,400}?\(\s*\$\s*(\d{1,3}(?:\.\d{3})+)", re.I | re.S)
+_UMBRAL_RE = re.compile(r"\(\s*(\d{1,5})\s*smm?lmv\s*\)|\b(\d{1,5})\s*salarios? m[ií]nimos?", re.I)
+
+
+def _entero(txt: str) -> int:
+    return int(re.sub(r"[.,]", "", txt))
+
+
+def _num(x: float) -> str:
+    return f"{x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
+
+
+def datos_calculados(pregunta: str, pasajes: list[CanonicalPassage]) -> str:
+    """Si la pregunta trae un monto en pesos y un pasaje fija el salario mínimo, el monto en salarios
+    mínimos y su comparación con cada umbral en salarios mínimos que aparezca en los pasajes."""
+    montos = [_entero(a or b) for a, b in _MONTO_RE.findall(pregunta or "")]
+    smlmv = None
+    for p in pasajes:
+        m = _SMLMV_RE.search(p.texto or "")
+        if m:
+            smlmv = (int(m.group(1)), _entero(m.group(2)), p.id)
+            break
+    if not montos or not smlmv:
+        return ""
+    umbrales = sorted({int(a or b) for p in pasajes for a, b in _UMBRAL_RE.findall(p.texto or "")} - {0})
+    anio, valor, fuente = smlmv
+    lineas = []
+    pesos = lambda x: f"${x:,}".replace(",", ".")  # noqa: E731
+    for monto in sorted(set(montos)):
+        n = monto / valor
+        lineas.append(f"- {pesos(monto)} equivalen a {_num(n)} salarios mínimos mensuales "
+                      f"(salario mínimo de {anio}: {pesos(valor)}, según [{fuente}]).")
+        lineas += [f"  {_num(n)} {'EXCEDE' if n > u else 'NO EXCEDE'} {u} salarios mínimos." for u in umbrales]
+    return "DATOS CALCULADOS POR EL SISTEMA (aritmética exacta; úsalos tal cual):\n" + "\n".join(lineas)
+
+
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
@@ -122,6 +165,9 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
         "PASAJES:\n" + ("\n\n".join(bloques) if bloques else "(ninguno)"),
         f"PREGUNTA: {pregunta}",
     ]
+    calculo = datos_calculados(pregunta, pasajes)
+    if calculo:
+        partes.insert(-1, calculo)
     if opciones:
         partes.append("OPCIONES:\n" + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     return system, "\n\n".join(partes)
@@ -133,7 +179,7 @@ def _verificar_host_local(base_url: str) -> None:
         raise ValueError(f"LLM_BASE_URL apunta a un proveedor cerrado prohibido: {host}")
 
 
-def _llamar_llm(system: str, user: str) -> str:
+def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
     """POST al Qwen3-8B local (modelo abierto). Lanza `requests.exceptions.RequestException`
     si falla la conexión, hay timeout o el servidor responde con error HTTP.
 
@@ -146,6 +192,8 @@ def _llamar_llm(system: str, user: str) -> str:
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         "chat_template_kwargs": {"enable_thinking": False},  # Qwen3: sin bloque <think>
     }
+    if esquema:  # salida guiada por gramática (llama.cpp): el JSON y sus valores quedan acotados
+        payload["response_format"] = {"type": "json_schema", "json_schema": {"name": "salida", "schema": esquema}}
     resp = requests.post(f"{LLM_BASE_URL.rstrip('/')}/chat/completions", json=payload, timeout=LLM_TIMEOUT)
     resp.raise_for_status()
     try:
@@ -247,4 +295,53 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
         return _abstencion(formato)
     borrador["formato"] = formato
     borrador["abstencion"] = bool(borrador.get("abstencion", False))
+    if formato == "multiple_choice" and opciones and not borrador["abstencion"] and ELEGIR_LETRA:
+        borrador = con_letra_de_la_justificacion(borrador, opciones)
     return borrador
+
+
+# --- Elección de la letra en un paso aparte (cerradas) ------------------------------------
+# El 8B razona bien y luego anuncia otra letra (58: concluye "la Ley 1564 de 2012" y elige la D, Ley
+# 906; 528: escribe "no corresponde a mayor cuantía" y elige mayor cuantía). Un segundo llamado al
+# mismo modelo lee solo el razonamiento, sin las frases que anuncian una letra, y devuelve la opción
+# que ese razonamiento respalda, con la salida acotada a las letras válidas. Temperatura 0: determinista.
+ELEGIR_LETRA = os.environ.get("ELEGIR_LETRA", "1") != "0"
+# Sin re.I: las letras de opción van en mayúscula; con re.I "es a" o "opción … a" atraparían frases normales.
+_ANUNCIA_LETRA = re.compile(r"\b[Oo]pci[oó]n(?:es)?\b[^.]*?\b[A-H]\b|\b(?:la|es)\s+[A-H]\b(?![\w.])|\b[A-H]\)")
+_SYSTEM_LETRA = (
+    "Eres un verificador. Recibes el RAZONAMIENTO de una respuesta a una pregunta de opción múltiple y las "
+    "OPCIONES. Básate solo en el razonamiento, no en conocimiento propio. Devuelve SOLO un objeto JSON con "
+    "las llaves, en este orden: \"conclusion\" (una oración: qué responde el razonamiento a la pregunta) y "
+    "\"letra\" (la opción cuyo contenido coincide con esa conclusión). Si una opción nombra la misma norma "
+    "que el razonamiento con otro año (error de digitación), cuenta como coincidencia."
+)
+
+
+def _sin_anuncios(texto: str) -> str:
+    frases = re.split(r"(?<=[.;])\s+", texto or "")
+    return " ".join(f for f in frases if not _ANUNCIA_LETRA.search(f)).strip()
+
+
+def con_letra_de_la_justificacion(borrador: dict, opciones: dict) -> dict:
+    """Corrige `respuesta_correcta` con la letra que respalda el razonamiento de la justificación.
+    Si el segundo llamado falla, o el razonamiento queda vacío, el borrador no cambia."""
+    letras = sorted(opciones)
+    razonamiento = _sin_anuncios(str(borrador.get("justificacion") or ""))
+    if not razonamiento:
+        return borrador
+    user = (f"RAZONAMIENTO:\n{razonamiento}\n\nOPCIONES:\n"
+            + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
+    esquema = {"type": "object", "properties": {"conclusion": {"type": "string"},
+                                                "letra": {"type": "string", "enum": letras}},
+               "required": ["conclusion", "letra"]}
+    try:
+        letra = str(_parsear_json(_llamar_llm(_SYSTEM_LETRA, user, esquema)).get("letra", "")).strip().upper()[:1]
+    except (requests.exceptions.RequestException, ValueError, AttributeError):
+        return borrador
+    anterior = str(borrador.get("respuesta_correcta") or "").strip().upper()[:1]
+    if letra not in opciones or letra == anterior:
+        return borrador
+    print(f"   letra corregida por el razonamiento: {anterior or '-'} -> {letra}", file=sys.stderr, flush=True)
+    descartes = {k: v for k, v in (borrador.get("descarte_opciones") or {}).items() if k != letra}
+    return {**borrador, "respuesta_correcta": letra, "descarte_opciones": descartes,
+            "justificacion": f"{razonamiento} Por lo tanto, la opción correcta es la {letra}."}

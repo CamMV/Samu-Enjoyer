@@ -116,3 +116,70 @@ def test_dos_corridas_no_escriben_el_mismo_archivo(tmp_path):
     assert not salida.with_name("s.jsonl.lock").exists()   # se libera al terminar
     with batch_runner._candado(salida):                      # y se puede volver a usar
         pass
+
+
+# --- calculadora de montos y elección de la letra (cerradas) ---
+
+ART25 = CanonicalPassage(id="codigo_general_proceso/art_25", metadatos={}, texto=(
+    "Código General del Proceso (Ley 1564 de 2012)\nArtículo 25. CUANTÍA\nSon de mínima cuantía cuando versen sobre "
+    "pretensiones patrimoniales que no excedan el equivalente a cuarenta salarios mínimos legales mensuales vigentes "
+    "(40 smlmv). Son de mayor cuantía cuando excedan el equivalente a ciento cincuenta salarios mínimos legales "
+    "mensuales vigentes (150 smlmv)."))
+SMLMV = CanonicalPassage(id="decreto_1572_2024/art_1", metadatos={}, texto=(
+    "Decreto 1572 de 2024\nArtículo 1.\nSalario Mínimo Legal Mensual vigente para el año 2025. Fijar a partir del "
+    "primero (1°) de enero de 2025 como Salario Mínimo Legal Mensual, la suma de UN MILLÓN CUATROCIENTOS VEINTITRÉS "
+    "MIL QUINIENTOS PESOS ($1.423.500)"))
+CUANTIA = {"A": "Alta cuantía", "B": "Menor cuantía", "C": "Mínima cuantía", "D": "Mayor cuantía"}
+
+
+def test_calculadora_convierte_el_monto_y_lo_compara_con_los_umbrales():
+    q = "Si un proceso tiene pretensiones por 30.000.000 COP ¿a qué cuantía corresponde?"
+    datos = writer_tool.datos_calculados(q, [ART25, SMLMV])
+    assert "$30.000.000 equivalen a 21,07 salarios mínimos" in datos and "salario mínimo de 2025: $1.423.500" in datos
+    assert "21,07 NO EXCEDE 40 salarios mínimos." in datos and "21,07 NO EXCEDE 150 salarios mínimos." in datos
+    _, user = writer_tool.build_prompts(q, {"formato": "multiple_choice"}, [ART25, SMLMV], CUANTIA)
+    assert user.index("DATOS CALCULADOS") < user.index("PREGUNTA:")
+    # Sin monto en pesos o sin el decreto del salario mínimo, nada.
+    assert writer_tool.datos_calculados("¿Qué es la cuantía?", [ART25, SMLMV]) == ""
+    assert writer_tool.datos_calculados(q, [ART25]) == ""
+
+
+def test_la_letra_sale_del_razonamiento_y_no_del_anuncio(monkeypatch):
+    llamadas = []
+
+    def llm(system, user, esquema=None):
+        llamadas.append((system, user, esquema))
+        if esquema is None:  # escritor: razona "mínima" y anuncia otra letra
+            return ('{"justificacion": "Con 21,07 salarios mínimos no se exceden 40 [codigo_general_proceso/art_25], '
+                    'así que es de mínima cuantía. Por lo tanto, la opción correcta es D.", '
+                    '"respuesta_correcta": "D", "descarte_opciones": {"C": "No.", "B": "No."}, "abstencion": false}')
+        return '{"conclusion": "Es de mínima cuantía.", "letra": "C"}'
+
+    monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", True)
+    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert b["respuesta_correcta"] == "C" and "C" not in b["descarte_opciones"]
+    assert b["justificacion"].endswith("es de mínima cuantía. Por lo tanto, la opción correcta es la C.")
+    _, user_letra, esquema = llamadas[1]
+    assert "opción correcta es D" not in user_letra             # el verificador no ve el anuncio
+    assert esquema["properties"]["letra"]["enum"] == ["A", "B", "C", "D"]
+
+
+def test_la_letra_no_cambia_si_coincide_o_si_el_verificador_falla(monkeypatch):
+    escritor = ('{"justificacion": "Es de mínima cuantía [codigo_general_proceso/art_25].", '
+                '"respuesta_correcta": "C", "descarte_opciones": {}, "abstencion": false}')
+    for verificador in ('{"conclusion": "Mínima.", "letra": "C"}', requests.exceptions.ConnectionError("caído")):
+        def llm(system, user, esquema=None, v=verificador):
+            if esquema is None:
+                return escritor
+            if isinstance(v, Exception):
+                raise v
+            return v
+        monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+        b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+        assert b["respuesta_correcta"] == "C" and b["justificacion"] == "Es de mínima cuantía [codigo_general_proceso/art_25]."
+
+
+def test_quitar_anuncios_no_borra_frases_normales():
+    texto = "Lo que es a la vez un deber del juez. La opción correcta es la B. Según el artículo 25, B) no aplica."
+    assert writer_tool._sin_anuncios(texto) == "Lo que es a la vez un deber del juez."
