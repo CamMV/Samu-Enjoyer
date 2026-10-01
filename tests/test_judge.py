@@ -39,11 +39,17 @@ def _estado(borrador=None, pasajes=(P46,)):
     return state
 
 
+@pytest.fixture(autouse=True)
+def _sin_voto(monkeypatch):
+    # ITEM es una cerrada: las pruebas de la revisión del borrador corren con el voto apagado.
+    monkeypatch.setattr(judge_tool, "JUDGE_VOTO_CERRADAS", False)
+
+
 def _responde(monkeypatch, *salidas):
     """El LLM del juez devuelve `salidas` en orden (dict -> JSON; excepción -> se lanza)."""
     cola, llamadas = list(salidas), []
 
-    def falso(system, user):
+    def falso(system, user, esquema=None):
         llamadas.append((system, user))
         salida = cola.pop(0)
         if isinstance(salida, Exception):
@@ -206,3 +212,48 @@ def test_ciclo_juez_caido_conserva_el_borrador(monkeypatch):
     state, traza = run_with_judge(_agente(consultas), ITEM)
     assert state.aprobado_por_juez is None and not state.abstencion and len(consultas) == 1
     assert state.borrador_respuesta["respuesta_correcta"]
+
+
+# --- voto en cerradas ---
+
+def _voto(letra, consulta=""):
+    return {"razon": "Los pasajes respaldan esa opción.", "voto": letra, "consulta_sugerida": consulta}
+
+
+def test_voto_coincide_aprueba_y_es_ciego(monkeypatch):
+    monkeypatch.setattr(judge_tool, "JUDGE_VOTO_CERRADAS", True)
+    llamadas = _responde(monkeypatch, _voto("c"))
+    v = evaluate_with_judge(_estado())
+    assert v.aprobado is True and v.origen == "voto" and v.voto == v.voto_escritor == "C"
+    system, user = llamadas[0]
+    assert "BORRADOR" not in user and "Procede por perjuicios" not in user  # no ve la respuesta del escritor
+    for secreto in ("LEGAL_BASIS_SECRETA", "TEXTO_CORRECTO_SECRETO", "ESPERADA_SECRETA"):
+        assert secreto not in system + user
+
+
+def test_voto_distinto_rechaza_sin_forzar_abstencion(monkeypatch):
+    monkeypatch.setattr(judge_tool, "JUDGE_VOTO_CERRADAS", True)
+    _responde(monkeypatch, _voto("B"), _voto("B", "Ley 472 de 1998"))
+    v = evaluate_with_judge(_estado())
+    assert v.aprobado is False and (v.voto, v.voto_escritor) == ("B", "C") and v.pasajes_suficientes
+    assert v.consulta_sugerida == "Perjuicios individuales Interés colectivo"  # las dos opciones en disputa
+    assert evaluate_with_judge(_estado()).consulta_sugerida == "Ley 472 de 1998"
+
+
+def test_voto_invalido_o_juez_caido_conserva_el_borrador(monkeypatch, capsys):
+    monkeypatch.setattr(judge_tool, "JUDGE_VOTO_CERRADAS", True)
+    _responde(monkeypatch, _voto("Z"), requests.exceptions.ConnectionError("caído"))
+    for _ in range(2):
+        v = evaluate_with_judge(_estado())
+        assert v.aprobado is None and v.origen == "error"
+    assert capsys.readouterr().err.count("AVISO: el juez no votó la pregunta 51") == 2
+
+
+def test_ciclo_voto_discrepa_reintenta_y_gana_el_escritor(monkeypatch):
+    monkeypatch.setattr(judge_tool, "JUDGE_VOTO_CERRADAS", True)
+    llamadas, consultas = _responde(monkeypatch, _voto("B"), _voto("B")), []
+    state, traza = run_with_judge(_agente(consultas), ITEM)
+    assert len(llamadas) == 2 and len(consultas) == 2 and traza["ciclos"] == 2
+    assert not traza["abstencion_forzada"] and not state.abstencion
+    assert state.borrador_respuesta["respuesta_correcta"] == traza["veredictos"][-1]["voto_escritor"]
+    assert [v["voto"] for v in traza["veredictos"]] == ["B", "B"]

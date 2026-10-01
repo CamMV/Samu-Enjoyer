@@ -48,7 +48,8 @@ def test_pasajes_inyectados_tienen_prioridad():
 
 
 def test_el_reintento_no_muta_el_primer_intento(monkeypatch):
-    monkeypatch.setattr(judge_tool, "_llamar_juez", lambda s, u: json.dumps(RECHAZO))
+    monkeypatch.setattr(judge_tool, "JUDGE_VOTO_CERRADAS", False)  # prueba la revisión, no el voto
+    monkeypatch.setattr(judge_tool, "_llamar_juez", lambda s, u, esquema=None: json.dumps(RECHAZO))
     vistos = []
 
     def retriever(state):

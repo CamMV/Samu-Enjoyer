@@ -8,6 +8,11 @@ Si el juez rechaza el primer borrador, se vuelve a recuperar con la consulta aju
 feedback y se redacta de nuevo con los pasajes nuevos. La pregunta que ve el escritor no cambia:
 solo cambia la evidencia. Máximo 2 ciclos por pregunta.
 
+En las cerradas el juez vota a ciegas en vez de revisar (`judge_tool.votar_cerrada`): rechaza cuando
+su letra no coincide con la del escritor. Si tras el segundo ciclo siguen sin coincidir, se entrega
+un borrador del escritor (letra y justificación del mismo modelo; el del ciclo más reciente salvo
+que tenga más citas fuera de los pasajes).
+
 El grafo se compila sin checkpointer (la memoria se reinicia en cada pregunta) y sin ramas
 paralelas: la ejecución es secuencial y determinista.
 

@@ -344,6 +344,7 @@ decidir qué modelo escribe y cuál juzga.
 | `JUDGE_BASE_URL` / `JUDGE_MODEL` | `http://localhost:11434/v1` / `gemma4:e4b` | Juez (modelo y servidor distintos del escritor) |
 | `JUDGE_TIMEOUT` / `JUDGE_MAX_TOKENS` | `60` / `1024` | Límites de la llamada del juez |
 | `JUDGE_THINKING` | `0` | `1` activa el razonamiento del modelo |
+| `JUDGE_VOTO_CERRADAS` | `1` | En las cerradas el juez vota a ciegas (sin ver el borrador) y se compara su letra con la del escritor; `0` vuelve a la revisión del borrador |
 | `JUDGE_ABSTENER` | `1` | `0` desactiva la abstención cuando el juez declara que los pasajes no bastan |
 
 El borrador se aprueba si responde la sub-tarea, no tiene afirmaciones sin

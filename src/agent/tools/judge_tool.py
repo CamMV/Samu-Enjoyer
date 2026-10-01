@@ -5,6 +5,10 @@ Evalúa tres cosas, usando SOLO los 10 pasajes como evidencia:
     2. si cada afirmación tiene un pasaje que la soporte;
     3. si el área jurídica es coherente (señal blanda: se registra, no rechaza).
 
+En las cerradas el juez no revisa: VOTA (`votar_cerrada`). Responde la pregunta a ciegas, sin ver el
+borrador, y el borrador se aprueba si su letra coincide con la del escritor. Si discrepan, el grafo
+vuelve a buscar y se vota de nuevo; si la discrepancia persiste se entrega la respuesta del escritor.
+
 El juez nunca ve la clave (`respuesta_correcta`, `respuesta_esperada`, `legal_basis`): en el
 test no existe y contaminaría el veredicto.
 
@@ -20,11 +24,13 @@ Configuración por entorno o .env:
     JUDGE_TIMEOUT     segundos (default 300)
     JUDGE_MAX_TOKENS  (default 1024)
     JUDGE_THINKING    1 activa el razonamiento del modelo si lo soporta (default 0)
+    JUDGE_VOTO_CERRADAS  0 vuelve a la revisión del borrador también en las cerradas (default 1)
 """
 from __future__ import annotations
 
 import os
 import re
+import sys
 from typing import List, Literal, Optional
 
 import requests
@@ -39,6 +45,7 @@ JUDGE_MODEL = os.environ.get("JUDGE_MODEL") or "gemma4:e4b"
 JUDGE_TIMEOUT = float(os.environ.get("JUDGE_TIMEOUT", "300"))
 JUDGE_MAX_TOKENS = int(os.environ.get("JUDGE_MAX_TOKENS", "1024"))
 JUDGE_THINKING = os.environ.get("JUDGE_THINKING", "0") == "1"
+JUDGE_VOTO_CERRADAS = os.environ.get("JUDGE_VOTO_CERRADAS", "1") != "0"
 
 
 class Veredicto(BaseModel):
@@ -52,7 +59,9 @@ class Veredicto(BaseModel):
     consulta_sugerida: str = ""
     citas_invalidas: List[str] = Field(default_factory=list, description="IDs citados que no están en los pasajes")
     aprobado: Optional[bool] = Field(default=None, description="None = el juez no pudo decidir")
-    origen: Literal["llm", "determinista", "mock", "error"] = "llm"
+    origen: Literal["llm", "voto", "determinista", "mock", "error"] = "llm"
+    voto: Optional[str] = Field(default=None, description="Cerradas: letra que votó el juez a ciegas")
+    voto_escritor: Optional[str] = Field(default=None, description="Cerradas: letra del borrador")
 
     @property
     def problemas(self) -> int:
@@ -94,6 +103,16 @@ _EXTRA_CERRADA = (
     "permiten decidir entre opciones, repórtalo en afirmaciones_sin_soporte."
 )
 
+_SYSTEM_VOTO = (
+    "Eres un asistente jurídico colombiano. Responde la pregunta de opción múltiple EXCLUSIVAMENTE con "
+    "la información de los PASAJES entregados. No presentes como vigente una norma marcada derogada o "
+    "transitoria. Devuelve SOLO un objeto JSON con las llaves, en este orden:\n"
+    "1. razon: una o dos oraciones con lo que dicen los pasajes y la opción que respaldan.\n"
+    "2. voto: la letra de la opción que tu razón respalda. Elige siempre una letra.\n"
+    "3. consulta_sugerida: si los pasajes no bastan para decidir, términos jurídicos y normas que habría "
+    "que buscar (vacío si bastan)."
+)
+
 _CITA_RE = re.compile(r"\[([a-z0-9_.\-]+(?:/[a-z0-9_.\-~#]+)+)\]", re.I)
 _SIN_PARTE_RE = re.compile(r"(/notas)?(#\d+)?$")
 
@@ -128,9 +147,8 @@ def citas_fuera_de_pasajes(borrador: dict, pasajes: List[CanonicalPassage]) -> l
     return fuera
 
 
-def build_judge_prompts(state: QuestionState) -> tuple[str, str]:
-    """Construye (system_prompt, user_prompt). No incluye ningún campo de la clave."""
-    system = _SYSTEM + (_EXTRA_CERRADA if state.formato == "multiple_choice" else "")
+def _contexto(state: QuestionState) -> list[str]:
+    """Pasajes, pregunta y opciones. No incluye ningún campo de la clave ni el borrador."""
     bloques = [f"[{p.id}] (vigencia: {p.metadatos.get('vigencia', 'desconocida')})\n{texto}"
                for p, texto in zip(state.pasajes_recuperados, textos_para_prompt(state.pasajes_recuperados))]
     partes = [
@@ -140,6 +158,18 @@ def build_judge_prompts(state: QuestionState) -> tuple[str, str]:
     ]
     if state.opciones:
         partes.append("OPCIONES:\n" + "\n".join(f"{k}. {v}" for k, v in sorted(state.opciones.items())))
+    return partes
+
+
+def build_vote_prompts(state: QuestionState) -> tuple[str, str]:
+    """Prompt del voto a ciegas: el juez no ve el borrador del escritor, para no anclarse a su letra."""
+    return _SYSTEM_VOTO, "\n\n".join(_contexto(state))
+
+
+def build_judge_prompts(state: QuestionState) -> tuple[str, str]:
+    """Construye (system_prompt, user_prompt). No incluye ningún campo de la clave."""
+    system = _SYSTEM + (_EXTRA_CERRADA if state.formato == "multiple_choice" else "")
+    partes = _contexto(state)
     borrador = {k: v for k, v in (state.borrador_respuesta or {}).items() if k not in ("formato", "abstencion")}
     lineas = []
     for k, v in borrador.items():
@@ -152,7 +182,7 @@ def build_judge_prompts(state: QuestionState) -> tuple[str, str]:
     return system, "\n\n".join(partes)
 
 
-def _llamar_juez(system: str, user: str) -> str:
+def _llamar_juez(system: str, user: str, esquema: Optional[dict] = None) -> str:
     """POST al modelo local del juez. Lanza `requests.exceptions.RequestException` si falla."""
     _verificar_host_local(JUDGE_BASE_URL)
     url = f"{JUDGE_BASE_URL.rstrip('/')}/chat/completions"
@@ -163,7 +193,7 @@ def _llamar_juez(system: str, user: str) -> str:
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
     }
     guiado = {
-        "response_format": {"type": "json_schema", "json_schema": {"name": "veredicto", "schema": _ESQUEMA}},
+        "response_format": {"type": "json_schema", "json_schema": {"name": "veredicto", "schema": esquema or _ESQUEMA}},
         "chat_template_kwargs": {"enable_thinking": JUDGE_THINKING},
     }
     resp = requests.post(url, json={**payload, **guiado}, timeout=JUDGE_TIMEOUT)
@@ -214,14 +244,56 @@ def _previo(state: QuestionState) -> tuple[Optional[Veredicto], list[str]]:
     return None, citas_fuera_de_pasajes(borrador, state.pasajes_recuperados)
 
 
+def _letra(valor, opciones: dict) -> Optional[str]:
+    letra = str(valor or "").strip().upper()[:1]
+    return letra if letra in opciones else None
+
+
+def votar_cerrada(state: QuestionState, citas_invalidas: list[str]) -> Veredicto:
+    """Voto a ciegas del juez en una cerrada. Aprueba el borrador si las dos letras coinciden.
+
+    Si discrepan, `consulta_sugerida` guía la nueva búsqueda: la que pide el juez o, si no pide
+    ninguna, el texto de las dos opciones en disputa. `pasajes_suficientes` queda en True: una
+    discrepancia nunca fuerza la abstención (en una cerrada abstenerse es fallar seguro)."""
+    opciones = state.opciones or {}
+    letra_escritor = _letra((state.borrador_respuesta or {}).get("respuesta_correcta"), opciones)
+    esquema = {
+        "type": "object",
+        "properties": {"razon": {"type": "string"}, "voto": {"type": "string", "enum": sorted(opciones)},
+                       "consulta_sugerida": {"type": "string"}},
+        "required": ["razon", "voto", "consulta_sugerida"],
+    }
+    datos = _parsear_json(_llamar_juez(*build_vote_prompts(state), esquema=esquema))
+    voto = _letra(datos["voto"], opciones)
+    if voto is None:
+        raise ValueError(f"voto inválido: {datos['voto']!r}")
+    if voto == letra_escritor:
+        return Veredicto(citas_invalidas=citas_invalidas, aprobado=not citas_invalidas, origen="voto", voto=voto,
+                         voto_escritor=letra_escritor)
+    en_disputa = " ".join(opciones[k] for k in (letra_escritor, voto) if k)
+    return Veredicto(
+        feedback=f"El juez votó {voto} y el escritor eligió {letra_escritor}: {str(datos.get('razon') or '').strip()}",
+        consulta_sugerida=str(datos.get("consulta_sugerida") or "").strip() or en_disputa,
+        citas_invalidas=citas_invalidas, aprobado=False, origen="voto", voto=voto, voto_escritor=letra_escritor)
+
+
 def evaluate_with_judge(state: QuestionState) -> Veredicto:
-    """Juzga `state.borrador_respuesta` contra `state.pasajes_recuperados`.
+    """Juzga `state.borrador_respuesta` contra `state.pasajes_recuperados`; en las cerradas, vota.
 
     `aprobado` es True/False, o None si el juez no pudo decidir (servidor caído o salida que no es
     el JSON esperado); en ese caso el llamador conserva el borrador y no reintenta."""
     veredicto, citas_invalidas = _previo(state)
     if veredicto:
         return veredicto
+    if JUDGE_VOTO_CERRADAS and state.formato == "multiple_choice" and state.opciones:
+        try:
+            return votar_cerrada(state, citas_invalidas)
+        except (requests.exceptions.RequestException, ValueError, KeyError, TypeError, AttributeError) as e:
+            # Sin segundo voto se entrega la letra del escritor sin contraste: que se note en el log.
+            print(f"   AVISO: el juez no votó la pregunta {state.id} ({type(e).__name__}: {e}); "
+                  "se conserva la respuesta del escritor", file=sys.stderr, flush=True)
+            return Veredicto(citas_invalidas=citas_invalidas, aprobado=None, origen="error",
+                             feedback=f"Juez no disponible ({type(e).__name__}: {e})")
     system, user = build_judge_prompts(state)
     try:
         return _veredicto_de(_parsear_json(_llamar_juez(system, user)), citas_invalidas)
