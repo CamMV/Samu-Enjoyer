@@ -31,8 +31,10 @@ Se encuentra un enlace simbólico a la carpeta de instrucciones llamada `docs_re
 - **Validación Determinista de Fuentes (Sin LLM):** 
   - Toda cita en la respuesta debe mapearse a un ID canónico (`<doc_id>/art_<N>`, ej. `codigo_general_proceso/art_42`).
   - Si una cita no existe en los 10 pasajes recuperados, se suprime o se activa `abstencion: true`.
+  - **Subagente de búsqueda de citas** (`src/agent/tools/citation_search_tool.py`, nodo `buscar_citas`, sin LLM): cada cita fuera de los pasajes se busca en `chunks.sqlite`. Si existe y está vigente, se agrega su pasaje (sustituye al último pasaje no citado; nunca más de 10); si no existe, está derogada, cita solo el documento o los 10 pasajes ya están citados, se suprime del borrador. Con `--mock` (sin corpus) solo suprime. El informe queda en la llave `citas` de `<salida>.juez.jsonl`.
 - **LLM as Judge:** Evalúa si responde la sub-tarea, si cada afirmación tiene pasaje que la soporte y la coherencia del área jurídica.
 - **Control de Ciclos:** Máximo 2 ciclos por pregunta. Si el Juez rechaza en el ciclo 1, el orquestador reintenta ajustando la consulta con el feedback recibido.
+- **Orquestación con LangGraph:** el flujo es un `StateGraph` en `src/agent/graph.py` (`entrada` → `consulta_cerrada` | `reescribir_consulta` → `recuperar` → `escribir` → `validar_fuentes` ⇄ `buscar_citas` → `juzgar` → `finalizar`), compilado sin checkpointer (sin memoria entre preguntas) y sin ramas paralelas. `LegalAgent` (`src/agent/agent.py`) es la fachada; `run_with_judge` activa el nodo del juez. `python -m src.agent.graph` imprime el grafo en Mermaid. El trazado de LangSmith se fuerza apagado (ninguna llamada sale a terceros).
 
 ---
 

@@ -310,11 +310,19 @@ python scripts/evaluate.py --submission submissions.jsonl --split sample --ragas
 **Requisitos de hardware:** 48GB-96GB (Nvidia A40 / sala Turing / Colab).
 **Tiempo estimado sobre las 50 preguntas de muestra:** 1500s (~25m).
 
+### Subagente de búsqueda de citas
+
+Antes del juez, `src/agent/tools/citation_search_tool.py` (nodo `buscar_citas` del
+grafo, determinista y sin LLM) revisa cada cita del borrador que no está entre los
+pasajes recuperados y la busca en `corpus/chunks/chunks.sqlite`: si existe y está
+vigente agrega su pasaje (sustituye al último pasaje no citado, nunca más de 10); si
+no, la suprime del borrador.
+
 ### LLM as judge
 
 El juez (`src/agent/tools/judge_tool.py`) revisa cada borrador contra los 10
-pasajes y el ciclo (`src/agent/judge_loop.py`) reintenta una vez, con la consulta
-ajustada por su feedback, si lo rechaza. Es opcional y se activa con `--juez`:
+pasajes y el grafo de LangGraph (`src/agent/graph.py`) reintenta una vez, con la
+consulta ajustada por su feedback, si lo rechaza. Es opcional y se activa con `--juez`:
 
 ```bash
 python -m src.agent.batch_runner --juez        # traza del juez en <salida>.juez.jsonl
