@@ -37,6 +37,28 @@ class Config:
     penal_prioridad_baja: float = 0.05
     usar_citas: bool = True
     expandir_articulo: bool = True
+    # Ajustes de orden tras el reranker (el banco de pruebas mostró que preámbulos de
+    # decretos, notas del Senado y fichas de tutelas desplazaban a los artículos):
+    penal_tipo: dict = field(default_factory=dict)   # tipo_chunk -> penalización, p. ej. {"preambulo": 0.2}
+    bonus_prioridad_alta: float = 0.0                 # normas del seed (las que más usa el banco)
+    max_sentencias: int | None = None                 # tope de pasajes de sentencias entre los k
+
+
+# Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
+PERFILES = {
+    "base": {},
+    "penal": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}},
+    "penal_bonus": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "bonus_prioridad_alta": 0.1},
+    "penal_tope": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "max_sentencias": 4},
+    "completo": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "bonus_prioridad_alta": 0.1,
+                 "max_sentencias": 4},
+    "completo_100": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "bonus_prioridad_alta": 0.1,
+                     "max_sentencias": 4, "n_rerank": 100},
+}
+
+
+def config_de(perfil: str, **base) -> "Config":
+    return Config(**{**base, **PERFILES[perfil]})
 
 
 @dataclass
@@ -109,32 +131,57 @@ class Recuperador:
                 s -= cfg.penal_derogado
             if d.get("prioridad") == "baja":
                 s -= cfg.penal_prioridad_baja
+            if cid not in citadas:  # lo que la pregunta cita expresamente no se castiga
+                s -= cfg.penal_tipo.get(d["tipo_chunk"], 0.0)
+                if d.get("prioridad") == "alta" and d.get("tipo_documento") != "sentencia":
+                    s += cfg.bonus_prioridad_alta
             ajustados.append((cid, round(s, 4)))
         ajustados.sort(key=lambda p: (-p[1], p[0]))
         etapas["rerank"] = [c for c, _ in ajustados]
 
         t0 = time.perf_counter()
-        pasajes = self._seleccionar(ajustados, datos)
+        pasajes = self._seleccionar(ajustados, datos, set(citadas))
         t["seleccion"] = time.perf_counter() - t0
         etapas["final"] = [p["chunk_id"] for p in pasajes]
         return Resultado(pasajes, etapas, {k: round(v, 3) for k, v in t.items()})
 
-    def _seleccionar(self, ajustados: list[tuple[str, float]], datos: dict) -> list[dict]:
-        cfg, out, por_doc, articulos = self.cfg, [], {}, set()
-        for cid, s in ajustados:
+    def _seleccionar(self, ajustados: list[tuple[str, float]], datos: dict,
+                     citadas: set[str] = frozenset()) -> list[dict]:
+        cfg, elegidos, por_doc, articulos, n_sent, diferidos = self.cfg, [], {}, set(), 0, []
+
+        def tomar(cid: str, s: float) -> bool:
             d = datos[cid]
             unidad = d.get("articulo_id") if d["tipo_chunk"] in ("articulo", "parte_articulo") else cid
             if unidad in articulos or por_doc.get(d["doc_id"], 0) >= cfg.max_por_doc:
-                continue
+                return False
             articulos.add(unidad)
             por_doc[d["doc_id"]] = por_doc.get(d["doc_id"], 0) + 1
+            elegidos.append((cid, s))
+            return True
+
+        for cid, s in ajustados:
+            if len(elegidos) == cfg.k:
+                break
+            es_sentencia = datos[cid].get("tipo_documento") == "sentencia"
+            if es_sentencia and cfg.max_sentencias is not None and n_sent >= cfg.max_sentencias \
+                    and cid not in citadas:
+                diferidos.append((cid, s))  # vuelven solo si no alcanza para k pasajes
+                continue
+            n_sent += tomar(cid, s) and es_sentencia
+        for cid, s in diferidos:
+            if len(elegidos) == cfg.k:
+                break
+            tomar(cid, s)
+        elegidos.sort(key=lambda p: (-p[1], p[0]))
+
+        out = []
+        for cid, s in elegidos:
+            d = datos[cid]
             texto, pid = d["texto"], cid
             if cfg.expandir_articulo and d["tipo_chunk"] == "parte_articulo":
                 texto, pid = self._articulo_completo(d), d["articulo_id"]
             out.append({"doc_id": d["doc_id"], "chunk_id": pid, "texto": texto, "score": s,
                         "inicio": d.get("inicio"), "fin": d.get("fin"), "tipo_chunk": d["tipo_chunk"]})
-            if len(out) == cfg.k:
-                break
         return out
 
     def _articulo_completo(self, d: dict) -> str:

@@ -22,7 +22,7 @@ from evaluation.retrieval_benchmark import evaluate as eval_mod
 from evaluation.retrieval_benchmark import index_variants as idx_mod
 from evaluation.retrieval_benchmark.config import (BM25_BANCO, EMBEDDERS_BANCO, K, RERANKERS_BANCO, RESULTS_ROOT,
                                                    dir_bm25, dir_denso, nombre_brazo)
-from src.knowledge.hybrid_search import Config
+from src.knowledge.hybrid_search import PERFILES, config_de
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,6 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--procesos", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     p.add_argument("--candidatos", type=int, default=100)
     p.add_argument("--n-rerank", type=int, default=50)
+    p.add_argument("--perfiles", default="base", help=f"ajustes de orden, separados por coma: {','.join(PERFILES)}")
     p.add_argument("--force", action="store_true")
     return p
 
@@ -59,17 +60,19 @@ def main():
         for e in embedders:
             idx_mod.denso(e, args.seleccion, args.device, args.lote_gpu, args.force)
     if "evaluate" in stages:
-        cfg = Config(candidatos=args.candidatos, n_rerank=args.n_rerank, k=K)
+        perfiles = [p for p in args.perfiles.split(",") if p]
         for e in embedders:
             for r in raices:
                 for rr in rerankers:
-                    nombre = nombre_brazo(e, r, rr, args.seleccion)
-                    if (RESULTS_ROOT / f"eval_{nombre}.json").exists() and not args.force:
-                        print(f"[evaluate] ya existe {nombre}")
-                        continue
-                    print(f"[evaluate] {nombre}", flush=True)
-                    eval_mod.correr(nombre, dir_bm25(args.seleccion, r), dir_denso(e, args.seleccion), rr, cfg,
-                                    args.device)
+                    for perfil in perfiles:
+                        cfg = config_de(perfil, candidatos=args.candidatos, n_rerank=args.n_rerank, k=K)
+                        nombre = nombre_brazo(e, r, rr, args.seleccion, perfil)
+                        if (RESULTS_ROOT / f"eval_{nombre}.json").exists() and not args.force:
+                            print(f"[evaluate] ya existe {nombre}")
+                            continue
+                        print(f"[evaluate] {nombre}", flush=True)
+                        eval_mod.correr(nombre, dir_bm25(args.seleccion, r), dir_denso(e, args.seleccion), rr,
+                                        cfg, args.device)
     if "compare" in stages:
         _comparar()
 

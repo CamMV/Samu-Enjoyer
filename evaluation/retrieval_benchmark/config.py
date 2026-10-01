@@ -34,7 +34,10 @@ def dir_denso(embedder: str, seleccion: str) -> Path:
     return INDICES / f"{embedder}_{seleccion}"
 
 
-def nombre_brazo(embedder: str | None, raices: bool, reranker: str | None, seleccion: str) -> str:
+def nombre_brazo(embedder: str | None, raices: bool, reranker: str | None, seleccion: str,
+                 perfil: str = "base") -> str:
     partes = [seleccion, embedder or "sin_denso", "bm25" if raices else "bm25_sin_raices",
               reranker or "sin_reranker"]
+    if perfil != "base":  # los resultados ya guardados del perfil base conservan su nombre
+        partes.append(perfil)
     return "__".join(partes)
