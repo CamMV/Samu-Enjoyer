@@ -78,14 +78,11 @@ PERFILES.update({
     "completo_150_seccion": {**_COMPLETO, "n_rerank": 150,
                              "penal_tipo": {**_COMPLETO["penal_tipo"], "seccion": 0.1}},
 })
-# Diversidad: la selección final (máximo por documento) fue la que más subió recall_docs
-# (rerank 0,533 -> final 0,764); se prueba un tope más estricto.
 _GANADOR = PERFILES["completo_150_seccion"]
 PERFILES.update({
-    "ganador_d2": {**_GANADOR, "max_por_doc": 2},
-    "ganador_d2_s3": {**_GANADOR, "max_por_doc": 2, "max_sentencias": 3},
-    # El diagnóstico mostró los códigos y la Constitución en las posiciones 100-900 de BM25 y
-    # HNSW, enterrados por sentencias: lista aparte sobre solo normas.
+    # Un tope de 2 pasajes por documento no cambió el recall. El diagnóstico mostró los
+    # códigos y la Constitución en las posiciones 100-900 de BM25 y HNSW, enterrados por
+    # sentencias: lista aparte sobre solo normas.
     "ganador_normas50": {**_GANADOR, "normas": 50},
     "ganador_normas100": {**_GANADOR, "normas": 100},
 })
