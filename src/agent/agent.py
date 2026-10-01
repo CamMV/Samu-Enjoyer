@@ -9,6 +9,14 @@ from src.agent.schemas import CanonicalPassage, QuestionState
 from src.agent.tools.flags_tool import extract_query_flags
 from src.agent.tools.writer_tool import write_legal_response
 
+# La recuperación depende de requirements-rag.txt (faiss, bm25s, torch); el agente debe poder
+# importarse sin ellas.
+try:
+    from src.knowledge.hybrid_search import Config, Recuperador, consulta_de
+except ImportError:  # pragma: no cover
+    Config = Recuperador = consulta_de = None
+
+ROOT = Path(__file__).resolve().parents[2]
 Retriever = Callable[[QuestionState], List[CanonicalPassage]]
 _FLAG_KEYS = ("area", "sub_tarea", "complejidad", "tema", "formato")
 
@@ -63,18 +71,59 @@ class LegalAgent:
         }
 
 
+def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
+    """Adapta `Recuperador.buscar` (dicts) a objetos `CanonicalPassage`.
+
+    Los índices BM25 y denso son opcionales (se usa el que exista); `chunks.sqlite` y el
+    reranker son los de la configuración por defecto. Lanza FileNotFoundError / ImportError
+    si no hay con qué recuperar, para que el llamador decida el fallback."""
+    if Recuperador is None:
+        raise ImportError("src.knowledge no disponible: instalar requirements-rag.txt")
+    indices = ROOT / "corpus" / "indices"
+    bm25_path, denso_path = indices / "bm25_todo", indices / "bge-m3_todo"
+    bm25_path = bm25_path if bm25_path.exists() else None
+    denso_path = denso_path if (denso_path / "hnsw.faiss").exists() else None
+    if bm25_path is None and denso_path is None:
+        raise FileNotFoundError(f"No hay índices en {indices}")
+    recuperador = Recuperador(bm25_path, denso_path, "bge-reranker-v2-m3", Config())
+
+    def hook(query: str) -> List[CanonicalPassage]:
+        resultado = recuperador.buscar(query)
+        return [
+            CanonicalPassage(
+                id=p["chunk_id"],
+                texto=p["texto"],
+                score=p.get("score"),
+                metadatos={k: v for k, v in p.items() if k not in ("chunk_id", "texto", "score")},
+            )
+            for p in resultado.pasajes
+        ]
+
+    return hook
+
+
 if __name__ == "__main__":
-    ruta = Path(__file__).resolve().parents[2] / "data" / "sample_50.jsonl"
+    ruta = ROOT / "data" / "sample_50.jsonl"
     with open(ruta, encoding="utf-8") as f:
         item = json.loads(f.readline())
 
-    # Pasajes SIMULADOS (demo): el retriever real lo aporta el módulo de recuperación.
-    demo = [
+    # Pasajes SIMULADOS: fallback cuando no hay índices en corpus/indices/.
+    mock_retriever = [
         CanonicalPassage(id="constitucion/art_88", texto="[SIMULADO] Texto del artículo 88 de la Constitución.",
                          metadatos={"vigencia": "vigente"}, score=0.9),
         CanonicalPassage(id="ley_472_1998/art_46", texto="[SIMULADO] Texto del artículo 46 de la Ley 472 de 1998.",
                          metadatos={"vigencia": "vigente"}, score=0.8),
     ]
-    estado = LegalAgent().run(item, pasajes=demo)
+    try:
+        hook = get_real_retriever()
+        # LegalAgent llama al retriever con el QuestionState; el hook recibe el texto de búsqueda
+        # (pregunta + opciones en las cerradas).
+        agente = LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})))
+        print("Retriever REAL (corpus/indices)")
+    except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
+        print(f"Retriever real no disponible ({type(e).__name__}: {e}); se usa mock_retriever")
+        agente = LegalAgent(lambda s: mock_retriever)
+
+    estado = agente.run(item)
     print("FLAGS:", json.dumps({k: getattr(estado, k) for k in _FLAG_KEYS}, ensure_ascii=False, indent=2))
     print("RESPUESTA:", json.dumps(estado.borrador_respuesta, ensure_ascii=False, indent=2))
