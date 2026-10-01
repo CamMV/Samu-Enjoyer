@@ -30,7 +30,7 @@ K_RRF = 60
 @dataclass
 class Config:
     candidatos: int = 100      # por buscador (BM25 y HNSW)
-    n_rerank: int = 50         # cuántos de la fusión pasan por el reranker (portátil: 30-50)
+    n_rerank: int = 150        # cuántos de la fusión pasan por el reranker (A40: 0,68 s por pregunta)
     k: int = 10                # pasajes entregados (el evaluador mira los 10 primeros)
     max_por_doc: int = 3
     penal_derogado: float = 0.15
@@ -39,9 +39,11 @@ class Config:
     expandir_articulo: bool = True
     # Ajustes de orden tras el reranker (el banco de pruebas mostró que preámbulos de
     # decretos, notas del Senado y fichas de tutelas desplazaban a los artículos):
-    # Valores por defecto = perfil "completo", el ganador del banco de pruebas (normas_fichas, 50
-    # preguntas): recall_docs@10 0,715 -> 0,837 y recall_citas@10 0,898 -> 0,935 frente a "base".
-    penal_tipo: dict = field(default_factory=lambda: {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1})
+    # Valores por defecto = perfil "completo_150_seccion", el ganador sobre el corpus completo
+    # (2,2 M chunks, 50 preguntas): recall_citas@10 0,862 -> 0,898, recall_docs@10 0,439 -> 0,764,
+    # MRR 0,236 -> 0,380 y nDCG@10 0,314 -> 0,520 frente a "base".
+    penal_tipo: dict = field(default_factory=lambda: {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1,
+                                                      "seccion": 0.1})
     bonus_prioridad_alta: float = 0.1                 # normas del seed (las que más usa el banco)
     max_sentencias: int | None = 4                    # tope de pasajes de sentencias entre los k
 
