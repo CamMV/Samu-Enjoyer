@@ -310,6 +310,35 @@ python scripts/evaluate.py --submission submissions.jsonl --split sample --ragas
 **Requisitos de hardware:** 48GB-96GB (Nvidia A40 / sala Turing / Colab).
 **Tiempo estimado sobre las 50 preguntas de muestra:** 1500s (~25m).
 
+### LLM as judge
+
+El juez (`src/agent/tools/judge_tool.py`) revisa cada borrador contra los 10
+pasajes y el ciclo (`src/agent/judge_loop.py`) reintenta una vez, con la consulta
+ajustada por su feedback, si lo rechaza. Es opcional y se activa con `--juez`:
+
+```bash
+python -m src.agent.batch_runner --juez        # traza del juez en <salida>.juez.jsonl
+python -m src.agent.judge_eval --juez gemma4:e4b@http://localhost:11434/v1 \
+                               --juez Qwen/Qwen3-8B@http://localhost:8000/v1
+```
+
+`judge_eval` corre varios modelos como juez sobre los mismos borradores y mide,
+en las cerradas, cuánto coincide su veredicto con el acierto real: sirve para
+decidir qué modelo escribe y cuál juzga.
+
+| Variable | Default | Uso |
+|---|---|---|
+| `LLM_BASE_URL` / `LLM_MODEL` | `http://localhost:8000/v1` / `Qwen/Qwen3-8B` | Escritor |
+| `JUDGE_BASE_URL` / `JUDGE_MODEL` | el del escritor / `gemma4:e4b` | Juez |
+| `JUDGE_TIMEOUT` / `JUDGE_MAX_TOKENS` | `60` / `1024` | Límites de la llamada del juez |
+| `JUDGE_THINKING` | `0` | `1` activa el razonamiento del modelo |
+| `JUDGE_ABSTENER` | `1` | `0` desactiva la abstención cuando el juez declara que los pasajes no bastan |
+
+El borrador se aprueba si responde la sub-tarea, no tiene afirmaciones sin
+soporte y no cita IDs ajenos a los pasajes; esa decisión se toma en código a
+partir de lo que reporta el modelo. Si el juez no responde o devuelve algo que
+no es el JSON esperado, el borrador se conserva sin reintento.
+
 ## Resultados sobre las preguntas de muestra
 
 | Componente | Puntos obtenidos | Posibles |
