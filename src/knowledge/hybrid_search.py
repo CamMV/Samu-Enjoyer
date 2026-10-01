@@ -14,6 +14,7 @@ en la A40 y en el portátil (lo exige la verificación en vivo).
 """
 from __future__ import annotations
 
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -60,6 +61,11 @@ class Config:
     # abiertas: llegan sentencias que mencionan el artículo, pero no el artículo. 0 = no se usa.
     seguir_citas: int = 0
     seguir_desde: int = 20
+    # Quitar casi duplicados del top-k: un pasaje que no es artículo de norma y comparte >= `dedup`
+    # de su texto (secuencias de 5 palabras) con uno ya elegido se salta y su lugar lo toma el
+    # siguiente distinto. En las 50 de muestra, 65 de 500 pasajes repetían a otro (sentencias que
+    # copian el mismo párrafo, notas que transcriben la norma). 0 = no se usa.
+    dedup: float = 0.0
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -103,6 +109,9 @@ PERFILES.update({
     "ganador_opciones": {**_NORMAS50, "por_opcion": 50},
     "ganador_citas": {**_NORMAS50, "seguir_citas": 10},
     "ganador_ambas": {**_NORMAS50, "por_opcion": 50, "seguir_citas": 10},
+    # Sin casi duplicados en el top-10 (ver Config.dedup).
+    "ganador_dedup50": {**_NORMAS50, "dedup": 0.5},
+    "ganador_dedup70": {**_NORMAS50, "dedup": 0.7},
 })
 
 
@@ -129,6 +138,18 @@ def rrf(listas: list[list[str]], k: int = K_RRF) -> list[tuple[str, float]]:
         for pos, cid in enumerate(lista, 1):
             puntaje[cid] = puntaje.get(cid, 0.0) + 1.0 / (k + pos)
     return sorted(puntaje.items(), key=lambda p: (-round(p[1], 8), p[0]))
+
+
+def tejas(texto: str, n: int = 5) -> set[str]:
+    """Secuencias de `n` palabras del cuerpo del pasaje (sin la línea del encabezado)."""
+    cuerpo = texto.split("\n", 1)[1] if "\n" in texto else texto
+    w = re.findall(r"\w+", cuerpo.lower())
+    return {" ".join(w[i:i + n]) for i in range(max(len(w) - n + 1, 1))}
+
+
+def contencion(a: set, b: set) -> float:
+    """Fracción del más corto de los dos que está contenida en el otro."""
+    return len(a & b) / max(min(len(a), len(b)), 1)
 
 
 def consulta_de(item: dict) -> str:
@@ -275,11 +296,22 @@ class Recuperador:
                      citadas: set[str] = frozenset()) -> list[dict]:
         cfg, elegidos, por_doc, articulos, n_sent, diferidos = self.cfg, [], {}, set(), 0, []
 
+        tejas_elegidas: list[set] = []
+
         def tomar(cid: str, s: float) -> bool:
             d = datos[cid]
-            unidad = d.get("articulo_id") if d["tipo_chunk"] in ("articulo", "parte_articulo") else cid
+            es_articulo = d["tipo_chunk"] in ("articulo", "parte_articulo")
+            unidad = d.get("articulo_id") if es_articulo else cid
             if unidad in articulos or por_doc.get(d["doc_id"], 0) >= cfg.max_por_doc:
                 return False
+            if cfg.dedup:
+                t = tejas(d["texto"])
+                # Un pasaje que repite a uno ya elegido no aporta evidencia nueva; los artículos de norma
+                # se conservan siempre (son lo que se cita: una ley y la norma que modificó pueden decir
+                # lo mismo y cualquiera de las dos puede ser la de referencia).
+                if not es_articulo and any(contencion(t, e) >= cfg.dedup for e in tejas_elegidas):
+                    return False
+                tejas_elegidas.append(t)
             articulos.add(unidad)
             por_doc[d["doc_id"]] = por_doc.get(d["doc_id"], 0) + 1
             elegidos.append((cid, s))

@@ -66,3 +66,25 @@ def test_seguir_citas_trae_los_articulos_mas_citados():
     apagado = _rec(Config(normas=0, seguir_citas=0, usar_citas=False), bm25, almacen).buscar(
         "Cooperativa de trabajo asociado")
     assert "citas_seguidas" not in apagado.etapas
+
+
+def test_dedup_salta_casi_duplicados_pero_no_articulos():
+    parrafo = "En efecto existen casos en los cuales hay sujetos colectivos que pretenden la proteccion de intereses individuales " * 3
+    distinto = "La accion de tutela procede contra particulares encargados de la prestacion de un servicio publico " * 3
+    datos = {
+        "jurisprudencia_t-1_2012/resuelve#14": {"doc_id": "jurisprudencia_t-1_2012", "tipo_chunk": "seccion",
+                                               "tipo_documento": "sentencia", "texto": "T-1 › Resuelve\n" + parrafo},
+        "jurisprudencia_t-2_2013/resuelve#6": {"doc_id": "jurisprudencia_t-2_2013", "tipo_chunk": "seccion",
+                                              "tipo_documento": "sentencia", "texto": "T-2 › Resuelve\n" + parrafo},
+        "ley_1_1976/art_25": {"doc_id": "ley_1_1976", "tipo_chunk": "articulo", "articulo_id": "ley_1_1976/art_25",
+                              "texto": "Ley 1 de 1976\nArtículo 25.\n" + distinto},
+        "codigo_civil/art_1820": {"doc_id": "codigo_civil", "tipo_chunk": "articulo", "articulo_id": "codigo_civil/art_1820",
+                                  "texto": "Código Civil\nArtículo 1820.\n" + distinto},
+    }
+    orden = [(c, 1.0 - n / 10) for n, c in enumerate(datos)]
+    con = _rec(Config(normas=0, dedup=0.5, expandir_articulo=False), None, None)._seleccionar(orden, datos)
+    ids = [p["chunk_id"] for p in con]
+    assert "jurisprudencia_t-2_2013/resuelve#6" not in ids              # la sentencia que repite el párrafo sale
+    assert {"ley_1_1976/art_25", "codigo_civil/art_1820"} <= set(ids)    # los dos artículos se conservan
+    sin = _rec(Config(normas=0, dedup=0.0, expandir_articulo=False), None, None)._seleccionar(orden, datos)
+    assert len(sin) == 4
