@@ -341,7 +341,7 @@ decidir qué modelo escribe y cuál juzga.
 | Variable | Default | Uso |
 |---|---|---|
 | `LLM_BASE_URL` / `LLM_MODEL` | `http://localhost:8000/v1` / `Qwen/Qwen3-8B` | Escritor |
-| `JUDGE_BASE_URL` / `JUDGE_MODEL` | el del escritor / `gemma4:e4b` | Juez |
+| `JUDGE_BASE_URL` / `JUDGE_MODEL` | `http://localhost:11434/v1` / `gemma4:e4b` | Juez (modelo y servidor distintos del escritor) |
 | `JUDGE_TIMEOUT` / `JUDGE_MAX_TOKENS` | `60` / `1024` | Límites de la llamada del juez |
 | `JUDGE_THINKING` | `0` | `1` activa el razonamiento del modelo |
 | `JUDGE_ABSTENER` | `1` | `0` desactiva la abstención cuando el juez declara que los pasajes no bastan |

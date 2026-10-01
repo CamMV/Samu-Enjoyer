@@ -8,14 +8,15 @@ Evalúa tres cosas, usando SOLO los 10 pasajes como evidencia:
 El juez nunca ve la clave (`respuesta_correcta`, `respuesta_esperada`, `legal_basis`): en el
 test no existe y contaminaría el veredicto.
 
-Corre sobre un modelo ABIERTO y LOCAL (por defecto el mismo Qwen3-8B del escritor; vía vLLM / Ollama / llama.cpp, API
+Corre sobre un modelo ABIERTO y LOCAL, distinto del escritor (por defecto Gemma 4 E4B en Ollama; vía vLLM / Ollama / llama.cpp, API
 compatible con OpenAI), con el mismo bloqueo de proveedores cerrados que el escritor. Si el
 servidor falla o responde algo que no es el JSON esperado, el veredicto queda sin decisión
 (`aprobado=None`) y el borrador se conserva: el juez nunca detiene el lote.
 
 Configuración por entorno o .env:
-    JUDGE_BASE_URL    (default: LLM_BASE_URL del escritor)
-    JUDGE_MODEL       (default: LLM_MODEL del escritor; un solo modelo y un solo servidor)
+    JUDGE_BASE_URL    (default http://localhost:11434/v1; servidor propio: llama.cpp ignora el campo
+                      "model", así que apuntar al servidor del escritor haría juzgar al mismo Qwen)
+    JUDGE_MODEL       (default gemma4:e4b)
     JUDGE_TIMEOUT     segundos (default 300)
     JUDGE_MAX_TOKENS  (default 1024)
     JUDGE_THINKING    1 activa el razonamiento del modelo si lo soporta (default 0)
@@ -30,11 +31,11 @@ import requests
 from pydantic import BaseModel, Field
 
 from src.agent.schemas import CanonicalPassage, QuestionState
-from src.agent.tools.writer_tool import (LLM_BASE_URL, LLM_MODEL, _parsear_json, _tokens, _verificar_host_local,
+from src.agent.tools.writer_tool import (_parsear_json, _tokens, _verificar_host_local,
                                          textos_para_prompt)
 
-JUDGE_BASE_URL = os.environ.get("JUDGE_BASE_URL") or LLM_BASE_URL
-JUDGE_MODEL = os.environ.get("JUDGE_MODEL") or LLM_MODEL
+JUDGE_BASE_URL = os.environ.get("JUDGE_BASE_URL") or "http://localhost:11434/v1"
+JUDGE_MODEL = os.environ.get("JUDGE_MODEL") or "gemma4:e4b"
 JUDGE_TIMEOUT = float(os.environ.get("JUDGE_TIMEOUT", "300"))
 JUDGE_MAX_TOKENS = int(os.environ.get("JUDGE_MAX_TOKENS", "1024"))
 JUDGE_THINKING = os.environ.get("JUDGE_THINKING", "0") == "1"
