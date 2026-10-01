@@ -43,5 +43,4 @@ def test_to_submission_normaliza_y_convierte():
                                 "justificacion": ["Procede [ley_472_1998/art_46]."], "descarte_opciones": {}}
     r = LegalAgent.to_submission(state)
     assert r["respuesta_correcta"] == "C" and isinstance(r["justificacion"], str)
-    assert r["justificacion"] == ("Procede (artículo 46 de la Ley 472 de 1998). "
-                                  "Normas de los pasajes consultados: artículo 46 de la Ley 472 de 1998.")
+    assert r["justificacion"] == "Procede (artículo 46 de la Ley 472 de 1998)."

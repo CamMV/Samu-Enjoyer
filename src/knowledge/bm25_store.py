@@ -76,17 +76,12 @@ class IndiceBM25:
         # La consulta se tokeniza igual que se construyó el índice.
         self.raices = json.loads((ruta / "info.json").read_text(encoding="utf-8")).get("raices", True)
 
-    def buscar(self, consulta: str, k: int = 100, mascara: list[int] | None = None) -> list[tuple[str, float]]:
-        """`mascara`: posiciones del índice a las que se restringe la búsqueda (p. ej. una sola norma)."""
+    def buscar(self, consulta: str, k: int = 100) -> list[tuple[str, float]]:
         q = [self.vocab[t] for t in tokens(consulta, self.raices) if t in self.vocab]
         if not q:
             return []
-        peso = None
-        if mascara is not None:
-            peso = np.zeros(len(self.ids), dtype=np.float32)
-            peso[mascara] = 1.0
         docs, scores = self.bm.retrieve(Tokenized(ids=[q], vocab=self.vocab), k=min(k, len(self.ids)),
-                                        show_progress=False, n_threads=1, weight_mask=peso)
+                                        show_progress=False, n_threads=1)
         pares = [(self.ids[int(d)], float(s)) for d, s in zip(docs[0], scores[0]) if s > 0]
         # Orden estable: puntaje redondeado y chunk_id (igual en cualquier máquina).
         return sorted(pares, key=lambda p: (-round(p[1], 5), p[0]))
