@@ -97,7 +97,7 @@ def test_batch_runner_filtra_por_formato(tmp_path):
 def test_jsonl_con_separadores_unicode_no_se_parte(tmp_path):
     """\u2028 y \x85 dentro de un texto legal no son fin de registro (splitlines() sí los cortaba)."""
     import json
-    raro = "Artículo 1. Texto con separador\x85y otro."
+    raro = "Artículo 1.\u2028Texto con separador\x85y otro."
     entrada = tmp_path / "preguntas.jsonl"
     entrada.write_text(json.dumps({"id": 1, "formato": "semi_open", "pregunta": raro}, ensure_ascii=False) + "\n",
                        encoding="utf-8")
@@ -105,3 +105,14 @@ def test_jsonl_con_separadores_unicode_no_se_parte(tmp_path):
     batch_runner.ejecutar(entrada, salida, None, mock=True)   # valida al final: no debe lanzar
     filas = [json.loads(l) for l in salida.read_text(encoding="utf-8").split("\n") if l.strip()]
     assert len(filas) == 1 and filas[0]["id"] == 1
+
+
+def test_dos_corridas_no_escriben_el_mismo_archivo(tmp_path):
+    salida = tmp_path / "s.jsonl"
+    with batch_runner._candado(salida):
+        with pytest.raises(SystemExit, match="Otra corrida está escribiendo"):
+            with batch_runner._candado(salida):
+                pass
+    assert not salida.with_name("s.jsonl.lock").exists()   # se libera al terminar
+    with batch_runner._candado(salida):                      # y se puede volver a usar
+        pass

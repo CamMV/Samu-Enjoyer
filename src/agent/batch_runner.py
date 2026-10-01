@@ -69,15 +69,38 @@ def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
 
 def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False,
              formato: str | None = None) -> int:
-    # Solo saltos de línea reales: splitlines() también corta en \x85 o  , que aparecen en textos
+    # Solo saltos de línea reales: splitlines() también corta en \x85 o \u2028, que aparecen en textos
     # legales dentro de un JSON y partirían un registro (igual que lee el evaluador oficial).
     items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").split("\n") if ln.strip()]
     if limite:
         items = items[:limite]
     if formato:  # p. ej. solo las cerradas, para medir un cambio rápido
         items = [it for it in items if it.get("formato") == formato]
-    agente, modo = crear_agente(mock)
     salida.parent.mkdir(parents=True, exist_ok=True)
+    with _candado(salida):
+        return _ejecutar(items, salida, mock, juez)
+
+
+@contextlib.contextmanager
+def _candado(salida: Path):
+    """Impide que dos corridas escriban el mismo archivo a la vez (sus líneas se entremezclan y el
+    evaluador oficial no puede leerlo). Si una corrida murió sin limpiar, borrar el .lock a mano."""
+    lock = salida.with_name(salida.name + ".lock")
+    try:
+        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        raise SystemExit(f"Otra corrida está escribiendo {salida} ({lock} existe). Si no hay ninguna "
+                         f"corriendo, borrar {lock} y volver a lanzar.") from None
+    try:
+        os.write(fd, str(os.getpid()).encode())
+        os.close(fd)
+        yield
+    finally:
+        lock.unlink(missing_ok=True)
+
+
+def _ejecutar(items: list[dict], salida: Path, mock: bool, juez: bool) -> int:
+    agente, modo = crear_agente(mock)
     total, errores = len(items), 0
     print(f"== {total} preguntas, retriever {modo}{', con juez' if juez else ''} -> {salida}", flush=True)
     # La traza del juez va aparte: submissions.jsonl solo lleva lo que admite el esquema.
