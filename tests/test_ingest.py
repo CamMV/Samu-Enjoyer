@@ -244,7 +244,7 @@ def test_chunker_articulo_con_ruta_y_notas(tmp_path: Path):
 def test_seleccion_tope_sentencias_y_penalizacion():
     from src.knowledge.hybrid_search import Config, Recuperador
     rec = Recuperador.__new__(Recuperador)
-    rec.cfg = Config(k=4, max_sentencias=2, max_por_doc=3)
+    rec.cfg = Config(k=4, max_sentencias=2, max_por_doc=3, dedup=0.0)  # textos de ejemplo iguales
     datos = {f"s{i}/ficha": {"doc_id": f"jurisprudencia_t-{i}_2020", "tipo_chunk": "ficha",
                              "tipo_documento": "sentencia", "texto": "t"} for i in range(5)}
     datos["ley_1_2000/art_1"] = {"doc_id": "ley_1_2000", "tipo_chunk": "articulo", "tipo_documento": "norma",
@@ -253,5 +253,5 @@ def test_seleccion_tope_sentencias_y_penalizacion():
     ids = [p["chunk_id"] for p in rec._seleccionar(orden, datos)]
     # Tope de 2 sentencias: entra la norma; la 3.ª ficha vuelve solo para completar k=4. Salen por puntaje.
     assert ids == ["s0/ficha", "s1/ficha", "s2/ficha", "ley_1_2000/art_1"]
-    rec.cfg = Config(k=3, max_sentencias=2, max_por_doc=3)
+    rec.cfg = Config(k=3, max_sentencias=2, max_por_doc=3, dedup=0.0)
     assert [p["chunk_id"] for p in rec._seleccionar(orden, datos)] == ["s0/ficha", "s1/ficha", "ley_1_2000/art_1"]

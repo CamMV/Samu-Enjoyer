@@ -40,9 +40,9 @@ class Config:
     expandir_articulo: bool = True
     # Ajustes de orden tras el reranker (el banco de pruebas mostró que preámbulos de
     # decretos, notas del Senado y fichas de tutelas desplazaban a los artículos):
-    # Valores por defecto = perfil "ganador_normas50", el ganador sobre el corpus completo
-    # (2,2 M chunks, 50 preguntas): recall_citas@10 0,862 -> 0,919, recall_docs@10 0,439 -> 0,785,
-    # MRR 0,236 -> 0,416 y nDCG@10 0,314 -> 0,552 frente a "base".
+    # Valores por defecto = perfil "ganador_dedup70", el ganador sobre el corpus completo
+    # (2,2 M chunks, 50 preguntas): recall_citas@10 0,862 -> 0,919, recall_docs@10 0,439 -> 0,809,
+    # MRR 0,236 -> 0,419 y nDCG@10 0,314 -> 0,561 frente a "base".
     penal_tipo: dict = field(default_factory=lambda: {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1,
                                                       "seccion": 0.1})
     bonus_prioridad_alta: float = 0.1                 # normas del seed (las que más usa el banco)
@@ -65,7 +65,9 @@ class Config:
     # de su texto (secuencias de 5 palabras) con uno ya elegido se salta y su lugar lo toma el
     # siguiente distinto. En las 50 de muestra, 65 de 500 pasajes repetían a otro (sentencias que
     # copian el mismo párrafo, notas que transcriben la norma). 0 = no se usa.
-    dedup: float = 0.0
+    # Con 0,7: recall_docs@10 0,785 -> 0,809, MRR 0,416 -> 0,419, nDCG 0,552 -> 0,561; recall_citas
+    # igual (0,919); sin costo de tiempo. Con 0,5 da lo mismo.
+    dedup: float = 0.7
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -121,8 +123,8 @@ def _hermano(ruta: Path) -> Path:
 
 
 def config_de(perfil: str, **base) -> "Config":
-    # Los perfiles sin "normas" se midieron sin la lista de normas: así se siguen reproduciendo.
-    return Config(**{"normas": 0, **base, **PERFILES[perfil]})
+    # Los perfiles sin "normas" o sin "dedup" se midieron sin esas opciones: así se siguen reproduciendo.
+    return Config(**{"normas": 0, "dedup": 0.0, **base, **PERFILES[perfil]})
 
 
 @dataclass

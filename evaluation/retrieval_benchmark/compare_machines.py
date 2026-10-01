@@ -20,7 +20,7 @@ from evaluation.retrieval_benchmark.config import K, MUESTRA, RESULTS_ROOT, dir_
 from evaluation.retrieval_benchmark.evaluate import evaluar
 from src.knowledge.hybrid_search import Config, Recuperador
 
-REFERENCIA = RESULTS_ROOT / "eval_todo__qwen3-emb-0.6b__bm25__bge-reranker-v2-m3__ganador_normas50.json"
+REFERENCIA = RESULTS_ROOT / "eval_todo__qwen3-emb-0.6b__bm25__bge-reranker-v2-m3__ganador_dedup70.json"
 
 
 def main():

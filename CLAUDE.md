@@ -66,7 +66,7 @@ Se encuentra un enlace simbólico a la carpeta de instrucciones llamada `docs_re
 
 ## 5. Recuperación (`src/knowledge/`) — CONGELADA
 
-Arquitectura obligatoria BM25 + HNSW → RRF → reranker. Configuración ganadora = valores por defecto de `Config()` en `src/knowledge/hybrid_search.py` (perfil `ganador_normas50`); el agente la usa con `Config()` sin parámetros.
+Arquitectura obligatoria BM25 + HNSW → RRF → reranker. Configuración ganadora = valores por defecto de `Config()` en `src/knowledge/hybrid_search.py` (perfil `ganador_dedup70`); el agente la usa con `Config()` sin parámetros.
 
 | Pieza | Elección |
 |---|---|
@@ -77,18 +77,19 @@ Arquitectura obligatoria BM25 + HNSW → RRF → reranker. Configuración ganado
 | Fusión | Citas expresas de la pregunta + BM25 (100) + HNSW (100) + normas (50 + 50) → RRF k=60 |
 | Reranker | bge-reranker-v2-m3 (fp16) sobre los 150 primeros de la fusión |
 | Ajustes | Castigo por tipo (preámbulo 0,2; notas 0,15; ventana de sentencia 0,1; anexo 0,1; derogada 0,15), +0,1 a normas de prioridad alta, máximo 4 sentencias y 3 pasajes por documento, partes de un artículo reunidas |
+| Sin casi duplicados | Un pasaje que no es artículo de norma y repite ≥70 % del texto de uno ya elegido (secuencias de 5 palabras) se salta y entra el siguiente distinto. En la muestra, 65 de 500 pasajes repetían a otro (sentencias que copian un párrafo, notas que transcriben la norma). Los artículos de norma nunca se saltan |
 | Salida | 10 pasajes; todo orden se desempata por chunk_id (determinista) |
 
-Descartados con datos: bge-m3 y e5-large-instruct (embedders), Qwen3-Reranker-0.6B (peor y 4,5× más lento), BM25 sin raíces, más candidatos sin más reranker, topes más estrictos de sentencias o de pasajes por documento.
+Descartados con datos: bge-m3 y e5-large-instruct (embedders), Qwen3-Reranker-0.6B (peor y 4,5× más lento), BM25 sin raíces, más candidatos sin más reranker, topes más estrictos de sentencias o de pasajes por documento, búsqueda por opción en cerradas (`por_opcion`: recall_docs 0,772, peor) y seguimiento de citas (`seguir_citas`: sin cambio); quedan en el código apagadas. Pasar 20 candidatos al reranker o 20 pasajes al LLM: descartado (menos recall, y el evaluador solo cuenta los 10 primeros pasajes como respaldo).
 
 ### Resultados de recuperación (corpus completo, 2,2 M chunks, `data/sample_50.jsonl`)
 
 | Métrica @10 | Sin ajustes (`base`) | **Ganador** |
 |---|---|---|
 | recall_citas | 0,862 | **0,919** |
-| recall_docs | 0,439 | **0,785** |
-| MRR | 0,236 | **0,416** |
-| nDCG | 0,314 | **0,552** |
+| recall_docs | 0,439 | **0,809** |
+| MRR | 0,236 | **0,419** |
+| nDCG | 0,314 | **0,561** |
 
 - Por etapa (ganador): BM25 0,756 / 0,415 → denso 0,862 / 0,423 → RRF 0,898 / 0,744 → final 0,919 / 0,785 (recall_citas / recall_docs). El RRF con la lista de normas y la selección final (diversidad) son los que más suben recall_docs; el reranker mejora sobre todo el orden.
 - Por formato (final, recall_citas / recall_docs): opción múltiple 0,962 / 0,808 (15 preguntas), semiabierta 0,965 / 0,819 (30), **abierta 0,5 / 0,5 (5)**. Las abiertas son preguntas de caso que no nombran la norma: le toca al reescritor de consultas del agente.
