@@ -182,13 +182,23 @@ def test_ciclo_reintenta_con_la_consulta_del_juez(monkeypatch):
 
 
 def test_ciclo_maximo_dos_y_abstencion_forzada(monkeypatch):
+    semi = {**ITEM, "formato": "semi_open", "opciones": None}
     llamadas = _responde(monkeypatch, RECHAZO, RECHAZO, RECHAZO)
-    state, traza = run_with_judge(_agente([]), ITEM)
+    state, traza = run_with_judge(_agente([]), semi)
     assert len(llamadas) == 2 and traza["ciclos"] == 2
     assert traza["abstencion_forzada"] and state.abstencion and state.aprobado_por_juez is False
     registro = LegalAgent.to_submission(state)
-    assert registro["abstencion"] is True and registro["respuesta_correcta"] is None
+    assert registro["abstencion"] is True
     assert not {"aprobado_por_juez", "juez_feedback", "citas_invalidas"} & set(registro)
+
+
+def test_cerrada_rechazada_dos_veces_no_se_abstiene(monkeypatch):
+    # En una cerrada la abstención deja la letra en None (inválido en el esquema) y vale menos que responder.
+    _responde(monkeypatch, RECHAZO, RECHAZO, RECHAZO)
+    state, traza = run_with_judge(_agente([]), ITEM)
+    assert traza["ciclos"] == 2 and not traza["abstencion_forzada"] and not state.abstencion
+    registro = LegalAgent.to_submission(state)
+    assert registro["abstencion"] is False and registro["respuesta_correcta"] in ITEM["opciones"]
 
 
 def test_ciclo_sin_abstencion_elige_el_mejor_borrador(monkeypatch):

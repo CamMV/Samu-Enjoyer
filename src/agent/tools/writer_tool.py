@@ -295,8 +295,15 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
         return _abstencion(formato)
     borrador["formato"] = formato
     borrador["abstencion"] = bool(borrador.get("abstencion", False))
-    if formato == "multiple_choice" and opciones and not borrador["abstencion"] and ELEGIR_LETRA:
-        borrador = con_letra_de_la_justificacion(borrador, opciones)
+    if formato == "multiple_choice" and opciones:
+        # Una cerrada con letra válida se responde aunque el modelo marque abstención (ver graph.finalizar).
+        letra = str(borrador.get("respuesta_correcta") or "").strip().upper()[:1]
+        if borrador["abstencion"] and letra in opciones:
+            borrador["abstencion"] = False
+        if ELEGIR_LETRA and (not borrador["abstencion"] or borrador.get("justificacion")):
+            borrador = con_letra_de_la_justificacion(borrador, opciones)
+            if str(borrador.get("respuesta_correcta") or "").strip().upper()[:1] in opciones:
+                borrador["abstencion"] = False
     return borrador
 
 

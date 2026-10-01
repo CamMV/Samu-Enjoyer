@@ -180,6 +180,15 @@ def test_la_letra_no_cambia_si_coincide_o_si_el_verificador_falla(monkeypatch):
         assert b["respuesta_correcta"] == "C" and b["justificacion"] == "Es de mínima cuantía [codigo_general_proceso/art_25]."
 
 
+def test_cerrada_con_letra_no_se_abstiene(monkeypatch):
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", False)
+    monkeypatch.setattr(writer_tool, "_llamar_llm", lambda s, u, esquema=None: (
+        '{"justificacion": "Los pasajes no bastan.", "respuesta_correcta": "B", "descarte_opciones": {}, '
+        '"abstencion": true}'))
+    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert b["abstencion"] is False and b["respuesta_correcta"] == "B"
+
+
 def test_quitar_anuncios_no_borra_frases_normales():
     texto = "Lo que es a la vez un deber del juez. La opción correcta es la B. Según el artículo 25, B) no aplica."
     assert writer_tool._sin_anuncios(texto) == "Lo que es a la vez un deber del juez."
