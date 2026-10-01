@@ -483,11 +483,16 @@ class Recuperador:
         out = []
         for cid, s in elegidos:
             d = datos[cid]
-            texto, pid = d["texto"], cid
+            texto, pid, inicio, fin = d["texto"], cid, d.get("inicio"), d.get("fin")
             if cfg.expandir_articulo and d["tipo_chunk"] == "parte_articulo":
                 texto, pid = self._articulo_completo(d), d["articulo_id"]
+                # El rango del artículo completo: del inicio de la primera parte al fin de la última.
+                partes = [c for c in self.almacen.por("articulo_id", d["articulo_id"])
+                          if c["tipo_chunk"] == "parte_articulo" and c.get("inicio") is not None]
+                if partes:
+                    inicio, fin = min(c["inicio"] for c in partes), max(c["fin"] for c in partes)
             out.append({"doc_id": d["doc_id"], "chunk_id": pid, "texto": texto, "score": s,
-                        "inicio": d.get("inicio"), "fin": d.get("fin"), "tipo_chunk": d["tipo_chunk"]})
+                        "inicio": inicio, "fin": fin, "tipo_chunk": d["tipo_chunk"]})
         return out
 
     def _articulo_completo(self, d: dict) -> str:

@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from src.agent.agent import LegalAgent
-from src.agent.citas import borrador_con_citas_legibles, citas_legibles, con_normas_consultadas
+from src.agent.citas import borrador_con_citas_legibles, citas_legibles, con_normas_consultadas, respuesta_concisa, sin_encabezados
 from src.agent.schemas import CanonicalPassage
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -53,8 +53,9 @@ def test_to_submission_convierte_y_conserva_el_borrador():
                                 "respuesta": "El juez debe dirigir el proceso [codigo_general_proceso/art_42].",
                                 "palabras_clave": ["juez"], "referencia_legal": "[codigo_general_proceso/art_42]"}
     registro = LegalAgent.to_submission(state)
-    assert registro["respuesta"] == ("El juez debe dirigir el proceso (artículo 42 del Código General del Proceso "
-                                     "(Ley 1564 de 2012)).")
+    # La cita sale del texto que lee RAGAS y queda en referencia_legal, que lee el evaluador de citas.
+    assert registro["respuesta"] == "El juez debe dirigir el proceso."
+    assert "artículo 42 del Código General del Proceso (Ley 1564 de 2012)" in registro["referencia_legal"]
     assert "[" not in registro["referencia_legal"]
     assert "[codigo_general_proceso/art_42]" in state.borrador_respuesta["respuesta"]  # el juez sigue viendo IDs
     texto = registro["respuesta"] + " " + registro["referencia_legal"]
@@ -86,3 +87,23 @@ def test_to_submission_no_agrega_normas_si_se_abstiene():
     state.pasajes_recuperados, state.abstencion = PASAJES, True
     state.borrador_respuesta = {"respuesta": "", "palabras_clave": [], "referencia_legal": ""}
     assert LegalAgent.to_submission(state)["referencia_legal"] == ""
+
+
+def test_respuesta_concisa_saca_las_citas_y_deja_tres_oraciones():
+    b = {"respuesta": ("Sí procede (artículo 46 de la Ley 472 de 1998). La exige un grupo (artículo 3 de la Ley 472 "
+                       "de 1998). Requiere 20 personas. Es una acción de reparación. Caduca en dos años."),
+         "referencia_legal": "artículo 46 de la Ley 472 de 1998", "palabras_clave": ["grupo"]}
+    r = respuesta_concisa(b, 3)
+    assert r["respuesta"] == "Sí procede. La exige un grupo. Requiere 20 personas."
+    assert r["referencia_legal"] == "artículo 46 de la Ley 472 de 1998; artículo 3 de la Ley 472 de 1998"
+    got = citations.bodies(citations.extract(r["respuesta"] + " " + r["referencia_legal"]))
+    assert ("ley", "472", "1998") in got                       # el evaluador de citas las sigue viendo
+    assert respuesta_concisa({"respuesta": "Plazo de diez (10) días. Otra."}, 3)["respuesta"] == \
+        "Plazo de diez (10) días. Otra."                     # paréntesis que no son citas se quedan
+
+
+def test_sin_encabezados_de_seccion():
+    b = {"jurisprudencia": "Sentencia SC-13208 de 2015 › II. LA DEMANDA D E CASACIÓN (32/78) fija la regla.",
+         "otro": ["Corte Constitucional, Sentencia T-1 de 2020 › Inicio (3/5)"]}
+    assert sin_encabezados(b) == {"jurisprudencia": "Sentencia SC-13208 de 2015 fija la regla.",
+                                  "otro": ["Corte Constitucional, Sentencia T-1 de 2020"]}

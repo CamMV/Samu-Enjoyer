@@ -45,3 +45,21 @@ def test_to_submission_normaliza_y_convierte():
     assert r["respuesta_correcta"] == "C" and isinstance(r["justificacion"], str)
     assert r["justificacion"] == ("Procede (artículo 46 de la Ley 472 de 1998). "
                                   "Normas de los pasajes consultados: artículo 46 de la Ley 472 de 1998.")
+
+
+def test_registro_cumple_el_esquema_oficial_con_offsets():
+    import json
+    import jsonschema
+    esquema = json.loads((Path(__file__).resolve().parents[1] / "schema" / "submission.schema.json").read_text(encoding="utf-8"))
+    p = CanonicalPassage(id="ley_472_1998/art_46", texto="Ley 472 de 1998\nArtículo 46.\nProcede.", score=0.9,
+                         metadatos={"inicio": 96224, "fin": 101680, "vigencia": "sin_marca"})
+    sin_offsets = CanonicalPassage(id="ley_472_1998/art_3", texto="Ley 472 de 1998\nArtículo 3.", metadatos={})
+    state = LegalAgent().build_state({"id": 51, "formato": "multiple_choice", "pregunta": "¿?", "opciones": OPC})
+    state.pasajes_recuperados = [p, sin_offsets]
+    state.borrador_respuesta = {"respuesta_correcta": "C", "justificacion": "Procede [ley_472_1998/art_46].",
+                                "descarte_opciones": {"A": "No."}}
+    r = LegalAgent.to_submission(state)
+    jsonschema.Draft202012Validator(esquema).validate(r)
+    assert r["pasajes_recuperados"][0] == {"doc_id": "ley_472_1998", "inicio": 96224, "fin": 101680,
+                                           "texto": p.texto, "score": 0.9}
+    assert "inicio" not in r["pasajes_recuperados"][1]

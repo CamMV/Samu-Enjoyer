@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from src.agent.citas import borrador_con_citas_legibles, con_normas_consultadas
+from src.agent.citas import borrador_con_citas_legibles, con_normas_consultadas, respuesta_concisa, sin_encabezados
 from src.agent.graph import _FLAG_KEYS, construir_grafo, estado_inicial
 from src.agent.salida import normalizar
 from src.agent.schemas import CanonicalPassage, QuestionState
@@ -63,19 +63,31 @@ class LegalAgent:
         `[doc_id/art_N]` se reescriben como citas que reconoce el evaluador oficial
         ("artículo N del ..."): ver src/agent/citas.py."""
         borrador = normalizar(dict(state.borrador_respuesta or {}), state.formato, state.opciones)
-        borrador = borrador_con_citas_legibles(borrador, state.pasajes_recuperados)
+        borrador = sin_encabezados(borrador_con_citas_legibles(borrador, state.pasajes_recuperados))
+        if state.formato == "semi_open" and not state.abstencion:
+            borrador = respuesta_concisa(borrador)
         if not state.abstencion:
             borrador = con_normas_consultadas(borrador, state.formato, state.pasajes_recuperados)
         return {
             "id": state.id,
             "formato": state.formato,
             "abstencion": state.abstencion,
-            "pasajes_recuperados": [
-                {"doc_id": p.doc_id, "texto": p.texto, **({"score": p.score} if p.score is not None else {})}
-                for p in state.pasajes_recuperados
-            ],
+            "pasajes_recuperados": [_pasaje_entrega(p) for p in state.pasajes_recuperados],
             **borrador,
         }
+
+
+def _pasaje_entrega(p: CanonicalPassage) -> dict:
+    """Pasaje con los campos del esquema: doc_id y texto literal; inicio y fin (posición en el
+    documento del corpus, para reconstruirlo en la verificación en vivo) y score si se conocen."""
+    out = {"doc_id": p.doc_id}
+    inicio, fin = p.metadatos.get("inicio"), p.metadatos.get("fin")
+    if isinstance(inicio, int) and isinstance(fin, int) and 0 <= inicio <= fin:
+        out.update(inicio=inicio, fin=fin)
+    out["texto"] = p.texto
+    if p.score is not None:
+        out["score"] = p.score
+    return out
 
 
 def mock_retriever(state: QuestionState) -> List[CanonicalPassage]:

@@ -145,4 +145,5 @@ def test_grafo_resuelve_las_citas_antes_del_juez(monkeypatch):
     assert [c["accion"] for c in traza["citas"]] == ["agregada", "suprimida"]
     registro = LegalAgent.to_submission(state)
     assert len(registro["pasajes_recuperados"]) == 2 and "busqueda_citas" not in registro
-    assert "artículo 3 de la Ley 472 de 1998" in registro["respuesta"] and "inventada" not in registro["respuesta"]
+    texto = registro["respuesta"] + " " + registro["referencia_legal"]  # lo que lee el evaluador de citas
+    assert "artículo 3 de la Ley 472 de 1998" in texto and "inventada" not in texto

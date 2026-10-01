@@ -66,15 +66,22 @@ _FORMATO_INSTRUCCIONES = {
         'nombre que trae el encabezado del pasaje. Si la pregunta da un monto en pesos y un pasaje fija '
         'el salario mínimo, convierte el monto a salarios mínimos antes de compararlo con los umbrales.'
     ),
+    # RAGAS cuenta como error toda afirmación que no esté en la respuesta esperada, aunque sea cierta:
+    # respuestas cortas y directas, sin describir los pasajes (ver src/agent/citas.py).
     "semi_open": (
-        'Devuelve JSON con las llaves: "respuesta" (3 a 5 oraciones, máximo 150 palabras, citando '
-        'IDs canónicos), "palabras_clave" (lista de strings), "referencia_legal" (IDs/normas citadas), '
-        '"abstencion" (boolean).'
+        'Devuelve JSON con las llaves: "respuesta" (exactamente 3 oraciones breves, máximo 70 palabras: '
+        'la PRIMERA responde directamente la pregunta —sí o no, la norma, la autoridad, la definición, el '
+        'plazo o el sentido del fallo—; las otras dos dan solo el fundamento esencial, citando IDs '
+        'canónicos; nada que la pregunta no pida), "palabras_clave" (lista de strings), "referencia_legal" '
+        '(IDs/normas citadas), "abstencion" (boolean).'
     ),
     "open_ended": (
-        'Devuelve JSON con las llaves: "marco_normativo", "analisis" (5 a 8 oraciones citando IDs '
-        'canónicos), "jurisprudencia" (solo la que esté en los pasajes; si no hay, dilo), '
-        '"conclusion", "abstencion" (boolean).'
+        'Devuelve JSON con las llaves: "marco_normativo" (las normas aplicables, cada una con su ID '
+        'canónico y lo que establece para el caso; nunca describas los pasajes), "analisis" (5 a 8 '
+        'oraciones que aplican esas normas a los hechos del caso, citando IDs canónicos), '
+        '"jurisprudencia" (las sentencias de los pasajes que aplican, con la regla que fijan; si no hay, '
+        'escribe "No se identificó jurisprudencia aplicable en el corpus."), "conclusion" (una o dos '
+        'oraciones que responden directamente la pregunta), "abstencion" (boolean).'
     ),
 }
 

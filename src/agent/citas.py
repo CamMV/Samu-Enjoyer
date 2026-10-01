@@ -15,6 +15,7 @@ respaldada por la evidencia. Determinista, sin LLM.
 """
 from __future__ import annotations
 
+import os
 import re
 from typing import List
 
@@ -80,6 +81,48 @@ def borrador_con_citas_legibles(borrador: dict, pasajes: List[CanonicalPassage])
         return v
 
     return convertir(borrador)
+
+
+# --- Texto que lee RAGAS ----------------------------------------------------------------------
+# RAGAS (answer correctness) cuenta como error cada afirmación que no está en la respuesta esperada,
+# aunque sea cierta: sobre v2, con las mismas respuestas, sacar las citas del texto de `respuesta`
+# (pasan a `referencia_legal`, que lee el evaluador de citas y no RAGAS) subió 0,438 -> 0,456 y
+# dejar además 3 oraciones, 0,462; citación y abstención, iguales.
+MAX_ORACIONES_RESPUESTA = int(os.environ.get("MAX_ORACIONES_RESPUESTA", "3"))
+_PAREN = re.compile(r"\s*\((?:[^()]|\([^()]*\))*\)")
+_ES_CITA = re.compile(r"art[ií]culo|\bley\b|decreto|sentencia|c[oó]digo|constituci[oó]n|estatuto", re.I)
+_ORACION = re.compile(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ¿¡])")
+# Encabezado de sección de una sentencia copiado de un pasaje: "› II. LA DEMANDA DE CASACIÓN (32/78)".
+_SECCION = re.compile(r"\s*›[^›()\n;]*?\(\d+/\d+\)")
+
+
+def sin_encabezados(borrador: dict) -> dict:
+    """Quita de todos los textos los encabezados de sección de sentencias que el LLM copia de los pasajes."""
+    def limpiar(v):
+        if isinstance(v, str):
+            return _SECCION.sub("", v)
+        if isinstance(v, dict):
+            return {k: limpiar(x) for k, x in v.items()}
+        if isinstance(v, list):
+            return [limpiar(x) for x in v]
+        return v
+    return limpiar(borrador)
+
+
+def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
+    """Semiabiertas: las citas entre paréntesis de `respuesta` pasan a `referencia_legal` y la respuesta
+    queda en sus primeras `max_oraciones` oraciones (el esquema pide de 3 a 5)."""
+    n = MAX_ORACIONES_RESPUESTA if max_oraciones is None else max_oraciones
+    texto = str(borrador.get("respuesta") or "")
+    citas = [m.group(0).strip()[1:-1].strip() for m in _PAREN.finditer(texto) if _ES_CITA.search(m.group(0))]
+    texto = _PAREN.sub(lambda m: "" if _ES_CITA.search(m.group(0)) else m.group(0), texto)
+    texto = re.sub(r"\s+([.,;:])", r"\1", texto).strip()
+    if n:
+        texto = " ".join(_ORACION.split(texto)[:n]).strip()
+    previa = str(borrador.get("referencia_legal") or "").strip()
+    nuevas = [c for c in dict.fromkeys(citas) if c not in previa]
+    referencia = "; ".join([x for x in [previa.rstrip(".;")] + nuevas if x])
+    return {**borrador, "respuesta": texto, "referencia_legal": referencia}
 
 
 # Campo donde van las normas consultadas: el que lee el extractor de citas del evaluador y que no
