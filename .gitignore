@@ -3,4 +3,7 @@ __pycache__/
 .venv/
 .pytest_cache/
 *.tar.gz
+
+./docs_reto
+
 venv/
