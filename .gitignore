@@ -1,7 +1,9 @@
 corpus/
 __pycache__/
 .venv/
+venv/
+envs/
 .pytest_cache/
 *.tar.gz
 logs/
-envs/
+./docs_reto
