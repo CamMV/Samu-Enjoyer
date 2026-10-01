@@ -2,6 +2,7 @@
 
   python -m src.knowledge.bm25_store                                 # todo el corpus -> corpus/indices/bm25_todo
   python -m src.knowledge.bm25_store --seleccion normas_fichas       # subcorpus del banco de pruebas
+  python -m src.knowledge.bm25_store --seleccion normas              # lista de normas de la fusión
 
 Requiere RAM proporcional al corpus (~1,5 M chunks: ~30-40 GB al construir). Se carga
 con mmap, así que en el portátil consultar no exige tenerlo entero en memoria.
@@ -19,7 +20,7 @@ import bm25s
 import numpy as np
 from bm25s.tokenization import Tokenized
 
-from .chunk_store import INDICES, leer_chunks
+from .chunk_store import INDICES, SELECCIONES, leer_chunks
 from .tokenization import tokens
 
 
@@ -88,7 +89,7 @@ class IndiceBM25:
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--seleccion", default="todo", choices=["todo", "normas_fichas"])
+    ap.add_argument("--seleccion", default="todo", choices=list(SELECCIONES))
     ap.add_argument("--limite", type=int, help="solo los primeros N chunks (prueba)")
     ap.add_argument("--sin-raices", action="store_true", help="sin stemming (para comparar en el banco de pruebas)")
     ap.add_argument("--salida", type=Path)

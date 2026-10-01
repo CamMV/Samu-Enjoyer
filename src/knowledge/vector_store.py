@@ -3,6 +3,7 @@
   python -m src.knowledge.vector_store --modelo bge-m3                          # todo el corpus
   python -m src.knowledge.vector_store --modelo qwen3-emb-0.6b --seleccion normas_fichas
   python -m src.knowledge.vector_store --modelo bge-m3 --solo-hnsw              # rehace el HNSW con los vectores ya hechos
+  python -m src.knowledge.vector_store --modelo qwen3-emb-0.6b --seleccion normas --subindice-de todo  # sin GPU
 
 Salida en corpus/indices/<modelo>_<seleccion>/: vectores por lotes (vec_00000.npy, float16,
 normalizados), ids.json, hnsw.faiss e info.json. Es reanudable: un lote ya guardado se
@@ -22,7 +23,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .chunk_store import INDICES, leer_chunks
+from .chunk_store import INDICES, SELECCIONES, leer_chunks
 from .embedding_variants import EMBEDDERS, Embedder
 
 LOTE = 50_000          # chunks por archivo de vectores (checkpoint)
@@ -94,6 +95,28 @@ def construir(clave: str, seleccion: str, salida: Path, lote_gpu: int, limite: i
     }, indent=1), encoding="utf-8")
 
 
+def subindice(clave: str, origen: Path, seleccion: str, salida: Path):
+    """HNSW de una selección a partir de los vectores ya calculados en `origen` (sin GPU):
+    los ids salen en el mismo orden de chunks.jsonl."""
+    ids_origen = json.loads((origen / "ids.json").read_text(encoding="utf-8"))
+    elegidos = {c["chunk_id"] for c in leer_chunks(seleccion)}
+    mascara = np.fromiter((cid in elegidos for cid in ids_origen), dtype=bool, count=len(ids_origen))
+    n_lotes = (len(ids_origen) + LOTE - 1) // LOTE
+    vectores = np.concatenate([np.load(origen / f"vec_{i:05d}.npy")[mascara[i * LOTE:(i + 1) * LOTE]]
+                               for i in range(n_lotes)]).astype(np.float32)
+    ids = [cid for cid, m in zip(ids_origen, mascara) if m]
+    assert len(vectores) == len(ids) == len(elegidos), f"{len(vectores)} vectores, {len(ids)} ids, {len(elegidos)}"
+    print(f"== {clave}: subíndice {seleccion} con {len(ids)} de {len(ids_origen)} chunks -> {salida}", flush=True)
+    salida.mkdir(parents=True, exist_ok=True)
+    (salida / "ids.json").write_text(json.dumps(ids), encoding="utf-8")
+    construir_hnsw(vectores, salida)
+    (salida / "info.json").write_text(json.dumps({
+        "modelo": clave, "hf": EMBEDDERS[clave].hf, "dim": int(vectores.shape[1]), "n": len(ids),
+        "seleccion": seleccion, "vectores_de": origen.name,
+        "hnsw": {"M": M_HNSW, "efConstruction": EF_CONSTRUCCION, "efSearch": EF_BUSQUEDA, "cuantizacion": "SQ8"},
+    }, indent=1), encoding="utf-8")
+
+
 def _guardar_lote(salida: Path, i: int, textos: list[str], e: Embedder, lote_gpu: int, modelo_ref: list,
                   dispositivo: str | None = None, hacer: bool = True) -> int:
     destino = salida / f"vec_{i:05d}.npy"
@@ -146,7 +169,10 @@ class IndiceDenso:
         return np.round(v.astype(np.float32), 4)
 
     def buscar(self, consulta: str, k: int = 100) -> list[tuple[str, float]]:
-        scores, idx = self.indice.search(self.vector(consulta), k)
+        return self.buscar_vector(self.vector(consulta), k)
+
+    def buscar_vector(self, v: np.ndarray, k: int = 100) -> list[tuple[str, float]]:
+        scores, idx = self.indice.search(v, k)
         pares = [(self.ids[int(i)], float(s)) for i, s in zip(idx[0], scores[0]) if i >= 0]
         return sorted(pares, key=lambda p: (-round(p[1], 4), p[0]))
 
@@ -154,7 +180,9 @@ class IndiceDenso:
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--modelo", required=True, choices=list(EMBEDDERS))
-    ap.add_argument("--seleccion", default="todo", choices=["todo", "normas_fichas"])
+    ap.add_argument("--seleccion", default="todo", choices=list(SELECCIONES))
+    ap.add_argument("--subindice-de", help="arma el HNSW de --seleccion con los vectores de esta selección "
+                                           "ya calculada (p. ej. todo), sin GPU")
     ap.add_argument("--lote-gpu", type=int, default=64, help="batch de encode (A40: 64-128)")
     ap.add_argument("--limite", type=int, help="solo los primeros N chunks (prueba)")
     ap.add_argument("--solo-hnsw", action="store_true", help="rehace el HNSW desde los vectores guardados")
@@ -163,6 +191,10 @@ def main():
     ap.add_argument("--partes", type=int, default=1, help="repartir los lotes entre N procesos (uno por GPU)")
     ap.add_argument("--salida", type=Path)
     args = ap.parse_args()
+    if args.subindice_de:
+        subindice(args.modelo, INDICES / f"{args.modelo}_{args.subindice_de}", args.seleccion,
+                  args.salida or INDICES / f"{args.modelo}_{args.seleccion}")
+        return
     construir(args.modelo, args.seleccion, args.salida or INDICES / f"{args.modelo}_{args.seleccion}",
               args.lote_gpu, args.limite, args.solo_hnsw, args.device, args.parte, args.partes)
 

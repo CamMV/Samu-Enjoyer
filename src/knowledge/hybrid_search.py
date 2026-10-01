@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .bm25_store import IndiceBM25
-from .chunk_store import Almacen
+from .chunk_store import Almacen, es_sentencia
 from .vector_store import IndiceDenso
 from .citation_lookup import chunks_citados
 from .reranker import Reranker
@@ -46,6 +46,9 @@ class Config:
                                                       "seccion": 0.1})
     bonus_prioridad_alta: float = 0.1                 # normas del seed (las que más usa el banco)
     max_sentencias: int | None = 4                    # tope de pasajes de sentencias entre los k
+    # Lista de normas: BM25 y HNSW sobre solo normas (índices <x>_normas junto a los de todo),
+    # `normas` candidatos de cada uno como listas extra en el RRF. 0 = no se usa.
+    normas: int = 0
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -81,7 +84,16 @@ _GANADOR = PERFILES["completo_150_seccion"]
 PERFILES.update({
     "ganador_d2": {**_GANADOR, "max_por_doc": 2},
     "ganador_d2_s3": {**_GANADOR, "max_por_doc": 2, "max_sentencias": 3},
+    # El diagnóstico mostró los códigos y la Constitución en las posiciones 100-900 de BM25 y
+    # HNSW, enterrados por sentencias: lista aparte sobre solo normas.
+    "ganador_normas50": {**_GANADOR, "normas": 50},
+    "ganador_normas100": {**_GANADOR, "normas": 100},
 })
+
+
+def _hermano(ruta: Path) -> Path:
+    """corpus/indices/bm25_todo -> bm25_normas; qwen3-emb-0.6b_todo -> qwen3-emb-0.6b_normas."""
+    return ruta.with_name(ruta.name.rsplit("_", 1)[0] + "_normas")
 
 
 def config_de(perfil: str, **base) -> "Config":
@@ -119,6 +131,13 @@ class Recuperador:
         self.bm25 = IndiceBM25(bm25) if bm25 else None
         self.denso = IndiceDenso(denso, dispositivo) if denso else None
         self.reranker = Reranker(reranker, dispositivo) if reranker else None
+        self.bm25_normas = self.denso_normas = None
+        if self.cfg.normas:
+            if bm25:
+                self.bm25_normas = IndiceBM25(_hermano(bm25))
+            if denso:
+                self.denso_normas = IndiceDenso(_hermano(denso), dispositivo)
+                assert self.denso_normas.info["modelo"] == self.denso.info["modelo"]
 
     def buscar(self, consulta: str) -> Resultado:
         cfg, t, etapas = self.cfg, {}, {}
@@ -134,9 +153,19 @@ class Recuperador:
             listas.append(etapas["bm25"])
         if self.denso:
             t0 = time.perf_counter()
-            etapas["denso"] = [c for c, _ in self.denso.buscar(consulta, cfg.candidatos)]
+            v = self.denso.vector(consulta)
+            etapas["denso"] = [c for c, _ in self.denso.buscar_vector(v, cfg.candidatos)]
             t["denso"] = time.perf_counter() - t0
             listas.append(etapas["denso"])
+        if self.bm25_normas or self.denso_normas:
+            t0 = time.perf_counter()
+            if self.bm25_normas:
+                etapas["bm25_normas"] = [c for c, _ in self.bm25_normas.buscar(consulta, cfg.normas)]
+                listas.append(etapas["bm25_normas"])
+            if self.denso_normas:
+                etapas["denso_normas"] = [c for c, _ in self.denso_normas.buscar_vector(v, cfg.normas)]
+                listas.append(etapas["denso_normas"])
+            t["normas"] = time.perf_counter() - t0
         fusion = rrf(listas)
         etapas["rrf"] = [c for c, _ in fusion]
 
@@ -160,7 +189,7 @@ class Recuperador:
                 s -= cfg.penal_prioridad_baja
             if cid not in citadas:  # lo que la pregunta cita expresamente no se castiga
                 s -= cfg.penal_tipo.get(d["tipo_chunk"], 0.0)
-                if d.get("prioridad") == "alta" and d.get("tipo_documento") != "sentencia":
+                if d.get("prioridad") == "alta" and not es_sentencia(d):
                     s += cfg.bonus_prioridad_alta
             ajustados.append((cid, round(s, 4)))
         ajustados.sort(key=lambda p: (-p[1], p[0]))
@@ -189,12 +218,12 @@ class Recuperador:
         for cid, s in ajustados:
             if len(elegidos) == cfg.k:
                 break
-            es_sentencia = datos[cid].get("tipo_documento") == "sentencia"
-            if es_sentencia and cfg.max_sentencias is not None and n_sent >= cfg.max_sentencias \
+            sentencia = es_sentencia(datos[cid])
+            if sentencia and cfg.max_sentencias is not None and n_sent >= cfg.max_sentencias \
                     and cid not in citadas:
                 diferidos.append((cid, s))  # vuelven solo si no alcanza para k pasajes
                 continue
-            n_sent += tomar(cid, s) and es_sentencia
+            n_sent += tomar(cid, s) and sentencia
         for cid, s in diferidos:
             if len(elegidos) == cfg.k:
                 break

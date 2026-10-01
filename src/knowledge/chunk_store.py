@@ -15,10 +15,17 @@ ROOT = Path(__file__).resolve().parents[2]
 CHUNKS = ROOT / "corpus" / "chunks"
 INDICES = ROOT / "corpus" / "indices"
 
-# Subcorpus para comparar modelos rápido: normas completas + fichas de sentencias.
+def es_sentencia(c: dict) -> bool:
+    """Igual que el chunking: algunas sentencias no traen tipo_documento en el front-matter."""
+    return c.get("tipo_documento") == "sentencia" or c["doc_id"].startswith("jurisprudencia_")
+
+
 SELECCIONES = {
     "todo": lambda c: True,
+    # Subcorpus para comparar modelos rápido: normas completas + fichas de sentencias.
     "normas_fichas": lambda c: c.get("tipo_documento") != "sentencia" or c["tipo_chunk"] == "ficha",
+    # Solo normas: lista aparte en la fusión para que las sentencias (~85 % del corpus) no las entierren.
+    "normas": lambda c: not es_sentencia(c),
 }
 
 
