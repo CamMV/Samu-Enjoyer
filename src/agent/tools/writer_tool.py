@@ -61,7 +61,10 @@ _FORMATO_INSTRUCCIONES = {
         'Devuelve JSON con las llaves, en este orden: "justificacion" (primero razona con los pasajes '
         'qué opción es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de '
         'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
-        'opción incorrecta y una razón breve), "abstencion" (boolean).'
+        'opción incorrecta y una razón breve), "abstencion" (boolean). Si una opción nombra una norma '
+        'con el número correcto pero otro año (error de digitación), identifícala por su número y por el '
+        'nombre que trae el encabezado del pasaje. Si la pregunta da un monto en pesos y un pasaje fija '
+        'el salario mínimo, convierte el monto a salarios mínimos antes de compararlo con los umbrales.'
     ),
     "semi_open": (
         'Devuelve JSON con las llaves: "respuesta" (3 a 5 oraciones, máximo 150 palabras, citando '

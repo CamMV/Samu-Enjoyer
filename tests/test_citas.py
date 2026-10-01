@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from src.agent.agent import LegalAgent
-from src.agent.citas import borrador_con_citas_legibles, citas_legibles
+from src.agent.citas import borrador_con_citas_legibles, citas_legibles, con_normas_consultadas
 from src.agent.schemas import CanonicalPassage
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -64,3 +64,25 @@ def test_to_submission_convierte_y_conserva_el_borrador():
 def test_borrador_anidado():
     b = borrador_con_citas_legibles({"descarte_opciones": {"A": "No [constitucion/art_88]"}, "n": 3}, PASAJES)
     assert b == {"descarte_opciones": {"A": "No (artículo 88 de la Constitución Política de Colombia)"}, "n": 3}
+
+
+def test_normas_consultadas_en_el_campo_de_fundamento():
+    b = con_normas_consultadas({"referencia_legal": "artículo 42 del CGP", "respuesta": "x"}, "semi_open", PASAJES)
+    assert b["respuesta"] == "x"
+    assert b["referencia_legal"] == (
+        "artículo 42 del CGP Normas de los pasajes consultados: artículo 42 del Código General del Proceso "
+        "(Ley 1564 de 2012); artículo 5 de la Ley 1581 de 2012; artículo 88 de la Constitución Política de "
+        "Colombia; artículo 2.2.2.2.1 del Decreto 1072 de 2015.")  # sin la sentencia
+    got = citations.bodies(citations.extract(b["referencia_legal"]))
+    assert {("codigo_general_proceso", None, None), ("ley", "1581", "2012"), ("constitucion", None, None)} <= got
+    assert con_normas_consultadas({"justificacion": ""}, "multiple_choice", [CGP])["justificacion"].startswith(
+        "Normas de los pasajes consultados: artículo 42")
+    abierta = {"marco_normativo": "m", "analisis": "a"}
+    assert con_normas_consultadas(abierta, "open_ended", PASAJES) == abierta  # RAGAS lee todos sus campos
+
+
+def test_to_submission_no_agrega_normas_si_se_abstiene():
+    state = LegalAgent().build_state({"id": 2, "formato": "semi_open", "pregunta": "¿?"})
+    state.pasajes_recuperados, state.abstencion = PASAJES, True
+    state.borrador_respuesta = {"respuesta": "", "palabras_clave": [], "referencia_legal": ""}
+    assert LegalAgent.to_submission(state)["referencia_legal"] == ""

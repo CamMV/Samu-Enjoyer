@@ -88,3 +88,62 @@ def test_dedup_salta_casi_duplicados_pero_no_articulos():
     assert {"ley_1_1976/art_25", "codigo_civil/art_1820"} <= set(ids)    # los dos artículos se conservan
     sin = _rec(Config(normas=0, dedup=0.0, expandir_articulo=False), None, None)._seleccionar(orden, datos)
     assert len(sin) == 4
+
+
+def test_normas_citadas_sin_articulo():
+    r = _rec(Config(normas=0), None, None)
+    q = "¿Qué regula la Ley 1564 de 2002?\nA) Ley 472 de 1998\nB) artículo 5 de la Ley 1581 de 2012\nC) Sentencia C-355 de 2006"
+    # La 1564 (CGP, aunque el año esté errado) y la 472 van sin artículo; la 1581 trae artículo y la sentencia no es norma.
+    assert r._citadas_sin_articulo(q) == ["codigo_general_proceso", "ley_472_1998"]
+
+
+class BM25Mascara:
+    def __init__(self, ids):
+        self.ids, self.mascaras = ids, []
+
+    def buscar(self, consulta, k=100, mascara=None):
+        self.mascaras.append(sorted(mascara or []))
+        return [(self.ids[i], 1.0) for i in sorted(mascara or [])][:k]
+
+
+class AlmacenDoc(AlmacenFalso):
+    def por(self, campo, valor):
+        return [{"chunk_id": c} for c in self.textos if c.startswith(valor + "/")]
+
+
+def test_busqueda_dentro_de_la_norma_citada():
+    ids = ["ley_472_1998/art_1", "codigo_general_proceso/art_24#4", "constitucion/art_88", "codigo_general_proceso/art_1"]
+    almacen = AlmacenDoc({c: c for c in ids})
+    r = _rec(Config(normas=0, usar_citas=False, en_citadas=5), None, almacen)
+    r.bm25_normas = BM25Mascara(ids)
+    res = r.buscar_item({"pregunta": "¿Qué regula las funciones jurisdiccionales de la SIC?",
+                         "opciones": {"A": "Ley 1564 de 2002", "B": "Ley 270 de 1996"}})
+    assert r.bm25_normas.mascaras[-1] == [1, 3]  # solo los chunks del CGP
+    assert res.etapas["citada_codigo_general_proceso_bm25"] == ["codigo_general_proceso/art_24#4",
+                                                                 "codigo_general_proceso/art_1"]
+    assert "codigo_general_proceso/art_24#4" in res.etapas["rrf"]
+
+
+def test_solo_opciones_busca_con_el_texto_de_las_opciones():
+    normas = BM25Falso({"motivación": "cpaca/art_137"})
+    r = _rec(Config(normas=0, usar_citas=False, solo_opciones=20), None, AlmacenFalso({}))
+    r.bm25_normas = normas
+    res = r.buscar_item({"pregunta": "¿Qué vicio configura?", "opciones": {"A": "Falsa motivación", "B": "Desviación de poder"}})
+    assert normas.consultas[-1] == "Falsa motivación\nDesviación de poder"
+    assert res.etapas["solo_opciones_bm25"] == ["cpaca/art_137"]
+
+
+def test_monto_en_pesos_asegura_el_decreto_del_salario_minimo():
+    from src.knowledge.hybrid_search import _PESOS_RE
+    assert _PESOS_RE.search("pretensiones por 30.000.000 COP") and _PESOS_RE.search("una multa de $1.500.000")
+    assert not _PESOS_RE.search("la Ley 1564 de 2012, artículo 25") and not _PESOS_RE.search("30 salarios mínimos")
+    datos = {f"ley_{i}_2000/art_1": {"doc_id": f"ley_{i}_2000", "tipo_chunk": "articulo",
+                                     "articulo_id": f"ley_{i}_2000/art_1", "texto": f"Ley {i}\nArtículo 1.\n{i} " * 3}
+             for i in range(12)}
+    datos["decreto_1572_2024/art_1"] = {"doc_id": "decreto_1572_2024", "tipo_chunk": "articulo",
+                                        "articulo_id": "decreto_1572_2024/art_1", "texto": "Decreto\nArtículo 1.\nsmlmv"}
+    orden = [(c, 1.0 - n / 100) for n, c in enumerate(datos)]  # el decreto, último
+    r = _rec(Config(normas=0), None, None)
+    sin = [p["chunk_id"] for p in r._seleccionar(orden, datos)]
+    con = [p["chunk_id"] for p in r._seleccionar(orden, datos, forzados=["decreto_1572_2024/art_1"])]
+    assert "decreto_1572_2024/art_1" not in sin and con[-1] == "decreto_1572_2024/art_1" and len(con) == 10
