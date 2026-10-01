@@ -57,6 +57,16 @@ PERFILES = {
     "completo_100": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "bonus_prioridad_alta": 0.1,
                      "max_sentencias": 4, "n_rerank": 100},
 }
+# Variantes para el corpus completo (2,2 M chunks): las ventanas de sentencias ("seccion")
+# desplazan a las normas más que en el banco de prueba.
+_COMPLETO = PERFILES["completo"]
+PERFILES.update({
+    "completo_s3": {**_COMPLETO, "max_sentencias": 3},
+    "completo_s2": {**_COMPLETO, "max_sentencias": 2},
+    "completo_seccion": {**_COMPLETO, "penal_tipo": {**_COMPLETO["penal_tipo"], "seccion": 0.1}},
+    "completo_c200": {**_COMPLETO, "candidatos": 200},
+    "completo_c200_100": {**_COMPLETO, "candidatos": 200, "n_rerank": 100},
+})
 
 
 def config_de(perfil: str, **base) -> "Config":
