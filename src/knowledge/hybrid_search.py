@@ -39,16 +39,17 @@ class Config:
     expandir_articulo: bool = True
     # Ajustes de orden tras el reranker (el banco de pruebas mostró que preámbulos de
     # decretos, notas del Senado y fichas de tutelas desplazaban a los artículos):
-    # Valores por defecto = perfil "completo_150_seccion", el ganador sobre el corpus completo
-    # (2,2 M chunks, 50 preguntas): recall_citas@10 0,862 -> 0,898, recall_docs@10 0,439 -> 0,764,
-    # MRR 0,236 -> 0,380 y nDCG@10 0,314 -> 0,520 frente a "base".
+    # Valores por defecto = perfil "ganador_normas50", el ganador sobre el corpus completo
+    # (2,2 M chunks, 50 preguntas): recall_citas@10 0,862 -> 0,919, recall_docs@10 0,439 -> 0,785,
+    # MRR 0,236 -> 0,416 y nDCG@10 0,314 -> 0,552 frente a "base".
     penal_tipo: dict = field(default_factory=lambda: {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1,
                                                       "seccion": 0.1})
     bonus_prioridad_alta: float = 0.1                 # normas del seed (las que más usa el banco)
     max_sentencias: int | None = 4                    # tope de pasajes de sentencias entre los k
     # Lista de normas: BM25 y HNSW sobre solo normas (índices <x>_normas junto a los de todo),
     # `normas` candidatos de cada uno como listas extra en el RRF. 0 = no se usa.
-    normas: int = 0
+    # Con 50: recall_citas@10 0,898 -> 0,919, recall_docs@10 0,764 -> 0,785, MRR 0,380 -> 0,416.
+    normas: int = 50
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -94,7 +95,8 @@ def _hermano(ruta: Path) -> Path:
 
 
 def config_de(perfil: str, **base) -> "Config":
-    return Config(**{**base, **PERFILES[perfil]})
+    # Los perfiles sin "normas" se midieron sin la lista de normas: así se siguen reproduciendo.
+    return Config(**{"normas": 0, **base, **PERFILES[perfil]})
 
 
 @dataclass
