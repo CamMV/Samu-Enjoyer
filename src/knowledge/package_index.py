@@ -1,6 +1,6 @@
 """Empaqueta el entregable 5: corpus procesado + índice serializado + LICENSE en un .zip.
 
-  python -m src.knowledge.package_index                 # -> ../Samu-Enjoyer-entrega/samu_enjoyer_corpus_indice.zip
+  python -m src.knowledge.package_index                 # -> ../samu_enjoyer_corpus_indice.zip
   python -m src.knowledge.package_index --simular       # solo lista lo que entraría
 
 Todo va bajo corpus/: al descomprimir en la raíz del repo, los índices quedan donde el
@@ -97,7 +97,7 @@ desempates por chunk_id).
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--salida", type=Path, default=ROOT.parent / "Samu-Enjoyer-entrega" / "samu_enjoyer_corpus_indice.zip")
+    ap.add_argument("--salida", type=Path, default=ROOT.parent / "samu_enjoyer_corpus_indice.zip")
     ap.add_argument("--manifest", type=Path, default=ARCHIVO / "raw" / "corpus_manifest.json")
     ap.add_argument("--auditoria", type=Path, default=ARCHIVO / "descarga" / "auditoria.json")
     ap.add_argument("--simular", action="store_true")
