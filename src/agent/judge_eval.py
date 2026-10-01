@@ -36,7 +36,7 @@ def _pct(n: int, d: int) -> str:
 
 
 def evaluar(entrada: Path, jueces: list[str], limite: int | None, mock: bool, salida: Path | None) -> dict:
-    items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").split("\n") if ln.strip()]
     if limite:
         items = items[:limite]
     agente, modo = crear_agente(mock)

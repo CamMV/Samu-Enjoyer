@@ -36,7 +36,7 @@ def main():
     args = ap.parse_args()
 
     res = json.load(open(args.eval, encoding="utf-8"))
-    items = {json.loads(l)["id"]: json.loads(l) for l in MUESTRA.read_text(encoding="utf-8").splitlines() if l.strip()}
+    items = {json.loads(l)["id"]: json.loads(l) for l in MUESTRA.read_text(encoding="utf-8").split("\n") if l.strip()}
     rec = Recuperador(dir_bm25(args.seleccion), dir_denso(args.embedder, args.seleccion), None,
                       almacen=None, dispositivo=args.device)
     for f in res["preguntas"]:

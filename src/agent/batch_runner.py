@@ -69,7 +69,9 @@ def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
 
 def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False,
              formato: str | None = None) -> int:
-    items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    # Solo saltos de línea reales: splitlines() también corta en \x85 o  , que aparecen en textos
+    # legales dentro de un JSON y partirían un registro (igual que lee el evaluador oficial).
+    items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").split("\n") if ln.strip()]
     if limite:
         items = items[:limite]
     if formato:  # p. ej. solo las cerradas, para medir un cambio rápido
@@ -123,7 +125,7 @@ def validar(salida: Path) -> int:
         fallos = lambda r: [f"falta '{k}'" for k in obligatorios if k not in r]  # noqa: E731
         motor = "campos obligatorios (jsonschema no instalado)"
     malas = 0
-    for n, linea in enumerate(salida.read_text(encoding="utf-8").splitlines(), 1):
+    for n, linea in enumerate((ln for ln in salida.read_text(encoding="utf-8").split("\n") if ln.strip()), 1):
         for msg in fallos(json.loads(linea)):
             malas += 1
             print(f"   línea {n}: {msg}")

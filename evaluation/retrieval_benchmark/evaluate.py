@@ -93,7 +93,7 @@ def tabla(res: dict, nombre: str) -> str:
 def correr(nombre: str, bm25: Path | None, denso: Path | None, reranker: str | None, cfg: Config,
            dispositivo: str | None = None, salida: Path = RESULTS_ROOT) -> dict:
     rec = Recuperador(bm25, denso, reranker, cfg, dispositivo=dispositivo)
-    items = [json.loads(l) for l in MUESTRA.read_text(encoding="utf-8").splitlines() if l.strip()]
+    items = [json.loads(l) for l in MUESTRA.read_text(encoding="utf-8").split("\n") if l.strip()]
     res = evaluar(rec, items, cfg.k)
     res["config"] = {"nombre": nombre, "bm25": str(bm25), "denso": str(denso), "reranker": reranker,
                      **vars(cfg), "device": dispositivo, "fecha": dt.datetime.now().isoformat(timespec="seconds")}

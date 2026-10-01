@@ -41,7 +41,7 @@ def main():
     t0 = time.perf_counter()
     rec = Recuperador(dir_bm25("todo"), dir_denso("qwen3-emb-0.6b", "todo"), "bge-reranker-v2-m3", cfg,
                       dispositivo=args.device, dispositivo_denso=args.device_denso)
-    items = [json.loads(l) for l in MUESTRA.read_text(encoding="utf-8").splitlines() if l.strip()]
+    items = [json.loads(l) for l in MUESTRA.read_text(encoding="utf-8").split("\n") if l.strip()]
     rec.buscar(items[0]["pregunta"])  # calentamiento: carga de modelos fuera de la medición
     carga = time.perf_counter() - t0
     res = evaluar(rec, items, K)
