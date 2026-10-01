@@ -51,8 +51,8 @@ ARTICULO = re.compile(r"^Artículo (\S+?)\.?(?:\s+(.*))?$")
 CAJA = re.compile(r"^> \*\*(.+?):\*\*")
 RESUELVE = re.compile(r"resuelve|decisi[oó]n|decide|falla", re.I)
 DOC_CAMPOS = ("titulo", "tipo_documento", "tipo_norma", "numero", "anio", "organo_emisor", "sala",
-              "nombre_citable", "vigencia", "areas", "prioridad", "nivel", "origen", "citado_por",
-              "fuente", "url")
+              "tipo_providencia", "radicado", "nombre_citable", "canonico", "epigrafe", "vigencia", "areas",
+              "prioridad", "nivel", "origen", "citado_por", "ocr", "fuente", "url", "fecha_consulta")
 
 
 # ----------------------------------------------------------------- lectura

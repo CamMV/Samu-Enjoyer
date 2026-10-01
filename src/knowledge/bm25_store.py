@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import multiprocessing as mp
+import os
 import time
 from pathlib import Path
 
@@ -21,16 +23,39 @@ from .chunk_store import INDICES, leer_chunks
 from .tokenization import tokens
 
 
-def construir(seleccion: str, salida: Path, limite: int | None = None, raices: bool = True):
+def _tokenizar_lote(args: tuple[list[str], bool]) -> list[list[str]]:
+    textos, raices = args
+    return [tokens(t, raices) for t in textos]
+
+
+def _lotes(seleccion: str, limite: int | None, ids: list[str], raices: bool, n: int = 2000):
+    lote = []
+    for c in leer_chunks(seleccion, limite):
+        ids.append(c["chunk_id"])
+        lote.append(c["texto"])
+        if len(lote) == n:
+            yield lote, raices
+            lote = []
+    if lote:
+        yield lote, raices
+
+
+def construir(seleccion: str, salida: Path, limite: int | None = None, raices: bool = True,
+              procesos: int | None = None):
     salida.mkdir(parents=True, exist_ok=True)
     vocab: dict[str, int] = {}
     ids, docs = [], []
     t0 = time.time()
-    for i, c in enumerate(leer_chunks(seleccion, limite), 1):
-        ids.append(c["chunk_id"])
-        docs.append([vocab.setdefault(t, len(vocab)) for t in tokens(c["texto"], raices)])
-        if i % 200_000 == 0:
-            print(f"   {i} chunks tokenizados, vocabulario {len(vocab)}, {time.time() - t0:.0f} s", flush=True)
+    procesos = procesos or max(1, (os.cpu_count() or 2) - 1)
+    # La tokenización (stemming) va en paralelo; imap conserva el orden, así que los ids
+    # del vocabulario salen iguales en cualquier corrida.
+    with mp.Pool(procesos) as pool:
+        for lote in pool.imap(_tokenizar_lote, _lotes(seleccion, limite, ids, raices), chunksize=4):
+            for toks in lote:
+                docs.append([vocab.setdefault(t, len(vocab)) for t in toks])
+            if len(docs) % 200_000 < len(lote):
+                print(f"   {len(docs)} chunks tokenizados, vocabulario {len(vocab)}, {time.time() - t0:.0f} s",
+                      flush=True)
     print(f"== {len(ids)} chunks, vocabulario {len(vocab)}; indexando", flush=True)
     bm = bm25s.BM25(k1=1.2, b=0.75)
     bm.index(Tokenized(ids=docs, vocab=vocab), show_progress=True)

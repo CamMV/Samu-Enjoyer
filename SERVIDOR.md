@@ -28,19 +28,37 @@ tar -czf corpus_md.tar.gz -C corpus --exclude=md/_cache_doc --exclude=md/_contro
 scp corpus_md.tar.gz usuario@servidor:~/
 ```
 
-En el servidor:
+En el servidor (sin conda: Python del sistema, 3.9 o superior, con un entorno virtual).
+Desde la raíz del repo, con el `.tar.gz` en `corpus/`:
 
 ```bash
-git clone https://github.com/CamMV/Samu-Enjoyer.git && cd Samu-Enjoyer
-conda create -n IA python=3.12 -y && conda activate IA
-pip install torch --index-url https://download.pytorch.org/whl/cu124
+python3 --version                                  # 3.9 o superior
+nvidia-smi                                         # la A40 y la versión de CUDA del driver
+tar -xzf corpus/corpus_md.tar.gz -C corpus         # crea corpus/md/ (31.037 .md + manifest)
+ls corpus/md | wc -l                               # 31038
+mkdir -p ~/envs && python3 -m venv ~/envs/IA      # entorno virtual "IA" en ~/envs (una vez)
+source ~/envs/IA/bin/activate
+which python                                       # /home/<usuario>/envs/IA/bin/python
+pip install --upgrade pip
+pip install torch --index-url https://download.pytorch.org/whl/cu124   # cu121 si el driver es más viejo
 pip install -r requirements.txt -r requirements-rag.txt
-mkdir -p corpus && tar -xzf ~/corpus_md.tar.gz -C corpus
-python -m pytest -q tests                      # 50 pruebas en verde antes de empezar
+python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+python -m pytest -q tests                          # 50 pruebas en verde antes de empezar
+rm corpus/corpus_md.tar.gz                         # opcional, libera 0,7 GB
 ```
 
-Correr todo dentro de `tmux` (o con `nohup`): si se cae la sesión, se relanza el mismo
-comando y cada etapa retoma (chunks, índices y lotes de vectores ya hechos se saltan).
+En el servidor no hace falta LibreOffice ni Tesseract: solo se usan los `.md`.
+Cada vez que se abra una terminal nueva: `source ~/envs/IA/bin/activate`.
+
+Las etapas largas, en segundo plano con `nohup` para que sigan si se cierra la sesión SSH
+(si se cae, se relanza el mismo comando y retoma: chunks, índices y lotes de vectores
+ya hechos se saltan):
+
+```bash
+mkdir -p logs
+nohup python -m evaluation.retrieval_benchmark.run_all --seleccion normas_fichas --device cuda:0 > logs/banco.log 2>&1 &
+tail -f logs/banco.log                             # ver el avance (Ctrl+C sale sin detenerlo)
+```
 
 ## 1. Prueba de humo (5 minutos)
 
