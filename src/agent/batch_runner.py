@@ -9,11 +9,12 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
+import os
 import time
 from pathlib import Path
 
 from src.agent.agent import LegalAgent, consulta_de, get_real_retriever, mock_retriever
-from src.agent.judge_loop import run_with_judge
+from src.agent.graph import run_with_judge
 
 ROOT = Path(__file__).resolve().parents[2]
 # Se usa el primero que exista: el enlace docs_reto/ del repo (CLAUDE.md), la copia en schema/ o la
@@ -56,7 +57,13 @@ def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
     except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
         raise SystemExit(f"Recuperación real no disponible ({type(e).__name__}: {e}). Descomprimir el índice "
                          f"en corpus/ (CLAUDE.md, sección 6) o correr con --mock para probar sin índices.") from e
-    return LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones}))), "real"
+    # El subagente de citas solo SUPRIME las citas fuera de los pasajes. Agregar el pasaje de una cita
+    # que el LLM escribió sin haberlo leído (CITAS_AGREGAR_PASAJES=1) queda apagado: la afirmación no
+    # se redactó con ese texto, y los pasajes dejarían de depender solo de la búsqueda determinista
+    # (en la verificación en vivo, otro LLM/CPU puede citar distinto y cambiar los pasajes).
+    agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"
+    return LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})),
+                      buscador_citas=hook.buscar_cita if agregar else None), "real"
 
 
 def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False) -> int:

@@ -4,9 +4,9 @@ import json
 import pytest
 import requests
 
-from src.agent import judge_loop
+from src.agent import graph
 from src.agent.agent import LegalAgent
-from src.agent.judge_loop import run_with_judge
+from src.agent.graph import run_with_judge
 from src.agent.schemas import CanonicalPassage
 from src.agent.tools import judge_tool
 from src.agent.tools.judge_tool import (build_judge_prompts, citas_fuera_de_pasajes, evaluate_with_judge,
@@ -186,7 +186,7 @@ def test_ciclo_maximo_dos_y_abstencion_forzada(monkeypatch):
 
 
 def test_ciclo_sin_abstencion_elige_el_mejor_borrador(monkeypatch):
-    monkeypatch.setattr(judge_loop, "JUDGE_ABSTENER", False)
+    monkeypatch.setattr(graph, "JUDGE_ABSTENER", False)
     peor = {**RECHAZO, "afirmaciones_sin_soporte": ["a", "b"]}
     _responde(monkeypatch, RECHAZO, peor)
     state, traza = run_with_judge(_agente([]), ITEM)

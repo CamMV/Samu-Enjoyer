@@ -1,4 +1,4 @@
-"""LegalAgent: une flags_tool y writer_tool y produce el borrador estructurado."""
+"""LegalAgent: fachada del grafo de LangGraph (src/agent/graph.py) que produce el borrador estructurado."""
 from __future__ import annotations
 
 import json
@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 from src.agent.citas import borrador_con_citas_legibles
+from src.agent.graph import _FLAG_KEYS, construir_grafo, estado_inicial
 from src.agent.salida import normalizar
 from src.agent.schemas import CanonicalPassage, QuestionState
-from src.agent.tools.flags_tool import extract_query_flags
-from src.agent.tools.writer_tool import mock_write_legal_response, write_legal_response
+from src.agent.tools.citation_search_tool import Buscador, buscar_cita
 
 # La recuperación depende de requirements-rag.txt (faiss, bm25s, torch); el agente debe poder
 # importarse sin ellas.
@@ -21,45 +21,39 @@ except ImportError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parents[2]
 Retriever = Callable[[QuestionState], List[CanonicalPassage]]
-_FLAG_KEYS = ("area", "sub_tarea", "complejidad", "tema", "formato")
 
 
 class LegalAgent:
-    """Orquesta: flags -> pasajes -> redacción. El validador y el juez se aplican después."""
+    """Orquesta el grafo: flags -> consulta -> pasajes -> redacción -> validación de fuentes.
+    Las citas fuera de los pasajes las resuelve el subagente de búsqueda (`buscador_citas`).
+    El juez y su ciclo de reintento se activan con `run_with_judge` (src/agent/graph.py)."""
 
-    def __init__(self, retriever: Optional[Retriever] = None, forzar_mock_escritor: bool = False):
+    def __init__(self, retriever: Optional[Retriever] = None, forzar_mock_escritor: bool = False,
+                 buscador_citas: Optional[Buscador] = None):
+        """`buscador_citas` busca en el corpus una cita que no está en los pasajes (None = sin
+        corpus: esas citas solo se suprimen)."""
         self.retriever = retriever
         self.forzar_mock_escritor = forzar_mock_escritor
+        self.buscador_citas = buscador_citas
+        self._grafos: dict = {}
+
+    def grafo(self, con_juez: bool = False):
+        """Grafo compilado (una vez por agente) con o sin el nodo del juez."""
+        if con_juez not in self._grafos:
+            self._grafos[con_juez] = construir_grafo(self, con_juez)
+        return self._grafos[con_juez]
 
     def build_state(self, raw_item: dict) -> QuestionState:
-        flags = extract_query_flags(raw_item)
-        return QuestionState(
-            id=raw_item["id"],
-            pregunta=raw_item["pregunta"],
-            opciones=raw_item.get("opciones"),
-            legal_basis=raw_item.get("legal_basis"),
-            respuesta_correcta=raw_item.get("respuesta_correcta"),
-            texto_respuesta_correcta=raw_item.get("texto_respuesta_correcta"),
-            **flags,
-        )
+        return estado_inicial(raw_item)
 
     def run(self, raw_item: dict, pasajes: Optional[List[CanonicalPassage]] = None,
             forzar_mock_escritor: Optional[bool] = None) -> QuestionState:
         """Procesa un item. `pasajes` tiene prioridad sobre el retriever; sin ninguno no hay
         pasajes y el borrador resultante es una abstención. `forzar_mock_escritor` (None = el del
         constructor) usa el escritor simulado sin intentar la llamada HTTP al LLM."""
-        state = self.build_state(raw_item)
-        if pasajes is None:
-            pasajes = self.retriever(state) if self.retriever else []
-        state.pasajes_recuperados = pasajes[:10]
-        flags = {k: getattr(state, k) for k in _FLAG_KEYS}
-        mock = self.forzar_mock_escritor if forzar_mock_escritor is None else forzar_mock_escritor
-        escribir = mock_write_legal_response if mock else write_legal_response
-        state.borrador_respuesta = escribir(
-            state.pregunta, flags, state.pasajes_recuperados, state.opciones
-        )
-        state.abstencion = bool(state.borrador_respuesta.get("abstencion", False))
-        return state
+        final = self.grafo().invoke({"raw_item": raw_item, "pasajes": pasajes,
+                                     "mock_escritor": forzar_mock_escritor})
+        return final["state"]
 
     @staticmethod
     def to_submission(state: QuestionState) -> dict:
@@ -126,6 +120,8 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
             for p in resultado.pasajes
         ]
 
+    # Subagente de búsqueda de citas: mismo chunks.sqlite del recuperador, sin cargar nada más.
+    hook.buscar_cita = lambda cita: buscar_cita(cita, recuperador.almacen, recuperador._articulo_completo)
     return hook
 
 
@@ -138,7 +134,9 @@ if __name__ == "__main__":
         hook = get_real_retriever()
         # LegalAgent llama al retriever con el QuestionState; el hook recibe el texto de búsqueda
         # (pregunta + opciones en las cerradas).
-        agente = LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})))
+        agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"  # ver batch_runner.crear_agente
+        agente = LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})),
+                            buscador_citas=hook.buscar_cita if agregar else None)
         print("Retriever REAL (corpus/indices)")
     except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
         print(f"Retriever real no disponible ({type(e).__name__}: {e}); se usa mock_retriever")

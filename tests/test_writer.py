@@ -64,3 +64,14 @@ def test_pasaje_largo_se_recorta_solo_en_el_prompt():
     assert len(largo.texto) > 40_000  # el pasaje original (el que va a submissions.jsonl) no cambia
     corto = PASAJES[0]
     assert writer_tool.texto_para_prompt(corto) == corto.texto
+
+
+def test_subagente_de_citas_solo_suprime_por_defecto(monkeypatch):
+    def hook(consulta):
+        return []
+    hook.buscar_cita = lambda cita: None
+    monkeypatch.setattr(batch_runner, "get_real_retriever", lambda: hook)
+    monkeypatch.delenv("CITAS_AGREGAR_PASAJES", raising=False)
+    assert batch_runner.crear_agente(mock=False)[0].buscador_citas is None
+    monkeypatch.setenv("CITAS_AGREGAR_PASAJES", "1")
+    assert batch_runner.crear_agente(mock=False)[0].buscador_citas is hook.buscar_cita

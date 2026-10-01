@@ -51,6 +51,8 @@ class QuestionState(BaseModel):
     # --- Salida y evaluación ---
     borrador_respuesta: Optional[Dict[str, Any]] = None
     citas_invalidas: List[str] = Field(default_factory=list)
+    busqueda_citas: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Informe del subagente de búsqueda de citas (agregada / suprimida)")
     juez_feedback: Optional[str] = None
     aprobado_por_juez: Optional[bool] = None
     abstencion: bool = False
