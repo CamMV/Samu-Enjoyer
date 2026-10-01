@@ -8,4 +8,6 @@ envs/
 logs/
 ./docs_reto
 *.tar
+# Configuración por máquina y llaves (la plantilla versionada es .env.example)
+.env
 

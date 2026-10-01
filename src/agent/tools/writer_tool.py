@@ -6,9 +6,10 @@ servida por vLLM / Ollama / llama.cpp con API compatible con OpenAI
 cerrados (OpenAI, Anthropic, Google, Cohere): el cliente es `requests` puro y
 se rechaza cualquier LLM_BASE_URL que apunte a un SaaS de terceros.
 
-Si la llamada falla (caída de conexión, timeout, error HTTP), cae a un
-fallback determinista (mock) que devuelve un JSON válido según
-submission.schema.json.
+Si la llamada falla (caída de conexión, timeout, error HTTP), la pregunta queda
+en abstención y el error se avisa en stderr: nunca se entrega una respuesta
+simulada como si fuera real. El escritor simulado (mock) solo se usa a pedido
+(`--mock` en batch_runner).
 
 Dependencias (ver requirements-agent.txt):
     pydantic>=2.6.0      modelos CanonicalPassage / QuestionState
@@ -18,13 +19,15 @@ Dependencias (ver requirements-agent.txt):
 Configuración por entorno o .env:
     LLM_BASE_URL  (default http://localhost:8000/v1)
     LLM_MODEL     (default Qwen/Qwen3-8B)
-    LLM_TIMEOUT   segundos (default 30)
+    LLM_TIMEOUT   segundos (default 300: en el portátil el LLM corre en CPU y leer
+                  10 pasajes toma minutos)
 """
 from __future__ import annotations
 
 import json
 import os
 import re
+import sys
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -37,7 +40,7 @@ load_dotenv()
 
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "http://localhost:8000/v1")
 LLM_MODEL = os.environ.get("LLM_MODEL", "Qwen/Qwen3-8B")
-LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "30"))
+LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT", "300"))
 
 # Proveedores cerrados prohibidos por el reto (causal de descalificación).
 _HOSTS_PROHIBIDOS = ("openai", "anthropic", "google", "googleapis", "cohere", "azure", "mistral")
@@ -45,7 +48,7 @@ _HOSTS_PROHIBIDOS = ("openai", "anthropic", "google", "googleapis", "cohere", "a
 _SYSTEM_BASE = (
     "Eres un asistente jurídico colombiano. Responde EXCLUSIVAMENTE con la información de los "
     "PASAJES entregados; no uses conocimiento externo ni inventes normas. Cita cada norma con su "
-    "ID canónico exactamente como aparece entre corchetes (ej. [ley_1564_2012/art_42]). No cites "
+    "ID canónico exactamente como aparece entre corchetes (ej. [codigo_general_proceso/art_42]). No cites "
     "ningún ID que no esté en los pasajes. No presentes como vigente una norma marcada derogada o "
     "transitoria. Si los pasajes no bastan para responder, devuelve {\"abstencion\": true}. "
     "Responde SOLO con un objeto JSON válido, sin texto adicional."
@@ -187,7 +190,7 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
 
     Devuelve el borrador con las llaves del schema de entrega para ese formato
     más `formato` y `abstencion`. Sin pasajes, abstención. Si la llamada al servidor
-    LLM falla, usa `mock_write_legal_response`; si responde JSON inválido, abstención.
+    LLM falla o responde JSON inválido, abstención (con aviso en stderr si falló la llamada).
     """
     formato = flags["formato"]
     if not pasajes:
@@ -195,8 +198,10 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
     system, user = build_prompts(pregunta, flags, pasajes, opciones)
     try:
         salida = _llamar_llm(system, user)
-    except requests.exceptions.RequestException:  # conexión caída, timeout, HTTP error
-        return mock_write_legal_response(pregunta, flags, pasajes, opciones)
+    except requests.exceptions.RequestException as e:  # conexión caída, timeout, HTTP error
+        print(f"   AVISO: el LLM no respondió ({type(e).__name__}: {e}); la pregunta queda en abstención",
+              file=sys.stderr, flush=True)
+        return _abstencion(formato)
     try:
         borrador = _parsear_json(salida)
     except ValueError:  # JSON inválido: el servidor respondió, no se enmascara con el mock

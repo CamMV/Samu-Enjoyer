@@ -16,10 +16,12 @@ from src.agent.agent import LegalAgent, consulta_de, get_real_retriever, mock_re
 from src.agent.judge_loop import run_with_judge
 
 ROOT = Path(__file__).resolve().parents[2]
-# Esto se está ejecutando localmente, así que toca verificar que los schemas los tenga usted en la ruta de su máquina. 
-SCHEMAS = (Path("C:/Users/choco/Documents/COURSES/HackathonAI/schema/submission.schema.json"),
+# Se usa el primero que exista: el enlace docs_reto/ del repo (CLAUDE.md), la copia en schema/ o la
+# carpeta del reto junto al repo.
+SCHEMAS = (ROOT / "docs_reto" / "schema" / "submission.schema.json",
+           ROOT / "schema" / "submission.schema.json",
            ROOT.parent / "HackathonAI" / "schema" / "submission.schema.json",
-           ROOT / "schema" / "submission.schema.json")
+           Path("C:/Users/choco/Documents/COURSES/HackathonAI/schema/submission.schema.json"))
 FORMATOS = ("multiple_choice", "semi_open", "open_ended")
 _VACIO = {
     "multiple_choice": {"respuesta_correcta": None, "justificacion": "", "descarte_opciones": {}},
@@ -45,13 +47,16 @@ def registro_abstencion(item: dict, formato: str | None = None) -> dict:
 
 
 def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
-    if not mock:
-        try:
-            hook = get_real_retriever()
-            return LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones}))), "real"
-        except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
-            print(f"Retriever real no disponible ({type(e).__name__}: {e}); se usa mock_retriever", flush=True)
-    return LegalAgent(mock_retriever, forzar_mock_escritor=mock), "mock"
+    """Con `mock`, pasajes y escritor simulados. Sin `mock`, la recuperación real o un error: una
+    corrida real nunca cae en pasajes simulados (el LLM respondería sobre texto inventado)."""
+    if mock:
+        return LegalAgent(mock_retriever, forzar_mock_escritor=True), "mock"
+    try:
+        hook = get_real_retriever()
+    except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
+        raise SystemExit(f"Recuperación real no disponible ({type(e).__name__}: {e}). Descomprimir el índice "
+                         f"en corpus/ (CLAUDE.md, sección 6) o correr con --mock para probar sin índices.") from e
+    return LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones}))), "real"
 
 
 def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False) -> int:

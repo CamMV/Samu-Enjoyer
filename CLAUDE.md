@@ -145,8 +145,36 @@ Después: `python -m src.knowledge.verify_indices` debe terminar en `TODO CORREC
 
 ## 7. Agente — decisiones y pendientes
 
-- **LLM recomendado:** Qwen3-8B GGUF Q4_K_M con llama.cpp (servidor local con API compatible), temperatura 0, top_k=1, semilla fija, sin modo de razonamiento, peticiones secuenciales. Mismo motor en la A40 (992 preguntas) y en el portátil (verificación en vivo).
-- **Portátil, 4 GB de GPU:** el reranker ocupa ~2,8 GB (el embedder va en CPU, ver sección 5); Qwen3-8B Q4 (~5 GB) no cabe: el LLM va en CPU o con pocas capas en GPU (llama.cpp `-ngl` parcial). El agente debe crear el `Recuperador` con `dispositivo_denso="cpu"` en el portátil.
+- **LLM recomendado:** Qwen3-8B GGUF Q4_K_M con llama.cpp (servidor local con API compatible), temperatura 0, top_k=1, semilla fija, sin modo de razonamiento, peticiones secuenciales. Mismo motor en la A40 (992 preguntas) y en el portátil (verificación en vivo). **Contexto de 16k** (`-c 16384`): 10 pasajes, con artículos largos reunidos, llegan a 8.000-10.000 tokens. Escritor y juez usan el mismo modelo y servidor (`JUDGE_MODEL` y `JUDGE_BASE_URL` toman por defecto `LLM_MODEL` y `LLM_BASE_URL`).
+- **Citas en la entrega:** el escritor cita con IDs canónicos entre corchetes (los usan el validador y el juez), pero el evaluador oficial no reconoce ese formato. `LegalAgent.to_submission` los reescribe con `src/agent/citas.py`: `[codigo_general_proceso/art_42]` → "(artículo 42 del Código General del Proceso (Ley 1564 de 2012))", con el nombre del encabezado del pasaje, así que toda cita queda respaldada. Probado con los pasajes reales de las 50 preguntas: 401/410 reconocidas y respaldadas (las 9 restantes son sentencias `csj_` sin cita reconocible en su propio texto).
+- **Fallas:** si el LLM no responde en `LLM_TIMEOUT` (300 s por defecto) la pregunta queda en **abstención** con aviso en stderr; nunca se entrega una respuesta simulada. Una corrida real sin índices se detiene con error; los pasajes y el escritor simulados solo se usan con `--mock`.
+- **Portátil, 4 GB de GPU:** el reranker ocupa ~2,8 GB (el embedder va en CPU con `RAG_DEVICE_DENSO=cpu`, ver sección 8); Qwen3-8B Q4 (~5 GB) no cabe: el LLM va en CPU o con pocas capas en GPU (llama.cpp `-ngl` parcial).
 - **Verificación en vivo (2-3 preguntas, ~10 min):** los pasajes ya son idénticos entre máquinas; las **normas citadas dependen del LLM** y CUDA (A40) vs CPU (portátil) pueden diferir aun con temperatura 0. Antes del sábado: correr las mismas 5 preguntas en ambas máquinas con el mismo GGUF y comparar normas citadas; si difieren, regenerar en la A40 con la misma configuración de llama.cpp que el portátil las preguntas que pida el jurado.
 - **Pendientes:** conectar el agente al recuperador y correr `scripts/evaluate.py --split sample` para el reporte del viernes 2/oct 17:00; reescritor de consultas para abiertas; `CORPUS.md`; README con comando único y sección "Corpus e índice"; subir el zip; informe técnico (3 páginas).
 - **Anomalías de datos conocidas (sin corregir):** `doc_id` `ley_09060_204a` (metadato mal leído en la conversión); sentencias de la CSJ con prefijo `csj_` se tratan como normas.
+---
+
+## 8. Cómo probar el agente (cualquier máquina del equipo)
+
+1. **Dependencias** (Python 3.12; en GPU, primero torch con CUDA):
+   ```bash
+   pip install torch --index-url https://download.pytorch.org/whl/cu124
+   pip install -r requirements.txt -r requirements-rag.txt -r requirements-agent.txt
+   ```
+2. **Índice:** descargar el zip del entregable 5 (sección 6), descomprimirlo en la raíz del repo y comprobar con `python -m src.knowledge.verify_indices` (debe terminar en `TODO CORRECTO`). Pesa ~15 GB descomprimido.
+3. **Configuración por máquina:** copiar `.env.example` como `.env` (no se versiona) y ajustar:
+   - `LLM_BASE_URL` del servidor local del LLM (por defecto `http://localhost:8000/v1`).
+   - **`RAG_DEVICE_DENSO=cpu` en GPUs de ≤ 8 GB** (portátiles): el embedder de la consulta va en CPU y el reranker en GPU. Sin esto, en 4 GB cada búsqueda tarda ~60 s en vez de ~6 s. Los pasajes salen idénticos. En la A40 se deja vacío.
+4. **LLM local** (Qwen3-8B GGUF Q4_K_M con llama.cpp; escritor y juez usan el mismo servidor):
+   ```bash
+   llama-server -m Qwen3-8B-Q4_K_M.gguf --port 8000 -c 16384 --jinja --temp 0 --top-k 1 --seed 42 -ngl 99
+   ```
+   `-ngl 99` pone todas las capas en GPU (A40); en un portátil, `-ngl 0` (todo en CPU) o unas pocas capas si sobra memoria después del reranker. `--jinja` es necesario para que funcione `enable_thinking: false` (sin bloque `<think>`).
+5. **Correr y evaluar:**
+   ```bash
+   python -m src.agent.batch_runner --mock --limite 3 --salida /tmp/prueba.jsonl     # humo: sin índices ni LLM
+   python -m src.agent.batch_runner --limite 3 --salida entregables/prueba.jsonl     # real, 3 preguntas
+   python -m src.agent.batch_runner --juez --salida entregables/submissions.jsonl    # las 50 con juez (máx. 2 ciclos)
+   python scripts/evaluate.py --submission entregables/submissions.jsonl --split sample
+   ```
+   Una corrida real sin índices se detiene con error (no usa pasajes simulados); si el LLM no responde, esa pregunta queda en abstención y se avisa en el log.
