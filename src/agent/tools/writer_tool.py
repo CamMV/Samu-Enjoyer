@@ -132,7 +132,10 @@ def _verificar_host_local(base_url: str) -> None:
 
 def _llamar_llm(system: str, user: str) -> str:
     """POST al Qwen3-8B local (modelo abierto). Lanza `requests.exceptions.RequestException`
-    si falla la conexión, hay timeout o el servidor responde con error HTTP."""
+    si falla la conexión, hay timeout o el servidor responde con error HTTP.
+
+    Sin modo de razonamiento: con él las cerradas tardarían minutos más en el portátil (CPU,
+    ~2 tokens/s) y la verificación en vivo no reproduciría las respuestas de la A40."""
     _verificar_host_local(LLM_BASE_URL)
     payload = {
         "model": LLM_MODEL,

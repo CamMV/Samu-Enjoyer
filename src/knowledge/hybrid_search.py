@@ -50,6 +50,16 @@ class Config:
     # `normas` candidatos de cada uno como listas extra en el RRF. 0 = no se usa.
     # Con 50: recall_citas@10 0,898 -> 0,919, recall_docs@10 0,764 -> 0,785, MRR 0,380 -> 0,416.
     normas: int = 50
+    # Cerradas: además de pregunta + todas las opciones, una búsqueda (BM25 y HNSW) por cada
+    # "pregunta + opción X", con `por_opcion` candidatos cada una, como listas extra en el RRF: lo
+    # que distingue a una opción (p. ej. "Fintech") no se diluye entre las cuatro. 0 = no se usa.
+    por_opcion: int = 0
+    # Seguir las citas (rewriter determinista, sin LLM): de los `seguir_desde` primeros de la fusión
+    # se extraen las normas que citan (extractor del evaluador oficial) y los `seguir_citas`
+    # artículos más citados entran como otra lista en el RRF. Ataca el caso típico de las
+    # abiertas: llegan sentencias que mencionan el artículo, pero no el artículo. 0 = no se usa.
+    seguir_citas: int = 0
+    seguir_desde: int = 20
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -86,6 +96,13 @@ PERFILES.update({
     # sentencias: lista aparte sobre solo normas.
     "ganador_normas50": {**_GANADOR, "normas": 50},
     "ganador_normas100": {**_GANADOR, "normas": 100},
+})
+_NORMAS50 = PERFILES["ganador_normas50"]
+PERFILES.update({
+    # Búsqueda por opción en las cerradas y seguimiento de citas (ver Config).
+    "ganador_opciones": {**_NORMAS50, "por_opcion": 50},
+    "ganador_citas": {**_NORMAS50, "seguir_citas": 10},
+    "ganador_ambas": {**_NORMAS50, "por_opcion": 50, "seguir_citas": 10},
 })
 
 
@@ -142,7 +159,17 @@ class Recuperador:
                 self.denso_normas = IndiceDenso(_hermano(denso), dispositivo)
                 assert self.denso_normas.info["modelo"] == self.denso.info["modelo"]
 
-    def buscar(self, consulta: str) -> Resultado:
+    def buscar_item(self, item: dict) -> Resultado:
+        """Búsqueda para una pregunta (dict con "pregunta" y, en las cerradas, "opciones")."""
+        extras = []
+        if self.cfg.por_opcion and isinstance(item.get("opciones"), dict):
+            pregunta = item.get("pregunta", "").strip()
+            extras = [(k, f"{pregunta}\n{k}) {v}") for k, v in sorted(item["opciones"].items())]
+        return self.buscar(consulta_de(item), extras)
+
+    def buscar(self, consulta: str, extras: list[tuple[str, str]] = ()) -> Resultado:
+        """`extras`: (nombre, consulta) adicionales (p. ej. una por opción); cada una aporta su
+        lista de BM25 y de HNSW a la fusión. El reranker siempre puntúa contra `consulta`."""
         cfg, t, etapas = self.cfg, {}, {}
         t0 = time.perf_counter()
         citadas = chunks_citados(consulta, self.almacen) if cfg.usar_citas else []
@@ -169,7 +196,26 @@ class Recuperador:
                 etapas["denso_normas"] = [c for c, _ in self.denso_normas.buscar_vector(v, cfg.normas)]
                 listas.append(etapas["denso_normas"])
             t["normas"] = time.perf_counter() - t0
+        if extras and cfg.por_opcion:
+            t0 = time.perf_counter()
+            for nombre, q in extras:
+                if self.bm25:
+                    etapas[f"opcion_{nombre}_bm25"] = [c for c, _ in self.bm25.buscar(q, cfg.por_opcion)]
+                    listas.append(etapas[f"opcion_{nombre}_bm25"])
+                if self.denso:
+                    vq = self.denso.vector(q)
+                    etapas[f"opcion_{nombre}_denso"] = [c for c, _ in self.denso.buscar_vector(vq, cfg.por_opcion)]
+                    listas.append(etapas[f"opcion_{nombre}_denso"])
+            t["opciones"] = time.perf_counter() - t0
         fusion = rrf(listas)
+        if cfg.seguir_citas:
+            t0 = time.perf_counter()
+            seguidas = self._citas_seguidas([c for c, _ in fusion[:cfg.seguir_desde]])
+            t["seguir_citas"] = time.perf_counter() - t0
+            if seguidas:
+                etapas["citas_seguidas"] = seguidas
+                listas.append(seguidas)
+                fusion = rrf(listas)
         etapas["rrf"] = [c for c, _ in fusion]
 
         pool = [c for c, _ in fusion[:cfg.n_rerank]]
@@ -203,6 +249,27 @@ class Recuperador:
         t["seleccion"] = time.perf_counter() - t0
         etapas["final"] = [p["chunk_id"] for p in pasajes]
         return Resultado(pasajes, etapas, {k: round(v, 3) for k, v in t.items()})
+
+    def _citas_seguidas(self, top: list[str]) -> list[str]:
+        """Chunks de los artículos (o fichas) que más citan los pasajes `top`, en orden de cuántos
+        pasajes los citan (desempate por id). Un artículo partido trae todas sus partes."""
+        datos = self.almacen.get(top)
+        conteo: dict[str, int] = {}
+        chunks_de: dict[str, list[str]] = {}
+        for cid in top:
+            if cid not in datos:
+                continue
+            vistos = set()
+            for citado in chunks_citados(datos[cid]["texto"], self.almacen):
+                unidad = citado.split("#", 1)[0]
+                chunks_de.setdefault(unidad, [])
+                if citado not in chunks_de[unidad]:
+                    chunks_de[unidad].append(citado)
+                if unidad not in vistos:
+                    vistos.add(unidad)
+                    conteo[unidad] = conteo.get(unidad, 0) + 1
+        mejores = sorted(conteo, key=lambda u: (-conteo[u], u))[:self.cfg.seguir_citas]
+        return [c for u in mejores for c in sorted(chunks_de[u])]
 
     def _seleccionar(self, ajustados: list[tuple[str, float]], datos: dict,
                      citadas: set[str] = frozenset()) -> list[dict]:

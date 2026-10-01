@@ -108,8 +108,12 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
     recuperador = Recuperador(bm25_path, denso_path, "bge-reranker-v2-m3", Config(),
                               dispositivo_denso=os.environ.get("RAG_DEVICE_DENSO") or None)
 
-    def hook(query: str) -> List[CanonicalPassage]:
-        resultado = recuperador.buscar(query)
+    def hook(consulta) -> List[CanonicalPassage]:
+        """`consulta`: dict con "pregunta" (y "opciones" en las cerradas) o texto libre."""
+        if isinstance(consulta, dict):
+            resultado = recuperador.buscar_item(consulta)
+        else:
+            resultado = recuperador.buscar(consulta)
         return [
             CanonicalPassage(
                 id=p["chunk_id"],
@@ -135,7 +139,7 @@ if __name__ == "__main__":
         # LegalAgent llama al retriever con el QuestionState; el hook recibe el texto de búsqueda
         # (pregunta + opciones en las cerradas).
         agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"  # ver batch_runner.crear_agente
-        agente = LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})),
+        agente = LegalAgent(lambda s: hook({"pregunta": s.pregunta, "opciones": s.opciones}),
                             buscador_citas=hook.buscar_cita if agregar else None)
         print("Retriever REAL (corpus/indices)")
     except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles

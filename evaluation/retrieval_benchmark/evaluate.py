@@ -25,7 +25,7 @@ from pathlib import Path
 from evaluation.retrieval_benchmark.config import K, MUESTRA, RESULTS_ROOT
 from evaluation.retrieval_benchmark.metrics import media, ndcg_at_k, recall, reciprocal_rank
 from src.knowledge.citation_lookup import cuerpos, documentos_citados
-from src.knowledge.hybrid_search import Config, Recuperador, consulta_de
+from src.knowledge.hybrid_search import Config, Recuperador
 
 ETAPAS = ["bm25", "denso", "rrf", "rerank", "final"]
 
@@ -40,7 +40,7 @@ def evaluar(rec: Recuperador, items: list[dict], k: int = K) -> dict:
     for it in items:
         oro_cuerpos = cuerpos(it.get("legal_basis", ""))
         oro_docs = set(documentos_citados(it.get("legal_basis", "")))
-        r = rec.buscar(consulta_de(it))
+        r = rec.buscar_item(it)
         for etapa, v in r.tiempos.items():
             tiempos[etapa].append(v)
         fila = {"id": it["id"], "formato": it["formato"], "area": it.get("area"),

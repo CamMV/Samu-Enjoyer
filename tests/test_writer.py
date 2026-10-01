@@ -83,3 +83,12 @@ def test_subagente_de_citas_solo_suprime_por_defecto(monkeypatch):
     assert batch_runner.crear_agente(mock=False)[0].buscador_citas is None
     monkeypatch.setenv("CITAS_AGREGAR_PASAJES", "1")
     assert batch_runner.crear_agente(mock=False)[0].buscador_citas is hook.buscar_cita
+
+
+def test_batch_runner_filtra_por_formato(tmp_path):
+    salida = tmp_path / "cerradas.jsonl"
+    batch_runner.ejecutar(batch_runner.ROOT / "data" / "sample_50.jsonl", salida, None, mock=True,
+                          formato="multiple_choice")
+    import json
+    filas = [json.loads(l) for l in salida.read_text(encoding="utf-8").splitlines()]
+    assert len(filas) == 15 and {f["formato"] for f in filas} == {"multiple_choice"}

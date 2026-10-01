@@ -2,6 +2,7 @@
 
     python -m src.agent.batch_runner --entrada data/sample_50.jsonl --salida entregables/submissions.jsonl
     python -m src.agent.batch_runner --limite 3 --mock --salida test_submissions.jsonl
+    python -m src.agent.batch_runner --juez --formato multiple_choice --salida cerradas.jsonl   # solo las cerradas
     python -m src.agent.batch_runner --juez      # con LLM as judge (máx. 2 ciclos); traza en <salida>.juez.jsonl
 """
 from __future__ import annotations
@@ -13,7 +14,7 @@ import os
 import time
 from pathlib import Path
 
-from src.agent.agent import LegalAgent, consulta_de, get_real_retriever, mock_retriever
+from src.agent.agent import LegalAgent, get_real_retriever, mock_retriever
 from src.agent.graph import run_with_judge
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -62,14 +63,17 @@ def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
     # se redactó con ese texto, y los pasajes dejarían de depender solo de la búsqueda determinista
     # (en la verificación en vivo, otro LLM/CPU puede citar distinto y cambiar los pasajes).
     agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"
-    return LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})),
+    return LegalAgent(lambda s: hook({"pregunta": s.pregunta, "opciones": s.opciones}),
                       buscador_citas=hook.buscar_cita if agregar else None), "real"
 
 
-def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False) -> int:
+def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False,
+             formato: str | None = None) -> int:
     items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").splitlines() if ln.strip()]
     if limite:
         items = items[:limite]
+    if formato:  # p. ej. solo las cerradas, para medir un cambio rápido
+        items = [it for it in items if it.get("formato") == formato]
     agente, modo = crear_agente(mock)
     salida.parent.mkdir(parents=True, exist_ok=True)
     total, errores = len(items), 0
@@ -133,10 +137,11 @@ def main():
     ap.add_argument("--entrada", type=Path, default=ROOT / "data" / "sample_50.jsonl")
     ap.add_argument("--salida", type=Path, default=ROOT / "entregables" / "submissions.jsonl")
     ap.add_argument("--limite", type=int, help="solo los primeros N casos")
+    ap.add_argument("--formato", choices=FORMATOS, help="solo las preguntas de ese formato")
     ap.add_argument("--mock", action="store_true", help="pasajes simulados, sin cargar índices")
     ap.add_argument("--juez", action="store_true", help="revisa cada borrador con el LLM as judge (máx. 2 ciclos)")
     args = ap.parse_args()
-    ejecutar(args.entrada, args.salida, args.limite, args.mock, args.juez)
+    ejecutar(args.entrada, args.salida, args.limite, args.mock, args.juez, args.formato)
 
 
 if __name__ == "__main__":
