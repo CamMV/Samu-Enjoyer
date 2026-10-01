@@ -124,11 +124,15 @@ def consulta_de(item: dict) -> str:
 
 class Recuperador:
     def __init__(self, bm25: Path | None, denso: Path | None, reranker: str | None,
-                 config: Config | None = None, almacen: Almacen | None = None, dispositivo: str | None = None):
+                 config: Config | None = None, almacen: Almacen | None = None, dispositivo: str | None = None,
+                 dispositivo_denso: str | None = None):
+        """dispositivo_denso: dónde se embebe la consulta (por defecto, el mismo del reranker). En el
+        portátil de 4 GB va en "cpu": con los dos modelos en la GPU, Windows desborda la memoria a la
+        RAM y el reranker pasa de 3,6 s a 59 s; los pasajes salen idénticos (50/50 contra la A40)."""
         self.cfg = config or Config()
         self.almacen = almacen or Almacen()
         self.bm25 = IndiceBM25(bm25) if bm25 else None
-        self.denso = IndiceDenso(denso, dispositivo) if denso else None
+        self.denso = IndiceDenso(denso, dispositivo_denso or dispositivo) if denso else None
         self.reranker = Reranker(reranker, dispositivo) if reranker else None
         self.bm25_normas = self.denso_normas = None
         if self.cfg.normas:

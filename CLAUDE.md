@@ -92,7 +92,7 @@ Descartados con datos: bge-m3 y e5-large-instruct (embedders), Qwen3-Reranker-0.
 - Por formato (final, recall_citas / recall_docs): opción múltiple 0,962 / 0,808 (15 preguntas), semiabierta 0,965 / 0,819 (30), **abierta 0,5 / 0,5 (5)**. Las abiertas son preguntas de caso que no nombran la norma: le toca al reescritor de consultas del agente.
 - **recall_docs es el techo de citas del agente**: el validador solo acepta citas cuyo documento esté entre los 10 pasajes.
 - Tiempo por pregunta en la A40: ~1 s (reranker 0,66 s, BM25 0,19 s, denso 0,11 s, normas 0,04 s).
-- Portátil (RTX 3050 Ti, 4 GB): PENDIENTE — `python -m evaluation.retrieval_benchmark.compare_machines --device cuda --nombre portatil` mide tiempos y compara los 10 pasajes de cada pregunta con la A40 (`results/maquina_portatil.json`).
+- **Portátil (RTX 3050 Ti, 4 GB): determinismo verificado, 50/50 preguntas con los mismos 10 pasajes en el mismo orden que la A40** y métricas idénticas. Configuración obligatoria: **embedder de la consulta en CPU, reranker en GPU** (`Recuperador(..., dispositivo="cuda", dispositivo_denso="cpu")`): **6,4 s por pregunta** (reranker 3,6 s, denso 1,9 s, BM25 0,6 s; carga inicial ~100 s). Con los dos modelos en la GPU, Windows desborda la memoria a la RAM y el reranker sube a 59 s. Se repite con `python -m evaluation.retrieval_benchmark.compare_machines --device cuda --device-denso cpu --nombre portatil_denso_cpu` (`results/maquina_portatil_denso_cpu.json`).
 
 ### Dónde están las comparaciones (para el informe)
 
@@ -146,6 +146,7 @@ Después: `python -m src.knowledge.verify_indices` debe terminar en `TODO CORREC
 ## 7. Agente — decisiones y pendientes
 
 - **LLM recomendado:** Qwen3-8B GGUF Q4_K_M con llama.cpp (servidor local con API compatible), temperatura 0, top_k=1, semilla fija, sin modo de razonamiento, peticiones secuenciales. Mismo motor en la A40 (992 preguntas) y en el portátil (verificación en vivo).
-- **Portátil, 4 GB de GPU:** el embedder de la consulta y el reranker ocupan ~3,5 GB; Qwen3-8B Q4 (~5 GB) no cabe al mismo tiempo: el LLM va con capas en CPU (llama.cpp `-ngl` parcial) o el reranker en CPU.
+- **Portátil, 4 GB de GPU:** el reranker ocupa ~2,8 GB (el embedder va en CPU, ver sección 5); Qwen3-8B Q4 (~5 GB) no cabe: el LLM va en CPU o con pocas capas en GPU (llama.cpp `-ngl` parcial). El agente debe crear el `Recuperador` con `dispositivo_denso="cpu"` en el portátil.
+- **Verificación en vivo (2-3 preguntas, ~10 min):** los pasajes ya son idénticos entre máquinas; las **normas citadas dependen del LLM** y CUDA (A40) vs CPU (portátil) pueden diferir aun con temperatura 0. Antes del sábado: correr las mismas 5 preguntas en ambas máquinas con el mismo GGUF y comparar normas citadas; si difieren, regenerar en la A40 con la misma configuración de llama.cpp que el portátil las preguntas que pida el jurado.
 - **Pendientes:** conectar el agente al recuperador y correr `scripts/evaluate.py --split sample` para el reporte del viernes 2/oct 17:00; reescritor de consultas para abiertas; `CORPUS.md`; README con comando único y sección "Corpus e índice"; subir el zip; informe técnico (3 páginas).
 - **Anomalías de datos conocidas (sin corregir):** `doc_id` `ley_09060_204a` (metadato mal leído en la conversión); sentencias de la CSJ con prefijo `csj_` se tratan como normas.
