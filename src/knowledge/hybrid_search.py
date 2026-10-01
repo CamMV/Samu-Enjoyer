@@ -66,6 +66,12 @@ PERFILES.update({
     "completo_seccion": {**_COMPLETO, "penal_tipo": {**_COMPLETO["penal_tipo"], "seccion": 0.1}},
     "completo_c200": {**_COMPLETO, "candidatos": 200},
     "completo_c200_100": {**_COMPLETO, "candidatos": 200, "n_rerank": 100},
+    # Corpus completo: 100 al reranker sube recall_citas 0,862 -> 0,886; el castigo a "seccion"
+    # mejora el orden (MRR 0,294 -> 0,369) sin cambiar el recall. Se combinan.
+    "completo_100_seccion": {**_COMPLETO, "n_rerank": 100,
+                             "penal_tipo": {**_COMPLETO["penal_tipo"], "seccion": 0.1}},
+    "completo_150_seccion": {**_COMPLETO, "n_rerank": 150,
+                             "penal_tipo": {**_COMPLETO["penal_tipo"], "seccion": 0.1}},
 })
 
 
