@@ -313,10 +313,14 @@ python scripts/evaluate.py --submission submissions.jsonl --split sample --ragas
 ### Subagente de búsqueda de citas
 
 Antes del juez, `src/agent/tools/citation_search_tool.py` (nodo `buscar_citas` del
-grafo, determinista y sin LLM) revisa cada cita del borrador que no está entre los
-pasajes recuperados y la busca en `corpus/chunks/chunks.sqlite`: si existe y está
-vigente agrega su pasaje (sustituye al último pasaje no citado, nunca más de 10); si
-no, la suprime del borrador.
+grafo, determinista y sin LLM) **suprime del borrador** cada cita que no está entre los
+pasajes recuperados: toda respuesta se redacta solo con los 10 pasajes de la búsqueda.
+
+Con `CITAS_AGREGAR_PASAJES=1` (apagado por defecto) busca además la cita en
+`corpus/chunks/chunks.sqlite` y, si existe y está vigente, agrega su pasaje (sustituye al
+último pasaje no citado, nunca más de 10). Está apagado porque la afirmación no se
+redactó con ese texto y porque los pasajes dejarían de depender solo de la búsqueda
+determinista, que es lo que se reproduce en la verificación en vivo.
 
 ### LLM as judge
 

@@ -8,6 +8,7 @@ from typing import Callable, List, Optional
 
 from src.agent.citas import borrador_con_citas_legibles
 from src.agent.graph import _FLAG_KEYS, construir_grafo, estado_inicial
+from src.agent.salida import normalizar
 from src.agent.schemas import CanonicalPassage, QuestionState
 from src.agent.tools.citation_search_tool import Buscador, buscar_cita
 
@@ -58,11 +59,11 @@ class LegalAgent:
     def to_submission(state: QuestionState) -> dict:
         """Registro conforme a submission.schema.json (sin campos internos de evaluación).
 
-        Las citas `[doc_id/art_N]` del borrador se reescriben como citas que reconoce el
-        evaluador oficial ("artículo N del ..."): ver src/agent/citas.py."""
-        borrador = borrador_con_citas_legibles(dict(state.borrador_respuesta or {}), state.pasajes_recuperados)
-        borrador.pop("formato", None)
-        borrador.pop("abstencion", None)
+        Cada campo queda con el tipo del esquema (src/agent/salida.py) y las citas
+        `[doc_id/art_N]` se reescriben como citas que reconoce el evaluador oficial
+        ("artículo N del ..."): ver src/agent/citas.py."""
+        borrador = normalizar(dict(state.borrador_respuesta or {}), state.formato, state.opciones)
+        borrador = borrador_con_citas_legibles(borrador, state.pasajes_recuperados)
         return {
             "id": state.id,
             "formato": state.formato,
@@ -133,8 +134,9 @@ if __name__ == "__main__":
         hook = get_real_retriever()
         # LegalAgent llama al retriever con el QuestionState; el hook recibe el texto de búsqueda
         # (pregunta + opciones en las cerradas).
+        agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"  # ver batch_runner.crear_agente
         agente = LegalAgent(lambda s: hook(consulta_de({"pregunta": s.pregunta, "opciones": s.opciones})),
-                            buscador_citas=hook.buscar_cita)
+                            buscador_citas=hook.buscar_cita if agregar else None)
         print("Retriever REAL (corpus/indices)")
     except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
         print(f"Retriever real no disponible ({type(e).__name__}: {e}); se usa mock_retriever")

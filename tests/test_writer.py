@@ -55,3 +55,23 @@ def test_rag_device_denso_llega_al_recuperador(monkeypatch, tmp_path):
     monkeypatch.setenv("RAG_DEVICE_DENSO", "")
     agent_mod.get_real_retriever()
     assert visto["dispositivo_denso"] is None
+
+
+def test_pasaje_largo_se_recorta_solo_en_el_prompt():
+    largo = CanonicalPassage(id="decreto_1_2020/art_1", texto="Decreto 1 de 2020 › Artículo 1.\n" + "palabra " * 5000)
+    system, user = writer_tool.build_prompts("¿Pregunta?", FLAGS, [largo] * 10)
+    assert "[…recortado]" in user and len(user) < 10 * (writer_tool.MAX_CHARS_PASAJE + 200) + 500
+    assert len(largo.texto) > 40_000  # el pasaje original (el que va a submissions.jsonl) no cambia
+    corto = PASAJES[0]
+    assert writer_tool.texto_para_prompt(corto) == corto.texto
+
+
+def test_subagente_de_citas_solo_suprime_por_defecto(monkeypatch):
+    def hook(consulta):
+        return []
+    hook.buscar_cita = lambda cita: None
+    monkeypatch.setattr(batch_runner, "get_real_retriever", lambda: hook)
+    monkeypatch.delenv("CITAS_AGREGAR_PASAJES", raising=False)
+    assert batch_runner.crear_agente(mock=False)[0].buscador_citas is None
+    monkeypatch.setenv("CITAS_AGREGAR_PASAJES", "1")
+    assert batch_runner.crear_agente(mock=False)[0].buscador_citas is hook.buscar_cita
