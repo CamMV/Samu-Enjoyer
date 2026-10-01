@@ -2,15 +2,18 @@
 
     python -m src.agent.batch_runner --entrada data/sample_50.jsonl --salida entregables/submissions.jsonl
     python -m src.agent.batch_runner --limite 3 --mock --salida test_submissions.jsonl
+    python -m src.agent.batch_runner --juez      # con LLM as judge (máx. 2 ciclos); traza en <salida>.juez.jsonl
 """
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import time
 from pathlib import Path
 
 from src.agent.agent import LegalAgent, consulta_de, get_real_retriever, mock_retriever
+from src.agent.judge_loop import run_with_judge
 
 ROOT = Path(__file__).resolve().parents[2]
 # Esto se está ejecutando localmente, así que toca verificar que los schemas los tenga usted en la ruta de su máquina. 
@@ -51,19 +54,28 @@ def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
     return LegalAgent(mock_retriever, forzar_mock_escritor=mock), "mock"
 
 
-def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool) -> int:
+def ejecutar(entrada: Path, salida: Path, limite: int | None, mock: bool, juez: bool = False) -> int:
     items = [json.loads(ln) for ln in entrada.read_text(encoding="utf-8").splitlines() if ln.strip()]
     if limite:
         items = items[:limite]
     agente, modo = crear_agente(mock)
     salida.parent.mkdir(parents=True, exist_ok=True)
     total, errores = len(items), 0
-    print(f"== {total} preguntas, retriever {modo} -> {salida}", flush=True)
-    with salida.open("w", encoding="utf-8") as f:
+    print(f"== {total} preguntas, retriever {modo}{', con juez' if juez else ''} -> {salida}", flush=True)
+    # La traza del juez va aparte: submissions.jsonl solo lleva lo que admite el esquema.
+    ruta_traza = salida.with_name(salida.name + ".juez.jsonl")
+    with salida.open("w", encoding="utf-8") as f, \
+            (ruta_traza.open("w", encoding="utf-8") if juez else contextlib.nullcontext()) as f_traza:
         for i, item in enumerate(items, 1):
             t0 = time.perf_counter()
             try:
-                registro = LegalAgent.to_submission(agente.run(item))
+                if juez:
+                    estado, traza = run_with_judge(agente, item, mock=mock)
+                    f_traza.write(json.dumps(traza, ensure_ascii=False) + "\n")
+                    f_traza.flush()
+                else:
+                    estado = agente.run(item)
+                registro = LegalAgent.to_submission(estado)
             except Exception as e:  # el lote nunca se detiene
                 errores += 1
                 print(f"   ERROR en id={item.get('id')}: {type(e).__name__}: {e}", flush=True)
@@ -110,8 +122,9 @@ def main():
     ap.add_argument("--salida", type=Path, default=ROOT / "entregables" / "submissions.jsonl")
     ap.add_argument("--limite", type=int, help="solo los primeros N casos")
     ap.add_argument("--mock", action="store_true", help="pasajes simulados, sin cargar índices")
+    ap.add_argument("--juez", action="store_true", help="revisa cada borrador con el LLM as judge (máx. 2 ciclos)")
     args = ap.parse_args()
-    ejecutar(args.entrada, args.salida, args.limite, args.mock)
+    ejecutar(args.entrada, args.salida, args.limite, args.mock, args.juez)
 
 
 if __name__ == "__main__":
