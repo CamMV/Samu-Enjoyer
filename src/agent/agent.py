@@ -7,7 +7,7 @@ from typing import Callable, List, Optional
 
 from src.agent.schemas import CanonicalPassage, QuestionState
 from src.agent.tools.flags_tool import extract_query_flags
-from src.agent.tools.writer_tool import write_legal_response
+from src.agent.tools.writer_tool import mock_write_legal_response, write_legal_response
 
 # La recuperación depende de requirements-rag.txt (faiss, bm25s, torch); el agente debe poder
 # importarse sin ellas.
@@ -24,8 +24,9 @@ _FLAG_KEYS = ("area", "sub_tarea", "complejidad", "tema", "formato")
 class LegalAgent:
     """Orquesta: flags -> pasajes -> redacción. El validador y el juez se aplican después."""
 
-    def __init__(self, retriever: Optional[Retriever] = None):
+    def __init__(self, retriever: Optional[Retriever] = None, forzar_mock_escritor: bool = False):
         self.retriever = retriever
+        self.forzar_mock_escritor = forzar_mock_escritor
 
     def build_state(self, raw_item: dict) -> QuestionState:
         flags = extract_query_flags(raw_item)
@@ -39,15 +40,19 @@ class LegalAgent:
             **flags,
         )
 
-    def run(self, raw_item: dict, pasajes: Optional[List[CanonicalPassage]] = None) -> QuestionState:
+    def run(self, raw_item: dict, pasajes: Optional[List[CanonicalPassage]] = None,
+            forzar_mock_escritor: Optional[bool] = None) -> QuestionState:
         """Procesa un item. `pasajes` tiene prioridad sobre el retriever; sin ninguno no hay
-        pasajes y el borrador resultante es una abstención."""
+        pasajes y el borrador resultante es una abstención. `forzar_mock_escritor` (None = el del
+        constructor) usa el escritor simulado sin intentar la llamada HTTP al LLM."""
         state = self.build_state(raw_item)
         if pasajes is None:
             pasajes = self.retriever(state) if self.retriever else []
         state.pasajes_recuperados = pasajes[:10]
         flags = {k: getattr(state, k) for k in _FLAG_KEYS}
-        state.borrador_respuesta = write_legal_response(
+        mock = self.forzar_mock_escritor if forzar_mock_escritor is None else forzar_mock_escritor
+        escribir = mock_write_legal_response if mock else write_legal_response
+        state.borrador_respuesta = escribir(
             state.pregunta, flags, state.pasajes_recuperados, state.opciones
         )
         state.abstencion = bool(state.borrador_respuesta.get("abstencion", False))
@@ -69,6 +74,16 @@ class LegalAgent:
             ],
             **borrador,
         }
+
+
+def mock_retriever(state: QuestionState) -> List[CanonicalPassage]:
+    """Pasajes SIMULADOS: fallback cuando no hay índices en corpus/indices/."""
+    return [
+        CanonicalPassage(id="constitucion/art_88", texto="[SIMULADO] Texto del artículo 88 de la Constitución.",
+                         metadatos={"vigencia": "vigente"}, score=0.9),
+        CanonicalPassage(id="ley_472_1998/art_46", texto="[SIMULADO] Texto del artículo 46 de la Ley 472 de 1998.",
+                         metadatos={"vigencia": "vigente"}, score=0.8),
+    ]
 
 
 def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
@@ -107,13 +122,6 @@ if __name__ == "__main__":
     with open(ruta, encoding="utf-8") as f:
         item = json.loads(f.readline())
 
-    # Pasajes SIMULADOS: fallback cuando no hay índices en corpus/indices/.
-    mock_retriever = [
-        CanonicalPassage(id="constitucion/art_88", texto="[SIMULADO] Texto del artículo 88 de la Constitución.",
-                         metadatos={"vigencia": "vigente"}, score=0.9),
-        CanonicalPassage(id="ley_472_1998/art_46", texto="[SIMULADO] Texto del artículo 46 de la Ley 472 de 1998.",
-                         metadatos={"vigencia": "vigente"}, score=0.8),
-    ]
     try:
         hook = get_real_retriever()
         # LegalAgent llama al retriever con el QuestionState; el hook recibe el texto de búsqueda
@@ -122,7 +130,7 @@ if __name__ == "__main__":
         print("Retriever REAL (corpus/indices)")
     except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles
         print(f"Retriever real no disponible ({type(e).__name__}: {e}); se usa mock_retriever")
-        agente = LegalAgent(lambda s: mock_retriever)
+        agente = LegalAgent(mock_retriever)
 
     estado = agente.run(item)
     print("FLAGS:", json.dumps({k: getattr(estado, k) for k in _FLAG_KEYS}, ensure_ascii=False, indent=2))
