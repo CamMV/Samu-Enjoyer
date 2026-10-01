@@ -108,7 +108,8 @@ class Config:
     # "falsa motivación") y BM25 sí ayuda. Banco (50 preguntas, A40), recall_citas / recall_docs:
     # combinado: cerradas 0,962 / 0,808, semiabiertas 0,965 / 0,861; solo HNSW: cerradas 0,923 / 0,769,
     # semiabiertas 0,986 / 0,944. El formato es un dato de la pregunta: la elección es determinista.
-    bm25_solo_cerradas: bool = False
+    # Activada (1/oct): total 0,919 / 0,809 / MRR 0,419 / nDCG 0,561 -> 0,931 / 0,858 / 0,423 / 0,577.
+    bm25_solo_cerradas: bool = True
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).

@@ -157,5 +157,6 @@ def test_bm25_solo_en_las_cerradas():
     assert "bm25" not in abierta.etapas and not bm25.consultas
     cerrada = _rec(cfg, bm25, almacen).buscar_item(ITEM)
     assert cerrada.etapas["bm25"] == ["ley_1/art_1"]
-    sin_opcion = _rec(Config(normas=0, usar_citas=False), bm25, almacen).buscar_item({"pregunta": "leasing"})
+    sin_opcion = _rec(Config(normas=0, usar_citas=False, bm25_solo_cerradas=False), bm25, almacen).buscar_item(
+        {"pregunta": "leasing"})
     assert sin_opcion.etapas["bm25"] == ["ley_1/art_1"]  # apagada: BM25 en todas
