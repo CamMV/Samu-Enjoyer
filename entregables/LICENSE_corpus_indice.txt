@@ -1,0 +1,22 @@
+Corpus procesado e índice de recuperación — Equipo Samu-Enjoyer, Hackathon IA Week 2026
+
+Licencia: Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+Texto completo: https://creativecommons.org/licenses/by/4.0/legalcode.es
+
+Usted es libre de compartir (copiar y redistribuir el material en cualquier medio o
+formato) y adaptar (remezclar, transformar y construir a partir del material) para
+cualquier propósito, incluso comercial, siempre que dé el crédito correspondiente
+("Equipo Samu-Enjoyer, Hackathon IA Week 2026"), indique si se hicieron cambios y
+proporcione un enlace a la licencia. El material se ofrece tal cual, sin garantías.
+
+Alcance
+- La licencia cubre el trabajo del equipo: la conversión a Markdown, los metadatos, la
+  división en pasajes (chunks), el índice BM25, los vectores y el índice HNSW, y los
+  manifiestos.
+- Los textos de fondo son documentos oficiales (leyes, decretos, Constitución, sentencias
+  y conceptos) descargados de fuentes públicas oficiales: Secretaría del Senado,
+  SUIN-Juriscol, relatorías de la Corte Constitucional, la Corte Suprema de Justicia y el
+  Consejo de Estado, DAPRE, DIAN, SIC, Función Pública, Cancillería y Colpensiones. La
+  fuente, la URL y la fecha de consulta de cada documento están en
+  corpus/corpus_manifest.json. Para efectos jurídicos prevalece la edición oficial.
+- Los vectores se calcularon con Qwen/Qwen3-Embedding-0.6B (Apache 2.0).
