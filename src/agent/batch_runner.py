@@ -13,6 +13,7 @@ from pathlib import Path
 from src.agent.agent import LegalAgent, consulta_de, get_real_retriever, mock_retriever
 
 ROOT = Path(__file__).resolve().parents[2]
+# Esto se está ejecutando localmente, así que toca verificar que los schemas los tenga usted en la ruta de su máquina. 
 SCHEMAS = (Path("C:/Users/choco/Documents/COURSES/HackathonAI/schema/submission.schema.json"),
            ROOT.parent / "HackathonAI" / "schema" / "submission.schema.json",
            ROOT / "schema" / "submission.schema.json")
