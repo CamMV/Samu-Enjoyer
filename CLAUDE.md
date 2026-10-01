@@ -29,7 +29,7 @@ Se encuentra un enlace simbólico a la carpeta de instrucciones llamada `docs_re
   - *Abiertas / semiabiertas:* Query rewriter con términos jurídicos y normas candidatas.
 - **Top-10 Pasajes:** Toda redacción se hace **exclusivamente con los 10 pasajes** entregados por la recuperación híbrida (BM25 + HNSW con Qwen3-Embedding-0.6B + RRF + bge-reranker-v2-m3; ver sección 5).
 - **Validación Determinista de Fuentes (Sin LLM):** 
-  - Toda cita en la respuesta debe mapearse a un ID canónico (`<doc_id>/art_<N>`, ej. `ley_1564_2012/art_42`).
+  - Toda cita en la respuesta debe mapearse a un ID canónico (`<doc_id>/art_<N>`, ej. `codigo_general_proceso/art_42`).
   - Si una cita no existe en los 10 pasajes recuperados, se suprime o se activa `abstencion: true`.
 - **LLM as Judge:** Evalúa si responde la sub-tarea, si cada afirmación tiene pasaje que la soporte y la coherencia del área jurídica.
 - **Control de Ciclos:** Máximo 2 ciclos por pregunta. Si el Juez rechaza en el ciclo 1, el orquestador reintenta ajustando la consulta con el feedback recibido.
