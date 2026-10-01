@@ -56,8 +56,11 @@ _SYSTEM_BASE = (
 
 _FORMATO_INSTRUCCIONES = {
     "multiple_choice": (
-        'Devuelve JSON con las llaves: "respuesta_correcta" (una letra de las opciones), '
-        '"justificacion" (citando IDs canónicos), "descarte_opciones" (objeto con la letra de cada '
+        # La justificación va ANTES de la letra: el modelo escribe en orden y, con la letra primero,
+        # elegía antes de razonar (pregunta 671: razonaba la C y había respondido B).
+        'Devuelve JSON con las llaves, en este orden: "justificacion" (primero razona con los pasajes '
+        'qué opción es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de '
+        'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
         'opción incorrecta y una razón breve), "abstencion" (boolean).'
     ),
     "semi_open": (
@@ -73,19 +76,34 @@ _FORMATO_INSTRUCCIONES = {
 }
 
 
-# Tope de caracteres por pasaje DENTRO del prompt (escritor y juez). Un artículo partido se entrega
-# reunido y algunos decretos guardan anexos enteros en un solo artículo: hubo prompts de 66k-159k
-# tokens contra el contexto de 16k. 10 × 3.000 caracteres ≈ 9k tokens. Se conserva el inicio
-# (encabezado y texto del artículo; lo que se pierde suele ser notas de vigencia). En
-# submissions.jsonl los pasajes van completos.
-MAX_CHARS_PASAJE = int(os.environ.get("MAX_CHARS_PASAJE", "3000"))
+# Presupuesto de caracteres para los 10 pasajes DENTRO del prompt (escritor y juez), con el LLM
+# en contexto de 32k tokens (-c 32768). Se reparte de forma justa: los pasajes que caben van
+# completos y solo se recortan los más largos, con lo que sobra. En las 50 de muestra, 45 entran
+# sin recortar nada; las 5 restantes traen anexos de 59k-310k tokens metidos en un solo artículo.
+# 85.000 caracteres ≈ 24k tokens (3,6 caracteres por token medidos con el tokenizador de Qwen3):
+# queda margen para instrucciones, pregunta, borrador (juez) y respuesta. En submissions.jsonl
+# los pasajes van completos.
+MAX_CHARS_PASAJES = int(os.environ.get("MAX_CHARS_PASAJES", "85000"))
 
 
-def texto_para_prompt(p: CanonicalPassage) -> str:
-    texto = p.texto or ""
-    if len(texto) <= MAX_CHARS_PASAJE:
-        return texto
-    return texto[:MAX_CHARS_PASAJE].rsplit(" ", 1)[0] + " […recortado]"
+def cupos(longitudes: list[int], presupuesto: int = None) -> list[int]:
+    """Caracteres para cada pasaje: el que cabe en su parte justa va completo y lo que no usa se
+    reparte entre los demás. Determinista; conserva el orden."""
+    restante = MAX_CHARS_PASAJES if presupuesto is None else presupuesto
+    cupo = [0] * len(longitudes)
+    pendientes = sorted(range(len(longitudes)), key=lambda i: (longitudes[i], i))
+    for n, i in enumerate(pendientes):
+        cupo[i] = min(longitudes[i], max(restante, 0) // (len(pendientes) - n))
+        restante -= cupo[i]
+    return cupo
+
+
+def textos_para_prompt(pasajes: list[CanonicalPassage]) -> list[str]:
+    textos = [p.texto or "" for p in pasajes]
+    salida = []
+    for texto, c in zip(textos, cupos([len(t) for t in textos])):
+        salida.append(texto if c >= len(texto) else texto[:c].rsplit(" ", 1)[0] + " […recortado]")
+    return salida
 
 
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
@@ -93,9 +111,9 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     """Construye (system_prompt, user_prompt)."""
     system = f"{_SYSTEM_BASE}\n{_FORMATO_INSTRUCCIONES[flags['formato']]}"
     bloques = []
-    for p in pasajes:
+    for p, texto in zip(pasajes, textos_para_prompt(pasajes)):
         vig = p.metadatos.get("vigencia", "desconocida")
-        bloques.append(f"[{p.id}] (vigencia: {vig})\n{texto_para_prompt(p)}")
+        bloques.append(f"[{p.id}] (vigencia: {vig})\n{texto}")
     partes = [
         f"Área: {flags.get('area')} | Tema: {flags.get('tema')} | Sub-tarea: {flags.get('sub_tarea')}",
         "PASAJES:\n" + ("\n\n".join(bloques) if bloques else "(ninguno)"),

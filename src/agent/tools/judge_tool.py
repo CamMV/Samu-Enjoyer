@@ -31,7 +31,7 @@ from pydantic import BaseModel, Field
 
 from src.agent.schemas import CanonicalPassage, QuestionState
 from src.agent.tools.writer_tool import (LLM_BASE_URL, LLM_MODEL, _parsear_json, _tokens, _verificar_host_local,
-                                         texto_para_prompt)
+                                         textos_para_prompt)
 
 JUDGE_BASE_URL = os.environ.get("JUDGE_BASE_URL") or LLM_BASE_URL
 JUDGE_MODEL = os.environ.get("JUDGE_MODEL") or LLM_MODEL
@@ -130,8 +130,8 @@ def citas_fuera_de_pasajes(borrador: dict, pasajes: List[CanonicalPassage]) -> l
 def build_judge_prompts(state: QuestionState) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt). No incluye ningún campo de la clave."""
     system = _SYSTEM + (_EXTRA_CERRADA if state.formato == "multiple_choice" else "")
-    bloques = [f"[{p.id}] (vigencia: {p.metadatos.get('vigencia', 'desconocida')})\n{texto_para_prompt(p)}"
-               for p in state.pasajes_recuperados]
+    bloques = [f"[{p.id}] (vigencia: {p.metadatos.get('vigencia', 'desconocida')})\n{texto}"
+               for p, texto in zip(state.pasajes_recuperados, textos_para_prompt(state.pasajes_recuperados))]
     partes = [
         f"Área: {state.area} | Tema: {state.tema} | Sub-tarea: {state.sub_tarea}",
         "PASAJES:\n" + ("\n\n".join(bloques) if bloques else "(ninguno)"),

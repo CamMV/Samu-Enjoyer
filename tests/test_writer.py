@@ -57,13 +57,21 @@ def test_rag_device_denso_llega_al_recuperador(monkeypatch, tmp_path):
     assert visto["dispositivo_denso"] is None
 
 
-def test_pasaje_largo_se_recorta_solo_en_el_prompt():
-    largo = CanonicalPassage(id="decreto_1_2020/art_1", texto="Decreto 1 de 2020 › Artículo 1.\n" + "palabra " * 5000)
-    system, user = writer_tool.build_prompts("¿Pregunta?", FLAGS, [largo] * 10)
-    assert "[…recortado]" in user and len(user) < 10 * (writer_tool.MAX_CHARS_PASAJE + 200) + 500
-    assert len(largo.texto) > 40_000  # el pasaje original (el que va a submissions.jsonl) no cambia
+def test_presupuesto_de_pasajes_en_el_prompt():
+    assert writer_tool.cupos([100, 200, 300], 1000) == [100, 200, 300]       # todo cabe: nada se recorta
+    assert writer_tool.cupos([100, 50_000, 300], 1000) == [100, 600, 300]    # solo el gigante se recorta
+    assert writer_tool.cupos([900, 900], 1000) == [500, 500]
+    largo = CanonicalPassage(id="decreto_1_2020/art_1", texto="Decreto 1 de 2020 › Artículo 1.\n" + "palabra " * 50_000)
     corto = PASAJES[0]
-    assert writer_tool.texto_para_prompt(corto) == corto.texto
+    system, user = writer_tool.build_prompts("¿Pregunta?", FLAGS, [corto, largo])
+    assert corto.texto in user and "[…recortado]" in user                   # el corto va completo
+    assert len(user) < writer_tool.MAX_CHARS_PASAJES + 2_000
+    assert len(largo.texto) > 300_000  # el pasaje original (el que va a submissions.jsonl) no cambia
+
+
+def test_cerradas_razonan_antes_de_elegir():
+    instr = writer_tool._FORMATO_INSTRUCCIONES["multiple_choice"]
+    assert instr.index('"justificacion"') < instr.index('"respuesta_correcta"')
 
 
 def test_subagente_de_citas_solo_suprime_por_defecto(monkeypatch):
