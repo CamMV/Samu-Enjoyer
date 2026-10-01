@@ -39,14 +39,16 @@ class Config:
     expandir_articulo: bool = True
     # Ajustes de orden tras el reranker (el banco de pruebas mostró que preámbulos de
     # decretos, notas del Senado y fichas de tutelas desplazaban a los artículos):
-    penal_tipo: dict = field(default_factory=dict)   # tipo_chunk -> penalización, p. ej. {"preambulo": 0.2}
-    bonus_prioridad_alta: float = 0.0                 # normas del seed (las que más usa el banco)
-    max_sentencias: int | None = None                 # tope de pasajes de sentencias entre los k
+    # Valores por defecto = perfil "completo", el ganador del banco de pruebas (normas_fichas, 50
+    # preguntas): recall_docs@10 0,715 -> 0,837 y recall_citas@10 0,898 -> 0,935 frente a "base".
+    penal_tipo: dict = field(default_factory=lambda: {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1})
+    bonus_prioridad_alta: float = 0.1                 # normas del seed (las que más usa el banco)
+    max_sentencias: int | None = 4                    # tope de pasajes de sentencias entre los k
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
 PERFILES = {
-    "base": {},
+    "base": {"penal_tipo": {}, "bonus_prioridad_alta": 0.0, "max_sentencias": None},  # sin ajustes
     "penal": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}},
     "penal_bonus": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "bonus_prioridad_alta": 0.1},
     "penal_tope": {"penal_tipo": {"preambulo": 0.2, "notas": 0.15, "anexo": 0.1}, "max_sentencias": 4},

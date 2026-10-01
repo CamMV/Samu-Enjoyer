@@ -95,7 +95,9 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
     if Recuperador is None:
         raise ImportError("src.knowledge no disponible: instalar requirements-rag.txt")
     indices = ROOT / "corpus" / "indices"
-    bm25_path, denso_path = indices / "bm25_todo", indices / "bge-m3_todo"
+    # Ganador del banco de pruebas (evaluation/retrieval_benchmark): qwen3-emb-0.6b + BM25 con raíces
+    # + bge-reranker-v2-m3 con el perfil "completo" (valores por defecto de Config).
+    bm25_path, denso_path = indices / "bm25_todo", indices / "qwen3-emb-0.6b_todo"
     bm25_path = bm25_path if bm25_path.exists() else None
     denso_path = denso_path if (denso_path / "hnsw.faiss").exists() else None
     if bm25_path is None and denso_path is None:

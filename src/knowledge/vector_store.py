@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 
@@ -47,7 +48,9 @@ def embeber(modelo, textos: list[str], lote: int) -> np.ndarray:
 
 
 def construir(clave: str, seleccion: str, salida: Path, lote_gpu: int, limite: int | None, solo_hnsw: bool,
-              dispositivo: str | None = None):
+              dispositivo: str | None = None, parte: int = 0, partes: int = 1):
+    """Con partes > 1, este proceso solo calcula los lotes i con i % partes == parte: se lanzan
+    `partes` procesos (uno por GPU) sobre la misma carpeta y el HNSW se arma cuando están todos."""
     e = EMBEDDERS[clave]
     salida.mkdir(parents=True, exist_ok=True)
     ids = [c["chunk_id"] for c in leer_chunks(seleccion, limite)]
@@ -62,16 +65,26 @@ def construir(clave: str, seleccion: str, salida: Path, lote_gpu: int, limite: i
         for c in leer_chunks(seleccion, limite):
             textos_lote.append(e.prefijo_pasaje + c["texto"][:MAX_CHARS_EMBED])
             if len(textos_lote) == LOTE:
-                lote_i = _guardar_lote(salida, lote_i, textos_lote, e, lote_gpu, modelo_ref := [modelo], dispositivo)
+                lote_i = _guardar_lote(salida, lote_i, textos_lote, e, lote_gpu, modelo_ref := [modelo], dispositivo,
+                                       hacer=lote_i % partes == parte)
                 modelo = modelo_ref[0]
-                hechos += len(textos_lote)
                 textos_lote = []
+                if (lote_i - 1) % partes != parte:
+                    continue
+                hechos += LOTE
                 vel = hechos / (time.time() - t0)
-                print(f"   lote {lote_i}/{n_lotes}  {hechos}/{len(ids)}  {vel:.0f} chunks/s  "
-                      f"faltan ~{(len(ids) - hechos) / max(vel, 1) / 60:.0f} min", flush=True)
+                mios = len(ids) / partes
+                print(f"   lote {lote_i}/{n_lotes} (parte {parte}/{partes})  {hechos}/{mios:.0f}  {vel:.0f} chunks/s  "
+                      f"faltan ~{max(mios - hechos, 0) / max(vel, 1) / 60:.0f} min", flush=True)
         if textos_lote:
-            _guardar_lote(salida, lote_i, textos_lote, e, lote_gpu, [modelo], dispositivo)
+            _guardar_lote(salida, lote_i, textos_lote, e, lote_gpu, [modelo], dispositivo,
+                          hacer=lote_i % partes == parte)
 
+    faltan = [i for i in range(n_lotes) if not (salida / f"vec_{i:05d}.npy").exists()]
+    if faltan:
+        print(f"== parte {parte}/{partes} lista. Faltan {len(faltan)} lotes de las otras partes; cuando terminen: "
+              f"python -m src.knowledge.vector_store --modelo {clave} --seleccion {seleccion} --solo-hnsw", flush=True)
+        return
     vectores = np.concatenate([np.load(salida / f"vec_{i:05d}.npy") for i in range(n_lotes)]).astype(np.float32)
     assert len(vectores) == len(ids), f"{len(vectores)} vectores para {len(ids)} ids"
     construir_hnsw(vectores, salida)
@@ -82,9 +95,9 @@ def construir(clave: str, seleccion: str, salida: Path, lote_gpu: int, limite: i
 
 
 def _guardar_lote(salida: Path, i: int, textos: list[str], e: Embedder, lote_gpu: int, modelo_ref: list,
-                  dispositivo: str | None = None) -> int:
+                  dispositivo: str | None = None, hacer: bool = True) -> int:
     destino = salida / f"vec_{i:05d}.npy"
-    if not destino.exists():  # checkpoint: los lotes hechos se saltan
+    if hacer and not destino.exists():  # checkpoint: los lotes hechos se saltan; los de otra parte, también
         if modelo_ref[0] is None:
             modelo_ref[0] = cargar_modelo(e, dispositivo)
         tmp = destino.with_suffix(".tmp.npy")
@@ -104,7 +117,9 @@ def construir_hnsw(vectores: np.ndarray, salida: Path):
     for i in range(0, len(vectores), 100_000):
         indice.add(vectores[i:i + 100_000])
         print(f"   HNSW {min(i + 100_000, len(vectores))}/{len(vectores)}  {time.time() - t0:.0f} s", flush=True)
-    faiss.write_index(indice, str(salida / "hnsw.faiss"))
+    tmp = salida / f"hnsw.{os.getpid()}.tmp"  # si dos partes terminan a la vez, no se pisan
+    faiss.write_index(indice, str(tmp))
+    os.replace(tmp, salida / "hnsw.faiss")
     print(f"== HNSW listo en {time.time() - t0:.0f} s", flush=True)
 
 
@@ -144,10 +159,12 @@ def main():
     ap.add_argument("--limite", type=int, help="solo los primeros N chunks (prueba)")
     ap.add_argument("--solo-hnsw", action="store_true", help="rehace el HNSW desde los vectores guardados")
     ap.add_argument("--device", help="cuda, cuda:2, cpu (por defecto cuda si hay)")
+    ap.add_argument("--parte", type=int, default=0, help="con --partes N: qué parte de los lotes hace este proceso")
+    ap.add_argument("--partes", type=int, default=1, help="repartir los lotes entre N procesos (uno por GPU)")
     ap.add_argument("--salida", type=Path)
     args = ap.parse_args()
     construir(args.modelo, args.seleccion, args.salida or INDICES / f"{args.modelo}_{args.seleccion}",
-              args.lote_gpu, args.limite, args.solo_hnsw, args.device)
+              args.lote_gpu, args.limite, args.solo_hnsw, args.device, args.parte, args.partes)
 
 
 if __name__ == "__main__":
