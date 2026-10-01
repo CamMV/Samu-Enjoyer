@@ -32,7 +32,6 @@ def contenido(manifest: Path, auditoria: Path) -> list[tuple[Path, str]]:
     out = [(ROOT / "entregables" / "LICENSE_corpus_indice.txt", "corpus/LICENSE"),
            (manifest, "corpus/corpus_manifest.json"),
            (auditoria, "corpus/auditoria_descarga.json"),
-           (ROOT / "corpus_md.tar.gz", "corpus/corpus_md.tar.gz"),
            (CHUNKS / "chunks.sqlite", "corpus/chunks/chunks.sqlite"),
            (CHUNKS / "resumen.json", "corpus/chunks/resumen.json")]
     for d in ("bm25_todo", "bm25_normas", f"{DENSO}_todo", f"{DENSO}_normas"):
@@ -55,10 +54,9 @@ Empaquetado el {dt.date.today().isoformat()}. Licencia: CC BY 4.0 (`corpus/LICEN
 
 | Ruta | Qué es |
 |---|---|
-| `corpus/corpus_md.tar.gz` | Corpus procesado: un `.md` por documento con front-matter de metadatos y su `corpus_manifest.json` de conversión |
 | `corpus/corpus_manifest.json` | Manifiesto de descarga: fuente oficial, URL y fecha de consulta de cada documento |
 | `corpus/auditoria_descarga.json` | Auditoría de cobertura de la descarga |
-| `corpus/chunks/chunks.sqlite` | {info['bm25_todo']['n']:,} pasajes (texto y metadatos) |
+| `corpus/chunks/chunks.sqlite` | Corpus enriquecido: {info['bm25_todo']['n']:,} pasajes con su texto y metadatos (norma, artículo, ruta jerárquica, vigencia, fuente) |
 | `corpus/indices/bm25_todo/` | BM25 (bm25s) sobre todos los pasajes; vocabulario {info['bm25_todo']['vocab']:,}, con raíces (Snowball) |
 | `corpus/indices/{DENSO}_todo/` | HNSW (FAISS `IndexHNSWSQ` 8 bits, M=32, efSearch=256) de Qwen/Qwen3-Embedding-0.6B, dim {info[f'{DENSO}_todo']['dim']} |
 | `corpus/indices/bm25_normas/`, `corpus/indices/{DENSO}_normas/` | Los mismos índices solo sobre normas ({info['bm25_normas']['n']:,} pasajes): lista extra de la fusión |
