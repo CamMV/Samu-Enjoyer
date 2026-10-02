@@ -48,7 +48,7 @@ def test_rag_device_denso_llega_al_recuperador(monkeypatch, tmp_path):
 
     monkeypatch.setattr(agent_mod, "ROOT", tmp_path)
     monkeypatch.setattr(agent_mod, "Recuperador", Falso)
-    monkeypatch.setattr(agent_mod, "Config", lambda: None)
+    monkeypatch.setattr(agent_mod, "Config", lambda **kw: None)
     monkeypatch.setenv("RAG_DEVICE_DENSO", "cpu")
     agent_mod.get_real_retriever()
     assert visto["dispositivo_denso"] == "cpu"
@@ -116,3 +116,188 @@ def test_dos_corridas_no_escriben_el_mismo_archivo(tmp_path):
     assert not salida.with_name("s.jsonl.lock").exists()   # se libera al terminar
     with batch_runner._candado(salida):                      # y se puede volver a usar
         pass
+
+
+# --- calculadora de montos y elección de la letra (cerradas) ---
+
+ART25 = CanonicalPassage(id="codigo_general_proceso/art_25", metadatos={}, texto=(
+    "Código General del Proceso (Ley 1564 de 2012)\nArtículo 25. CUANTÍA\nSon de mínima cuantía cuando versen sobre "
+    "pretensiones patrimoniales que no excedan el equivalente a cuarenta salarios mínimos legales mensuales vigentes "
+    "(40 smlmv). Son de mayor cuantía cuando excedan el equivalente a ciento cincuenta salarios mínimos legales "
+    "mensuales vigentes (150 smlmv)."))
+SMLMV = CanonicalPassage(id="decreto_1572_2024/art_1", metadatos={}, texto=(
+    "Decreto 1572 de 2024\nArtículo 1.\nSalario Mínimo Legal Mensual vigente para el año 2025. Fijar a partir del "
+    "primero (1°) de enero de 2025 como Salario Mínimo Legal Mensual, la suma de UN MILLÓN CUATROCIENTOS VEINTITRÉS "
+    "MIL QUINIENTOS PESOS ($1.423.500)"))
+CUANTIA = {"A": "Alta cuantía", "B": "Menor cuantía", "C": "Mínima cuantía", "D": "Mayor cuantía"}
+
+
+def test_calculadora_convierte_el_monto_y_lo_compara_con_los_umbrales():
+    q = "Si un proceso tiene pretensiones por 30.000.000 COP ¿a qué cuantía corresponde?"
+    datos = writer_tool.datos_calculados(q, [ART25, SMLMV])
+    assert "$30.000.000 equivalen a 21,07 salarios mínimos" in datos and "salario mínimo de 2025: $1.423.500" in datos
+    assert "21,07 NO EXCEDE 40 salarios mínimos." in datos and "21,07 NO EXCEDE 150 salarios mínimos." in datos
+    _, user = writer_tool.build_prompts(q, {"formato": "multiple_choice"}, [ART25, SMLMV], CUANTIA)
+    assert user.index("DATOS CALCULADOS") < user.index("PREGUNTA:")
+    # Sin monto en pesos o sin el decreto del salario mínimo, nada.
+    assert writer_tool.datos_calculados("¿Qué es la cuantía?", [ART25, SMLMV]) == ""
+    assert writer_tool.datos_calculados(q, [ART25]) == ""
+
+
+def test_la_letra_sale_del_razonamiento_y_no_del_anuncio(monkeypatch):
+    llamadas = []
+
+    def llm(system, user, esquema=None):
+        llamadas.append((system, user, esquema))
+        if esquema is None:  # escritor: razona "mínima" y anuncia otra letra
+            return ('{"justificacion": "Con 21,07 salarios mínimos no se exceden 40 [codigo_general_proceso/art_25], '
+                    'así que es de mínima cuantía. Por lo tanto, la opción correcta es D.", '
+                    '"respuesta_correcta": "D", "descarte_opciones": {"C": "No.", "B": "No."}, "abstencion": false}')
+        return '{"conclusion": "Es de mínima cuantía.", "letra": "C"}'
+
+    monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", True)
+    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert b["respuesta_correcta"] == "C" and "C" not in b["descarte_opciones"]
+    assert b["justificacion"].endswith("es de mínima cuantía. Por lo tanto, la opción correcta es la C.")
+    _, user_letra, esquema = llamadas[1]
+    assert "opción correcta es D" not in user_letra             # el verificador no ve el anuncio
+    assert esquema["properties"]["letra"]["enum"] == ["A", "B", "C", "D"]
+
+
+def test_la_letra_no_cambia_si_coincide_o_si_el_verificador_falla(monkeypatch):
+    escritor = ('{"justificacion": "Es de mínima cuantía [codigo_general_proceso/art_25].", '
+                '"respuesta_correcta": "C", "descarte_opciones": {}, "abstencion": false}')
+    for verificador in ('{"conclusion": "Mínima.", "letra": "C"}', requests.exceptions.ConnectionError("caído")):
+        def llm(system, user, esquema=None, v=verificador):
+            if esquema is None:
+                return escritor
+            if isinstance(v, Exception):
+                raise v
+            return v
+        monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+        b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+        assert b["respuesta_correcta"] == "C" and b["justificacion"] == "Es de mínima cuantía [codigo_general_proceso/art_25]."
+
+
+def test_cerrada_con_letra_no_se_abstiene(monkeypatch):
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", False)
+    monkeypatch.setattr(writer_tool, "_llamar_llm", lambda s, u, esquema=None: (
+        '{"justificacion": "Los pasajes no bastan.", "respuesta_correcta": "B", "descarte_opciones": {}, '
+        '"abstencion": true}'))
+    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert b["abstencion"] is False and b["respuesta_correcta"] == "B"
+
+
+def test_quitar_anuncios_no_borra_frases_normales():
+    texto = "Lo que es a la vez un deber del juez. La opción correcta es la B. Según el artículo 25, B) no aplica."
+    assert writer_tool._sin_anuncios(texto) == "Lo que es a la vez un deber del juez."
+
+
+def test_guia_de_la_primera_oracion_segun_la_sub_tarea():
+    g = writer_tool.guia_primera_oracion
+    assert "verdadera" in g("Establezca si es falsa o verdadera: el Congreso puede…", "Problema jurídico")
+    assert "define el concepto" in g("¿Cómo se define el litisconsorcio facultativo?", "Definición básica")
+    assert "nombra la norma" in g("¿Existe regulación del acoso laboral?", "Existencia normativa")
+    assert "responde directamente" in g("¿Qué pasa?", None)                    # sin sub-tarea conocida
+    _, user = writer_tool.build_prompts("¿Qué es X?", {"formato": "semi_open", "sub_tarea": "Definición básica"},
+                                        [ART25], None)
+    assert "PRIMERA ORACIÓN (sub-tarea: Definición básica)" in user
+    _, user_c = writer_tool.build_prompts("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert "PRIMERA ORACIÓN" not in user_c                                      # solo en semiabiertas
+
+
+def test_cerrada_sin_letra_usa_la_de_mas_respaldo(monkeypatch, capsys):
+    def llm(system, user, esquema=None):
+        if esquema is None:
+            return '{"justificacion": "No es posible decidir.", "respuesta_correcta": null, "descarte_opciones": {}}'
+        raise requests.exceptions.ConnectionError("verificador caído")
+
+    monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", True)
+    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert b["respuesta_correcta"] in CUANTIA and b["abstencion"] is False
+    assert "cerrada sin letra" in capsys.readouterr().err
+
+
+def test_largo_segun_complejidad(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", False)
+    assert w.extension_por_complejidad("high") == "" and w.oraciones_semiabierta("high") is None
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", True)
+    assert "5 oraciones" in w.extension_por_complejidad("high") and w.oraciones_semiabierta("alta") == 5
+    assert "4 oraciones" in w.extension_por_complejidad("medium") and w.oraciones_semiabierta("media") == 4
+    assert w.extension_por_complejidad("low") == "" and w.oraciones_semiabierta("baja") is None
+    _, user = w.build_prompts("¿Qué exige la norma?", {"formato": "semi_open", "complejidad": "high"}, [])
+    assert "EXTENSIÓN" in user
+
+
+def test_ejemplos_de_estilo_y_oraciones_sustantivas(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    pregunta = next(it["pregunta"] for it in w._muestra() if it["formato"] == "semi_open")
+    flags = {"formato": "semi_open", "sub_tarea": "Definición básica"}
+    monkeypatch.setattr(w, "EJEMPLOS_ESTILO", False)
+    assert w.ejemplos_de_estilo(pregunta, flags) == ""
+    monkeypatch.setattr(w, "EJEMPLOS_ESTILO", True)
+    bloque = w.ejemplos_de_estilo(pregunta, flags)
+    assert bloque.count("Respuesta esperada:") == 2 and pregunta.strip()[:50] not in bloque   # nunca la misma
+    assert w.ejemplos_de_estilo(pregunta, {"formato": "multiple_choice"}) == ""             # cerradas: no
+    assert w.ejemplos_de_estilo("otra", {"formato": "open_ended"}).count("Respuesta esperada:") == 1
+    monkeypatch.setattr(w, "ORACIONES_SUSTANTIVAS", True)
+    assert "contenido sustantivo" in w.guia_primera_oracion("¿Qué es?", "Definición básica")
+    monkeypatch.setattr(w, "ORACIONES_SUSTANTIVAS", False)
+    assert "fundamento esencial" in w.guia_primera_oracion("¿Qué es?", "Definición básica")
+
+
+def test_pensar_arma_la_peticion(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    vistos = []
+
+    class Resp:
+        def raise_for_status(self): pass
+        def json(self): return {"choices": [{"message": {"content": "{}"}}]}
+
+    monkeypatch.setattr(w.requests, "post", lambda url, json, timeout: (vistos.append(json), Resp())[1])
+    monkeypatch.setattr(w, "LLM_BASE_URL", "http://127.0.0.1:8010/v1")
+    monkeypatch.setattr(w, "PENSAR", True)
+    w._llamar_llm("s", "u")
+    w._llamar_llm("s", "u", {"type": "object"})               # paso de la letra (gramática): sin razonamiento
+    assert vistos[0]["chat_template_kwargs"]["enable_thinking"] is True and vistos[0]["max_tokens"] == w.PENSAR_MAX_TOKENS
+    assert vistos[1]["chat_template_kwargs"]["enable_thinking"] is False and "max_tokens" not in vistos[1]
+    monkeypatch.setattr(w, "PENSAR", False)
+    w._llamar_llm("s", "u")
+    assert vistos[2]["chat_template_kwargs"]["enable_thinking"] is False and vistos[2]["cache_prompt"] is False
+
+
+def test_cerrada_nunca_queda_sin_letra_si_el_llm_falla(monkeypatch):
+    import requests
+    from src.agent.schemas import CanonicalPassage
+    from src.agent.tools import writer_tool as w
+    pasajes = [CanonicalPassage(id="codigo_general_proceso/art_24#1", texto="La Superintendencia de Industria y "
+                                "Comercio ejerce funciones jurisdiccionales en la Ley 1564.")]
+    opciones = {"A": "Ley 1564", "B": "Ley 906 penal", "C": "Ley 472 populares"}
+    flags = {"formato": "multiple_choice"}
+    monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: "<think>sin terminar…")      # sin JSON (tope de tokens)
+    b = w.write_legal_response("¿Qué norma?", flags, pasajes, opciones)
+    assert b["respuesta_correcta"] == "A" and not b["abstencion"] and "[codigo_general_proceso/art_24#1]" in b["justificacion"]
+    assert "MOCK" not in b["justificacion"] and set(b["descarte_opciones"]) == {"B", "C"}
+
+    def caido(*a, **k):
+        raise requests.exceptions.ConnectionError("caído")
+    monkeypatch.setattr(w, "_llamar_llm", caido)
+    assert w.write_legal_response("¿Qué norma?", flags, pasajes, opciones)["respuesta_correcta"] == "A"
+    assert w.write_legal_response("¿Qué es?", {"formato": "semi_open"}, pasajes)["abstencion"] is True  # texto libre: abstención
+
+
+def test_letra_con_texto_se_interpreta_como_en_la_entrega(monkeypatch):
+    from src.agent.schemas import CanonicalPassage
+    from src.agent.tools import writer_tool as w
+    pasajes = [CanonicalPassage(id="codigo_general_proceso/art_24#1", texto="Superintendencia de Industria y Comercio, Ley 1564.")]
+    opciones = {"A": "Ley 1564", "B": "Ley 906 penal", "C": "Ley 472 populares"}
+    monkeypatch.setattr(w, "ELEGIR_LETRA", False)
+    monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: '{"justificacion": "x", "respuesta_correcta": '
+                                                          '"Código General del Proceso", "abstencion": false}')
+    b = w.write_legal_response("¿Qué norma?", {"formato": "multiple_choice"}, pasajes, opciones)
+    assert b["respuesta_correcta"] == "A"          # no queda "C" ni vacía: respaldo léxico
+    monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: '{"justificacion": "x", "respuesta_correcta": "B) Ley 906"}')
+    assert w.write_legal_response("¿Qué norma?", {"formato": "multiple_choice"}, pasajes, opciones)["respuesta_correcta"] == "B"

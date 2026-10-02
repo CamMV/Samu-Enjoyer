@@ -180,7 +180,10 @@ def construir_grafo(agente: Any, con_juez: bool = False):
         # Sin aprobación se entrega el borrador con menos problemas (en empate, el más reciente).
         state, veredicto = next(((e, v) for e, v in intentos if v.aprobado is not False),
                                 min(reversed(intentos), key=lambda ev: ev[1].problemas))
-        abstencion_forzada = (JUDGE_ABSTENER and not state.abstencion
+        # Las cerradas nunca se abstienen por el juez: el esquema exige una letra y responder rinde más
+        # (acierto 1, abstención 0,5, error 0, y la abstención vale 0 en exactitud). En la 58 la letra
+        # era la correcta y la abstención forzada la anulaba.
+        abstencion_forzada = (JUDGE_ABSTENER and not state.abstencion and state.formato != "multiple_choice"
                               and all(v.aprobado is False and not v.pasajes_suficientes for _, v in intentos))
         if abstencion_forzada:
             state.borrador_respuesta = _abstencion(state.formato)

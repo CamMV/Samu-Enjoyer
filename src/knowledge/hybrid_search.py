@@ -22,10 +22,13 @@ from pathlib import Path
 from .bm25_store import IndiceBM25
 from .chunk_store import Almacen, es_sentencia
 from .vector_store import IndiceDenso
-from .citation_lookup import chunks_citados
+from .citation_lookup import chunks_citados, documentos_citados
 from .reranker import Reranker
+from .siglas import con_siglas, sin_instrucciones
 
 K_RRF = 60
+# "$30.000.000", "30.000.000 COP", "1.500.000 pesos": montos de un millón o más.
+_PESOS_RE = re.compile(r"\$\s*\d{1,3}(?:[.,]\d{3}){2,}|\b\d{1,3}(?:[.,]\d{3}){2,}\s*(?:COP|pesos)\b", re.I)
 
 
 @dataclass
@@ -68,6 +71,78 @@ class Config:
     # Con 0,7: recall_docs@10 0,785 -> 0,809, MRR 0,416 -> 0,419, nDCG 0,552 -> 0,561; recall_citas
     # igual (0,919); sin costo de tiempo. Con 0,5 da lo mismo.
     dedup: float = 0.7
+    # Normas citadas sin artículo ("¿qué regula la Ley 1564...?", opciones que son leyes): los
+    # `en_citadas` mejores chunks de cada una, con BM25 y denso restringidos a esa norma, entran como
+    # listas extra en el RRF. Sin esto la norma citada compite con todo el corpus y puede no llegar
+    # ni a los 150 candidatos. Hasta `max_citadas` normas por pregunta. 0 = no se usa.
+    en_citadas: int = 0
+    max_citadas: int = 6
+    # Cerradas: una consulta con SOLO el texto de las opciones (sin la pregunta) sobre las normas,
+    # `solo_opciones` candidatos de BM25 y de HNSW: cuando las opciones son conceptos jurídicos
+    # ("falsa motivación", "desviación de poder") apuntan al artículo que los define. 0 = no se usa.
+    solo_opciones: int = 0
+    # Cerradas: el reranker puntúa cada candidato contra "pregunta + opción X" para cada opción y se
+    # queda con el máximo (y el de la consulta completa): lo que solo respalda a una opción ("Fintech")
+    # no se diluye entre las cuatro. Cuesta un reranker por opción.
+    rerank_opciones: bool = False
+    # Montos en pesos: los umbrales legales (cuantías, multas, topes) están en salarios mínimos, así
+    # que si la pregunta trae un monto en pesos entra, con un lugar asegurado entre los k, el artículo
+    # del decreto más reciente del corpus que fija el salario mínimo mensual legal.
+    # En las 50 de muestra solo cambia la 528 (entra el art. 1 del Decreto 1572 de 2024 en lugar de una
+    # nota del CPC); recall_citas, recall_docs, MRR y nDCG iguales.
+    smlmv: bool = True
+    # Mezcla final: al puntaje del reranker se suma `peso_fusion` x (puntaje RRF / el mejor RRF), para
+    # que lo que BM25 y el denso ponen arriba no dependa solo del reranker (p. ej. "Fintech": 1.º en
+    # BM25, puesto 48 tras el reranker). 0 = solo el reranker.
+    peso_fusion: float = 0.0
+    # Una sola ventana por sección de sentencia: las ventanas de ~1.700 caracteres de una misma sección
+    # cuentan como una unidad (igual que las partes de un artículo) y entra la mejor puntuada; el lugar
+    # de las demás lo toma otra fuente. En las 50 de muestra, 21 de 500 pasajes eran otra ventana de una
+    # sección ya elegida.
+    una_ventana: bool = False
+    # Cupo para los líderes: los `lideres` primeros de cada buscador (BM25, HNSW y sus listas de normas)
+    # entran al top-k aunque el reranker los baje (p. ej. "Fintech": 1.º en BM25 de normas, puesto 48
+    # tras el reranker). Respetan los topes por documento y de sentencias. 0 = no se usa.
+    # Con las 4 listas: cerradas recall_docs 0,808 -> 0,692 (el 1.º del HNSW desplaza documentos
+    # correctos). Solo el 1.º de BM25 de normas, en las cerradas: métricas idénticas al ganador (0,962 /
+    # 0,808 / MRR 0,365 / nDCG 0,467) y entra el pasaje que distingue una opción ("Fintech" en la 128,
+    # 1.º en BM25 de normas y puesto 48 tras el reranker). Activado el 1/oct, a medir con el agente.
+    lideres: int = 1
+    lideres_listas: tuple = ("bm25_normas",)   # de qué buscadores
+    lideres_solo_cerradas: bool = True
+    # Los `fijos_rrf` primeros de la fusión (BM25 + HNSW por RRF, antes del reranker) entran al top-k
+    # aunque el reranker los baje; el reranker ordena el resto. Con `fijos_solo_cerradas`, solo en las
+    # cerradas. Respetan los topes por documento y de sentencias. 0 = no se usa.
+    fijos_rrf: int = 0
+    fijos_solo_cerradas: bool = True
+    # BM25 solo en las cerradas: en semiabiertas y abiertas (lenguaje natural) BM25 mete pasajes que
+    # comparten palabras pero no tema; en las cerradas las opciones traen términos exactos ("Ley 472",
+    # "falsa motivación") y BM25 sí ayuda. Banco (50 preguntas, A40), recall_citas / recall_docs:
+    # combinado: cerradas 0,962 / 0,808, semiabiertas 0,965 / 0,861; solo HNSW: cerradas 0,923 / 0,769,
+    # semiabiertas 0,986 / 0,944. El formato es un dato de la pregunta: la elección es determinista.
+    # Activada (1/oct): total 0,919 / 0,809 / MRR 0,419 / nDCG 0,561 -> 0,931 / 0,858 / 0,423 / 0,577.
+    bm25_solo_cerradas: bool = True
+    # Siglas jurídicas (src/knowledge/siglas.py): la consulta se busca y se reordena con el nombre
+    # completo tras cada sigla ("SIC" -> "SIC (Superintendencia de Industria y Comercio)"). Las citas
+    # expresas se detectan sobre la consulta original. En la 58 ("…ante la SIC") el art. 24 del CGP,
+    # que da a la SIC funciones jurisdiccionales, no llegaba al top-10. Medido (2/oct, A40): métricas
+    # idénticas (0,931 / 0,858 / MRR 0,423 / nDCG 0,577, también por formato), solo cambian los pasajes
+    # de la 58 y la 679; con el agente, la 58 pasa a la A citando el art. 24 (v14: 13/15, 42,90/50
+    # contra 12/15 y 41,33 de v13). Activada.
+    siglas: bool = True
+    # Sin instrucciones de examen ("lea con atención cada pregunta y responda la siguiente pregunta",
+    # "Pregunta jurídica:"; `sin_instrucciones` en src/knowledge/siglas.py): BM25 las toma como términos
+    # de búsqueda. En la 748 traían artículos de interrogatorio de parte; sin ellas el art. 137 del
+    # CPACA (falsa motivación) pasa del puesto 258 al 35 en BM25 de normas. Medido (2/oct, A40): métricas
+    # idénticas, solo cambia la 748, pero el art. 137 sigue fuera del top-10 (el reranker no lo sube) y
+    # el agente pasa de D a C (las dos erradas; v15 42,90/50 igual que v14). Apagada: sin beneficio y con
+    # evidencia de un solo caso.
+    sin_instrucciones: bool = False
+    # BM25 de normas también en semiabiertas y abiertas: `bm25_solo_cerradas` apaga los dos BM25 en texto
+    # libre; con esto vuelve solo la lista de normas (276.958 artículos, sin ventanas de sentencias, que
+    # eran las que metían pasajes con palabras comunes pero sin tema). Medido (2/oct, A40): peor, semiabiertas
+    # 0,986 / 0,944 -> 0,951 / 0,847 y abiertas igual (0,5 / 0,5; no trae la Ley 472 a la 247 ni la 1581 a la 679). Apagado.
+    bm25_normas_libre: bool = False
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -115,6 +190,9 @@ PERFILES.update({
     "ganador_dedup50": {**_NORMAS50, "dedup": 0.5},
     "ganador_dedup70": {**_NORMAS50, "dedup": 0.7},
 })
+PERFILES["ganador_siglas"] = {**PERFILES["ganador_dedup70"], "siglas": True}
+PERFILES["ganador_instrucciones"] = {**PERFILES["ganador_siglas"], "sin_instrucciones": True}
+PERFILES["ganador_normas_libre"] = {**PERFILES["ganador_siglas"], "bm25_normas_libre": True}
 
 
 def _hermano(ruta: Path) -> Path:
@@ -124,7 +202,7 @@ def _hermano(ruta: Path) -> Path:
 
 def config_de(perfil: str, **base) -> "Config":
     # Los perfiles sin "normas" o sin "dedup" se midieron sin esas opciones: así se siguen reproduciendo.
-    return Config(**{"normas": 0, "dedup": 0.0, **base, **PERFILES[perfil]})
+    return Config(**{"normas": 0, "dedup": 0.0, "siglas": False, **base, **PERFILES[perfil]})
 
 
 @dataclass
@@ -184,22 +262,36 @@ class Recuperador:
 
     def buscar_item(self, item: dict) -> Resultado:
         """Búsqueda para una pregunta (dict con "pregunta" y, en las cerradas, "opciones")."""
-        extras = []
-        if self.cfg.por_opcion and isinstance(item.get("opciones"), dict):
-            pregunta = item.get("pregunta", "").strip()
-            extras = [(k, f"{pregunta}\n{k}) {v}") for k, v in sorted(item["opciones"].items())]
-        return self.buscar(consulta_de(item), extras)
+        opciones = item.get("opciones") if isinstance(item.get("opciones"), dict) else {}
+        pregunta = item.get("pregunta", "").strip()
+        extras = [(k, f"{pregunta}\n{k}) {v}") for k, v in sorted(opciones.items())]
+        usar_bm25 = bool(opciones) or not self.cfg.bm25_solo_cerradas
+        return self.buscar(consulta_de(item), extras, opciones, pregunta, usar_bm25)
 
-    def buscar(self, consulta: str, extras: list[tuple[str, str]] = ()) -> Resultado:
-        """`extras`: (nombre, consulta) adicionales (p. ej. una por opción); cada una aporta su
-        lista de BM25 y de HNSW a la fusión. El reranker siempre puntúa contra `consulta`."""
+    def buscar(self, consulta: str, extras: list[tuple[str, str]] = (), opciones: dict | None = None,
+               pregunta: str | None = None, usar_bm25: bool = True) -> Resultado:
+        """`extras`: (nombre, consulta) por opción ("pregunta + opción X"); con `por_opcion` cada una
+        aporta su lista de BM25 y de HNSW a la fusión, y con `rerank_opciones` el reranker también
+        puntúa contra cada una. `opciones`: las de la cerrada (para `solo_opciones`). `pregunta`: el
+        enunciado sin opciones, con el que se busca dentro de las normas citadas. `usar_bm25`: False =
+        sin las listas de BM25 (ver `bm25_solo_cerradas`)."""
         cfg, t, etapas = self.cfg, {}, {}
         t0 = time.perf_counter()
         citadas = chunks_citados(consulta, self.almacen) if cfg.usar_citas else []
         t["citas"] = time.perf_counter() - t0
+        if cfg.sin_instrucciones:
+            consulta = sin_instrucciones(consulta)
+            pregunta = sin_instrucciones(pregunta) if pregunta else pregunta
+            extras = [(nombre, sin_instrucciones(q)) for nombre, q in extras]
+        if cfg.siglas:
+            consulta = con_siglas(consulta)
+            pregunta = con_siglas(pregunta) if pregunta else pregunta
+            extras = [(nombre, con_siglas(q)) for nombre, q in extras]
 
+        forzados = list(self._decreto_smlmv()) if cfg.smlmv and _PESOS_RE.search(consulta) else []
+        etapas["forzados"] = forzados
         listas = [citadas] if citadas else []
-        if self.bm25:
+        if self.bm25 and usar_bm25:
             t0 = time.perf_counter()
             etapas["bm25"] = [c for c, _ in self.bm25.buscar(consulta, cfg.candidatos)]
             t["bm25"] = time.perf_counter() - t0
@@ -212,7 +304,7 @@ class Recuperador:
             listas.append(etapas["denso"])
         if self.bm25_normas or self.denso_normas:
             t0 = time.perf_counter()
-            if self.bm25_normas:
+            if self.bm25_normas and (usar_bm25 or cfg.bm25_normas_libre):
                 etapas["bm25_normas"] = [c for c, _ in self.bm25_normas.buscar(consulta, cfg.normas)]
                 listas.append(etapas["bm25_normas"])
             if self.denso_normas:
@@ -230,6 +322,35 @@ class Recuperador:
                     etapas[f"opcion_{nombre}_denso"] = [c for c, _ in self.denso.buscar_vector(vq, cfg.por_opcion)]
                     listas.append(etapas[f"opcion_{nombre}_denso"])
             t["opciones"] = time.perf_counter() - t0
+        if cfg.en_citadas:
+            t0 = time.perf_counter()
+            # Las normas se toman de la consulta completa (también las que nombran las opciones); dentro
+            # de cada una se busca con el enunciado solo: las demás opciones serían ruido.
+            normas_citadas = self._citadas_sin_articulo(consulta)
+            q = pregunta or consulta
+            vq = None
+            if normas_citadas and self.denso:
+                vq = v if q == consulta else self.denso.vector(q)
+            for did in normas_citadas:
+                for nombre, lista in self._dentro_de(did, q, vq).items():
+                    etapas[f"citada_{did}_{nombre}"] = lista
+                    listas.append(lista)
+            t["citadas"] = time.perf_counter() - t0
+        if cfg.solo_opciones and opciones:
+            t0 = time.perf_counter()
+            q = "\n".join(str(o) for _, o in sorted(opciones.items()))
+            if self.bm25_normas:
+                etapas["solo_opciones_bm25"] = [c for c, _ in self.bm25_normas.buscar(q, cfg.solo_opciones)]
+                listas.append(etapas["solo_opciones_bm25"])
+            if self.denso_normas:
+                etapas["solo_opciones_denso"] = [c for c, _ in self.denso_normas.buscar_vector(
+                    self.denso.vector(q), cfg.solo_opciones)]
+                listas.append(etapas["solo_opciones_denso"])
+            t["solo_opciones"] = time.perf_counter() - t0
+        if cfg.lideres and (opciones or not cfg.lideres_solo_cerradas):
+            for nombre in cfg.lideres_listas:
+                forzados += [c for c in etapas.get(nombre, [])[:cfg.lideres] if c not in forzados]
+            etapas["forzados"] = forzados
         fusion = rrf(listas)
         if cfg.seguir_citas:
             t0 = time.perf_counter()
@@ -240,21 +361,33 @@ class Recuperador:
                 listas.append(seguidas)
                 fusion = rrf(listas)
         etapas["rrf"] = [c for c, _ in fusion]
+        if cfg.fijos_rrf and (opciones or not cfg.fijos_solo_cerradas):
+            forzados += [c for c, _ in fusion[:cfg.fijos_rrf] if c not in forzados]
+            etapas["forzados"] = forzados
 
         pool = [c for c, _ in fusion[:cfg.n_rerank]]
+        pool += [c for c in forzados if c not in pool]
         datos = self.almacen.get(pool)
         pool = [c for c in pool if c in datos]
         if self.reranker:
             t0 = time.perf_counter()
-            puntajes = self.reranker.puntuar(consulta, [datos[c]["texto"] for c in pool])
+            textos = [datos[c]["texto"] for c in pool]
+            puntajes = self.reranker.puntuar(consulta, textos)
+            if cfg.rerank_opciones and extras:
+                for _, q in extras:
+                    puntajes = [max(a, b) for a, b in zip(puntajes, self.reranker.puntuar(q, textos))]
             t["reranker"] = time.perf_counter() - t0
         else:  # sin reranker: el puntaje RRF, reescalado
             maximo = fusion[0][1] if fusion else 1.0
             puntajes = [round(dict(fusion)[c] / maximo, 4) for c in pool]
 
         ajustados = []
+        rrf_de = dict(fusion)
+        rrf_max = fusion[0][1] if fusion else 1.0
         for cid, s in zip(pool, puntajes):
             d = datos[cid]
+            if cfg.peso_fusion and self.reranker:
+                s += cfg.peso_fusion * rrf_de.get(cid, 0.0) / rrf_max
             if d.get("derogado") or d.get("vigencia") == "derogada":
                 s -= cfg.penal_derogado
             if d.get("prioridad") == "baja":
@@ -268,10 +401,64 @@ class Recuperador:
         etapas["rerank"] = [c for c, _ in ajustados]
 
         t0 = time.perf_counter()
-        pasajes = self._seleccionar(ajustados, datos, set(citadas))
+        pasajes = self._seleccionar(ajustados, datos, set(citadas), forzados)
         t["seleccion"] = time.perf_counter() - t0
         etapas["final"] = [p["chunk_id"] for p in pasajes]
         return Resultado(pasajes, etapas, {k: round(v, 3) for k, v in t.items()})
+
+    def _decreto_smlmv(self) -> list[str]:
+        """Chunk del artículo que fija el salario mínimo en el decreto más reciente del corpus (se
+        busca una vez con BM25 sobre las normas y se guarda)."""
+        if not hasattr(self, "_smlmv"):
+            self._smlmv = []
+            if self.bm25_normas:
+                q = "Fijar a partir del primero de enero como Salario Mínimo Legal Mensual la suma de pesos"
+                cands = [c for c, _ in self.bm25_normas.buscar(q, 100)]
+                datos = self.almacen.get(cands)
+                fija = re.compile(r"fijar.{0,120}salario m[ií]nimo (legal )?mensual", re.I | re.S)
+                anios = []
+                for c in cands:
+                    d = datos.get(c)
+                    m = re.search(r"_(\d{4})$", c.split("/", 1)[0])
+                    if d and m and d["tipo_chunk"] == "articulo" and fija.search(d["texto"]):
+                        anios.append((int(m.group(1)), c))
+                if anios:
+                    self._smlmv = [max(anios)[1]]
+        return self._smlmv
+
+    def _citadas_sin_articulo(self, consulta: str) -> list[str]:
+        """Normas (no sentencias) que la consulta cita sin artículo, en orden de doc_id."""
+        docs = [did for did, arts in sorted(documentos_citados(consulta).items())
+                if not did.startswith("jurisprudencia_") and not any(arts)]
+        return docs[:self.cfg.max_citadas]
+
+    def _posiciones(self, nombre: str, ids: list[str]) -> dict[str, int]:
+        if not hasattr(self, "_pos"):
+            self._pos = {}
+        if nombre not in self._pos:
+            self._pos[nombre] = {c: i for i, c in enumerate(ids)}
+        return self._pos[nombre]
+
+    def _dentro_de(self, did: str, consulta: str, v) -> dict[str, list[str]]:
+        """Los `en_citadas` mejores chunks de la norma `did` para la consulta, con BM25 (máscara sobre
+        el índice de normas) y con el denso exacto (producto punto con los vectores de esa norma)."""
+        import numpy as np
+        n, out = self.cfg.en_citadas, {}
+        chunks = [c["chunk_id"] for c in self.almacen.por("doc_id", did)]
+        if self.bm25_normas:
+            pos = self._posiciones("bm25", self.bm25_normas.ids)
+            idx = [pos[c] for c in chunks if c in pos]
+            if idx:
+                out["bm25"] = [c for c, _ in self.bm25_normas.buscar(consulta, min(n, len(idx)), mascara=idx)]
+        if self.denso_normas and v is not None:
+            pos = self._posiciones("denso", self.denso_normas.ids)
+            pares = [(c, pos[c]) for c in chunks if c in pos]
+            if pares:
+                m = np.stack([self.denso_normas.indice.reconstruct(p) for _, p in pares])
+                s = np.round(m @ v[0], 4)
+                orden = sorted(zip((c for c, _ in pares), s.tolist()), key=lambda p: (-p[1], p[0]))
+                out["denso"] = [c for c, _ in orden[:n]]
+        return out
 
     def _citas_seguidas(self, top: list[str]) -> list[str]:
         """Chunks de los artículos (o fichas) que más citan los pasajes `top`, en orden de cuántos
@@ -295,7 +482,7 @@ class Recuperador:
         return [c for u in mejores for c in sorted(chunks_de[u])]
 
     def _seleccionar(self, ajustados: list[tuple[str, float]], datos: dict,
-                     citadas: set[str] = frozenset()) -> list[dict]:
+                     citadas: set[str] = frozenset(), forzados: list[str] = ()) -> list[dict]:
         cfg, elegidos, por_doc, articulos, n_sent, diferidos = self.cfg, [], {}, set(), 0, []
 
         tejas_elegidas: list[set] = []
@@ -304,6 +491,8 @@ class Recuperador:
             d = datos[cid]
             es_articulo = d["tipo_chunk"] in ("articulo", "parte_articulo")
             unidad = d.get("articulo_id") if es_articulo else cid
+            if cfg.una_ventana and d["tipo_chunk"] == "seccion":
+                unidad = re.sub(r"#\d+$", "", cid)
             if unidad in articulos or por_doc.get(d["doc_id"], 0) >= cfg.max_por_doc:
                 return False
             if cfg.dedup:
@@ -319,6 +508,10 @@ class Recuperador:
             elegidos.append((cid, s))
             return True
 
+        puntaje = dict(ajustados)
+        for cid in forzados:  # entran primero; el orden final sigue siendo por puntaje
+            if cid in puntaje:
+                tomar(cid, puntaje[cid])
         for cid, s in ajustados:
             if len(elegidos) == cfg.k:
                 break
@@ -337,11 +530,16 @@ class Recuperador:
         out = []
         for cid, s in elegidos:
             d = datos[cid]
-            texto, pid = d["texto"], cid
+            texto, pid, inicio, fin = d["texto"], cid, d.get("inicio"), d.get("fin")
             if cfg.expandir_articulo and d["tipo_chunk"] == "parte_articulo":
                 texto, pid = self._articulo_completo(d), d["articulo_id"]
+                # El rango del artículo completo: del inicio de la primera parte al fin de la última.
+                partes = [c for c in self.almacen.por("articulo_id", d["articulo_id"])
+                          if c["tipo_chunk"] == "parte_articulo" and c.get("inicio") is not None]
+                if partes:
+                    inicio, fin = min(c["inicio"] for c in partes), max(c["fin"] for c in partes)
             out.append({"doc_id": d["doc_id"], "chunk_id": pid, "texto": texto, "score": s,
-                        "inicio": d.get("inicio"), "fin": d.get("fin"), "tipo_chunk": d["tipo_chunk"]})
+                        "inicio": inicio, "fin": fin, "tipo_chunk": d["tipo_chunk"]})
         return out
 
     def _articulo_completo(self, d: dict) -> str:

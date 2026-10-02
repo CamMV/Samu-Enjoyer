@@ -1,0 +1,57 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/393 [00:00<?, ?it/s]Loading weights: 100%|██████████| 393/393 [00:00<00:00, 6170.31it/s]
+== 50 preguntas, retriever real -> entregables/v19.jsonl
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 6798.86it/s]
+[1/50] ID: 51 Formato: multiple_choice Tiempo: 20.92s
+[2/50] ID: 58 Formato: multiple_choice Tiempo: 33.24s
+[3/50] ID: 60 Formato: multiple_choice Tiempo: 14.49s
+[4/50] ID: 128 Formato: multiple_choice Tiempo: 29.21s
+[5/50] ID: 290 Formato: multiple_choice Tiempo: 17.11s
+[6/50] ID: 308 Formato: multiple_choice Tiempo: 21.74s
+[7/50] ID: 352 Formato: multiple_choice Tiempo: 25.56s
+[8/50] ID: 358 Formato: multiple_choice Tiempo: 16.36s
+[9/50] ID: 487 Formato: multiple_choice Tiempo: 15.41s
+[10/50] ID: 528 Formato: multiple_choice Tiempo: 16.90s
+[11/50] ID: 600 Formato: multiple_choice Tiempo: 16.81s
+[12/50] ID: 617 Formato: multiple_choice Tiempo: 27.96s
+[13/50] ID: 647 Formato: multiple_choice Tiempo: 21.45s
+[14/50] ID: 671 Formato: multiple_choice Tiempo: 25.41s
+[15/50] ID: 748 Formato: multiple_choice Tiempo: 33.62s
+[16/50] ID: 247 Formato: open_ended Tiempo: 22.92s
+[17/50] ID: 253 Formato: open_ended Tiempo: 21.42s
+[18/50] ID: 272 Formato: open_ended Tiempo: 22.22s
+[19/50] ID: 513 Formato: open_ended Tiempo: 16.03s
+[20/50] ID: 679 Formato: open_ended Tiempo: 24.34s
+[21/50] ID: 24 Formato: semi_open Tiempo: 13.46s
+[22/50] ID: 79 Formato: semi_open Tiempo: 11.16s
+[23/50] ID: 140 Formato: semi_open Tiempo: 12.67s
+[24/50] ID: 142 Formato: semi_open Tiempo: 14.97s
+[25/50] ID: 168 Formato: semi_open Tiempo: 11.56s
+[26/50] ID: 190 Formato: semi_open Tiempo: 34.22s
+[27/50] ID: 218 Formato: semi_open Tiempo: 20.95s
+[28/50] ID: 239 Formato: semi_open Tiempo: 13.16s
+[29/50] ID: 280 Formato: semi_open Tiempo: 12.57s
+[30/50] ID: 442 Formato: semi_open Tiempo: 20.79s
+[31/50] ID: 453 Formato: semi_open Tiempo: 11.57s
+[32/50] ID: 472 Formato: semi_open Tiempo: 13.14s
+[33/50] ID: 490 Formato: semi_open Tiempo: 14.32s
+[34/50] ID: 563 Formato: semi_open Tiempo: 16.67s
+[35/50] ID: 589 Formato: semi_open Tiempo: 12.61s
+[36/50] ID: 661 Formato: semi_open Tiempo: 22.95s
+[37/50] ID: 674 Formato: semi_open Tiempo: 13.62s
+[38/50] ID: 697 Formato: semi_open Tiempo: 18.12s
+[39/50] ID: 857 Formato: semi_open Tiempo: 11.55s
+[40/50] ID: 865 Formato: semi_open Tiempo: 9.20s
+[41/50] ID: 879 Formato: semi_open Tiempo: 8.87s
+[42/50] ID: 919 Formato: semi_open Tiempo: 16.59s
+[43/50] ID: 946 Formato: semi_open Tiempo: 14.03s
+[44/50] ID: 960 Formato: semi_open Tiempo: 16.34s
+[45/50] ID: 991 Formato: semi_open Tiempo: 20.83s
+[46/50] ID: 1005 Formato: semi_open Tiempo: 23.86s
+[47/50] ID: 1015 Formato: semi_open Tiempo: 16.16s
+[48/50] ID: 1065 Formato: semi_open Tiempo: 12.63s
+[49/50] ID: 1073 Formato: semi_open Tiempo: 11.12s
+[50/50] ID: 1089 Formato: semi_open Tiempo: 16.90s
+== listo: 50 ok, 0 con error
+   línea 2: None is not one of ['A', 'B', 'C', 'D']
+== validación [jsonschema] con /home/sgomezo2/Samu-Enjoyer/schema/submission.schema.json: 1 problemas

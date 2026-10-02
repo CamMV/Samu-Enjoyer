@@ -88,3 +88,109 @@ def test_dedup_salta_casi_duplicados_pero_no_articulos():
     assert {"ley_1_1976/art_25", "codigo_civil/art_1820"} <= set(ids)    # los dos artículos se conservan
     sin = _rec(Config(normas=0, dedup=0.0, expandir_articulo=False), None, None)._seleccionar(orden, datos)
     assert len(sin) == 4
+
+
+def test_normas_citadas_sin_articulo():
+    r = _rec(Config(normas=0), None, None)
+    q = "¿Qué regula la Ley 1564 de 2002?\nA) Ley 472 de 1998\nB) artículo 5 de la Ley 1581 de 2012\nC) Sentencia C-355 de 2006"
+    # La 1564 (CGP, aunque el año esté errado) y la 472 van sin artículo; la 1581 trae artículo y la sentencia no es norma.
+    assert r._citadas_sin_articulo(q) == ["codigo_general_proceso", "ley_472_1998"]
+
+
+class BM25Mascara:
+    def __init__(self, ids):
+        self.ids, self.mascaras = ids, []
+
+    def buscar(self, consulta, k=100, mascara=None):
+        self.mascaras.append(sorted(mascara or []))
+        return [(self.ids[i], 1.0) for i in sorted(mascara or [])][:k]
+
+
+class AlmacenDoc(AlmacenFalso):
+    def por(self, campo, valor):
+        return [{"chunk_id": c} for c in self.textos if c.startswith(valor + "/")]
+
+
+def test_busqueda_dentro_de_la_norma_citada():
+    ids = ["ley_472_1998/art_1", "codigo_general_proceso/art_24#4", "constitucion/art_88", "codigo_general_proceso/art_1"]
+    almacen = AlmacenDoc({c: c for c in ids})
+    r = _rec(Config(normas=0, usar_citas=False, en_citadas=5), None, almacen)
+    r.bm25_normas = BM25Mascara(ids)
+    res = r.buscar_item({"pregunta": "¿Qué regula las funciones jurisdiccionales de la SIC?",
+                         "opciones": {"A": "Ley 1564 de 2002", "B": "Ley 270 de 1996"}})
+    assert r.bm25_normas.mascaras[-1] == [1, 3]  # solo los chunks del CGP
+    assert res.etapas["citada_codigo_general_proceso_bm25"] == ["codigo_general_proceso/art_24#4",
+                                                                 "codigo_general_proceso/art_1"]
+    assert "codigo_general_proceso/art_24#4" in res.etapas["rrf"]
+
+
+def test_solo_opciones_busca_con_el_texto_de_las_opciones():
+    normas = BM25Falso({"motivación": "cpaca/art_137"})
+    r = _rec(Config(normas=0, usar_citas=False, solo_opciones=20), None, AlmacenFalso({}))
+    r.bm25_normas = normas
+    res = r.buscar_item({"pregunta": "¿Qué vicio configura?", "opciones": {"A": "Falsa motivación", "B": "Desviación de poder"}})
+    assert normas.consultas[-1] == "Falsa motivación\nDesviación de poder"
+    assert res.etapas["solo_opciones_bm25"] == ["cpaca/art_137"]
+
+
+def test_monto_en_pesos_asegura_el_decreto_del_salario_minimo():
+    from src.knowledge.hybrid_search import _PESOS_RE
+    assert _PESOS_RE.search("pretensiones por 30.000.000 COP") and _PESOS_RE.search("una multa de $1.500.000")
+    assert not _PESOS_RE.search("la Ley 1564 de 2012, artículo 25") and not _PESOS_RE.search("30 salarios mínimos")
+    datos = {f"ley_{i}_2000/art_1": {"doc_id": f"ley_{i}_2000", "tipo_chunk": "articulo",
+                                     "articulo_id": f"ley_{i}_2000/art_1", "texto": f"Ley {i}\nArtículo 1.\n{i} " * 3}
+             for i in range(12)}
+    datos["decreto_1572_2024/art_1"] = {"doc_id": "decreto_1572_2024", "tipo_chunk": "articulo",
+                                        "articulo_id": "decreto_1572_2024/art_1", "texto": "Decreto\nArtículo 1.\nsmlmv"}
+    orden = [(c, 1.0 - n / 100) for n, c in enumerate(datos)]  # el decreto, último
+    r = _rec(Config(normas=0), None, None)
+    sin = [p["chunk_id"] for p in r._seleccionar(orden, datos)]
+    con = [p["chunk_id"] for p in r._seleccionar(orden, datos, forzados=["decreto_1572_2024/art_1"])]
+    assert "decreto_1572_2024/art_1" not in sin and con[-1] == "decreto_1572_2024/art_1" and len(con) == 10
+
+
+def test_bm25_solo_en_las_cerradas():
+    bm25 = BM25Falso({"leasing": "ley_1/art_1"})
+    almacen = AlmacenFalso({})
+    cfg = Config(normas=0, usar_citas=False, bm25_solo_cerradas=True)
+    abierta = _rec(cfg, bm25, almacen).buscar_item({"pregunta": "¿Qué es el leasing?"})
+    assert "bm25" not in abierta.etapas and not bm25.consultas
+    cerrada = _rec(cfg, bm25, almacen).buscar_item(ITEM)
+    assert cerrada.etapas["bm25"] == ["ley_1/art_1"]
+    sin_opcion = _rec(Config(normas=0, usar_citas=False, bm25_solo_cerradas=False), bm25, almacen).buscar_item(
+        {"pregunta": "leasing"})
+    assert sin_opcion.etapas["bm25"] == ["ley_1/art_1"]  # apagada: BM25 en todas
+
+
+def test_siglas_se_expanden_una_vez_y_solo_en_mayusculas():
+    from src.knowledge.siglas import con_siglas
+    assert con_siglas("¿Qué norma regula las actuaciones ante la SIC?") == \
+        "¿Qué norma regula las actuaciones ante la SIC (Superintendencia de Industria y Comercio)?"
+    assert con_siglas("La DIAN y otra vez la DIAN") == \
+        "La DIAN (Dirección de Impuestos y Aduanas Nacionales) y otra vez la DIAN"
+    # Minúsculas, parte de otra palabra o de un id ("SU-123"): no se tocan.
+    assert con_siglas("sic transit; SICARIO; Sentencia SU-123; EPSx") == "sic transit; SICARIO; Sentencia SU-123; EPSx"
+    # Si el nombre completo ya está, no se repite.
+    texto = "la Superintendencia de Industria y Comercio (SIC)"
+    assert con_siglas(texto) == texto
+
+
+def test_siglas_en_la_busqueda():
+    bm25 = BM25Falso({"superintendencia de industria": "codigo_general_proceso/art_24"})
+    almacen = AlmacenFalso({})
+    item = {"pregunta": "¿Qué normativa regula las actuaciones ante la SIC?", "opciones": {"A": "Ley 1564"}}
+    apagado = _rec(Config(normas=0, usar_citas=False, siglas=False), bm25, almacen).buscar_item(item)
+    assert apagado.etapas["bm25"] == []
+    con = _rec(Config(normas=0, usar_citas=False), bm25, almacen).buscar_item(item)  # activada por defecto
+    assert con.etapas["bm25"] == ["codigo_general_proceso/art_24"]
+
+
+def test_sin_instrucciones_de_examen():
+    from src.knowledge.siglas import sin_instrucciones
+    p = ("Habiendo hecho la lectura previa de la Resolución No. 368 de 2014 expedida por el Ministerio de "
+         "Ambiente, lea con atención cada pregunta y responda la siguiente pregunta. \n\nPregunta jurídica: "
+         "No tener en cuenta lo presentado en la consulta previa puede configurar el vicio:")
+    limpio = sin_instrucciones(p)
+    assert "Resolución No. 368 de 2014" in limpio and "consulta previa puede configurar el vicio" in limpio
+    assert "lea con" not in limpio and "responda" not in limpio and "Pregunta jurídica" not in limpio
+    assert sin_instrucciones("¿Qué pregunta debe responder el testigo?") == "¿Qué pregunta debe responder el testigo?"
