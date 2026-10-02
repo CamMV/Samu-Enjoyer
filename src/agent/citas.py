@@ -117,12 +117,50 @@ def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
     citas = [m.group(0).strip()[1:-1].strip() for m in _PAREN.finditer(texto) if _ES_CITA.search(m.group(0))]
     texto = _PAREN.sub(lambda m: "" if _ES_CITA.search(m.group(0)) else m.group(0), texto)
     texto = re.sub(r"\s+([.,;:])", r"\1", texto).strip()
+    # Restos de puntuación donde estaban las citas: "servicio., " -> "servicio.", "norma, ." -> "norma."
+    texto = re.sub(r"([.;:])(?:\s*[,;])+", r"\1", texto)
+    texto = re.sub(r",\s*([.;:])", r"\1", texto).rstrip(" ,;")
     if n:
         texto = " ".join(_ORACION.split(texto)[:n]).strip()
     previa = str(borrador.get("referencia_legal") or "").strip()
     nuevas = [c for c in dict.fromkeys(citas) if c not in previa]
     referencia = "; ".join([x for x in [previa.rstrip(".;")] + nuevas if x])
     return {**borrador, "respuesta": texto, "referencia_legal": referencia}
+
+
+# Abiertas: oraciones máximas por campo. En v6 las 5 abiertas tenían ~480-510 palabras y el juez de
+# RAGAS no alcanzó a dar veredicto en ninguna (timeout): cuentan como cero. El esquema pide análisis de
+# 5 a 8 oraciones; los demás campos van breves.
+# Además, un tope de palabras: en v6 el marco normativo salió como lista "id: … contenido: …" que
+# copiaba los pasajes (237 palabras sin un punto). Con ~350 palabras en total (como en v2) el juez sí
+# da veredicto.
+MAX_ORACIONES_ABIERTA = {"marco_normativo": 3, "analisis": 5, "jurisprudencia": 2, "conclusion": 2}
+MAX_PALABRAS_ABIERTA = {"marco_normativo": 80, "analisis": 160, "jurisprudencia": 60, "conclusion": 50}
+
+
+def _recortar(texto: str, oraciones: int, palabras: int) -> str:
+    """Las primeras oraciones que quepan en `palabras`; si ni la primera cabe, sus primeras palabras."""
+    elegidas, n = [], 0
+    for o in _ORACION.split(texto.strip())[:oraciones]:
+        largo = len(o.split())
+        if elegidas and n + largo > palabras:
+            break
+        elegidas.append(o)
+        n += largo
+    salida = " ".join(elegidas).strip()
+    if len(salida.split()) > palabras:
+        salida = " ".join(salida.split()[:palabras]).rstrip(",;:") + "…"
+    return salida
+
+
+def abierta_concisa(borrador: dict) -> dict:
+    """Abiertas: cada campo en sus primeras oraciones y dentro de su tope de palabras."""
+    out = dict(borrador)
+    for campo, n in MAX_ORACIONES_ABIERTA.items():
+        texto = str(out.get(campo) or "").strip()
+        if texto:
+            out[campo] = _recortar(texto, n, MAX_PALABRAS_ABIERTA[campo])
+    return out
 
 
 # Campo donde van las normas consultadas: el que lee el extractor de citas del evaluador y que no

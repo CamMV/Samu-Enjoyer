@@ -76,12 +76,13 @@ _FORMATO_INSTRUCCIONES = {
         '(IDs/normas citadas), "abstencion" (boolean).'
     ),
     "open_ended": (
-        'Devuelve JSON con las llaves: "marco_normativo" (las normas aplicables, cada una con su ID '
-        'canónico y lo que establece para el caso; nunca describas los pasajes), "analisis" (5 a 8 '
-        'oraciones que aplican esas normas a los hechos del caso, citando IDs canónicos), '
-        '"jurisprudencia" (las sentencias de los pasajes que aplican, con la regla que fijan; si no hay, '
-        'escribe "No se identificó jurisprudencia aplicable en el corpus."), "conclusion" (una o dos '
-        'oraciones que responden directamente la pregunta), "abstencion" (boolean).'
+        'Devuelve JSON con las llaves, todas de tipo texto corrido (nunca listas ni objetos): '
+        '"marco_normativo" (máximo 3 oraciones: qué normas aplican, con su ID canónico, y qué establecen '
+        'para el caso; no copies el texto de los pasajes ni los describas), "analisis" (5 oraciones que '
+        'aplican esas normas a los hechos del caso, citando IDs canónicos), "jurisprudencia" (máximo 2 '
+        'oraciones: las sentencias de los pasajes que aplican y la regla que fijan; si no hay, escribe '
+        '"No se identificó jurisprudencia aplicable en el corpus."), "conclusion" (una o dos oraciones que '
+        'responden directamente la pregunta), "abstencion" (boolean). En total, menos de 300 palabras.'
     ),
 }
 

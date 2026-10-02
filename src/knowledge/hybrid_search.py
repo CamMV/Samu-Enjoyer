@@ -102,7 +102,18 @@ class Config:
     # Cupo para los líderes: los `lideres` primeros de cada buscador (BM25, HNSW y sus listas de normas)
     # entran al top-k aunque el reranker los baje (p. ej. "Fintech": 1.º en BM25 de normas, puesto 48
     # tras el reranker). Respetan los topes por documento y de sentencias. 0 = no se usa.
-    lideres: int = 0
+    # Con las 4 listas: cerradas recall_docs 0,808 -> 0,692 (el 1.º del HNSW desplaza documentos
+    # correctos). Solo el 1.º de BM25 de normas, en las cerradas: métricas idénticas al ganador (0,962 /
+    # 0,808 / MRR 0,365 / nDCG 0,467) y entra el pasaje que distingue una opción ("Fintech" en la 128,
+    # 1.º en BM25 de normas y puesto 48 tras el reranker). Activado el 1/oct, a medir con el agente.
+    lideres: int = 1
+    lideres_listas: tuple = ("bm25_normas",)   # de qué buscadores
+    lideres_solo_cerradas: bool = True
+    # Los `fijos_rrf` primeros de la fusión (BM25 + HNSW por RRF, antes del reranker) entran al top-k
+    # aunque el reranker los baje; el reranker ordena el resto. Con `fijos_solo_cerradas`, solo en las
+    # cerradas. Respetan los topes por documento y de sentencias. 0 = no se usa.
+    fijos_rrf: int = 0
+    fijos_solo_cerradas: bool = True
     # BM25 solo en las cerradas: en semiabiertas y abiertas (lenguaje natural) BM25 mete pasajes que
     # comparten palabras pero no tema; en las cerradas las opciones traen términos exactos ("Ley 472",
     # "falsa motivación") y BM25 sí ayuda. Banco (50 preguntas, A40), recall_citas / recall_docs:
@@ -303,8 +314,8 @@ class Recuperador:
                     self.denso.vector(q), cfg.solo_opciones)]
                 listas.append(etapas["solo_opciones_denso"])
             t["solo_opciones"] = time.perf_counter() - t0
-        if cfg.lideres:
-            for nombre in ("bm25_normas", "bm25", "denso_normas", "denso"):
+        if cfg.lideres and (opciones or not cfg.lideres_solo_cerradas):
+            for nombre in cfg.lideres_listas:
                 forzados += [c for c in etapas.get(nombre, [])[:cfg.lideres] if c not in forzados]
             etapas["forzados"] = forzados
         fusion = rrf(listas)
@@ -317,6 +328,9 @@ class Recuperador:
                 listas.append(seguidas)
                 fusion = rrf(listas)
         etapas["rrf"] = [c for c, _ in fusion]
+        if cfg.fijos_rrf and (opciones or not cfg.fijos_solo_cerradas):
+            forzados += [c for c, _ in fusion[:cfg.fijos_rrf] if c not in forzados]
+            etapas["forzados"] = forzados
 
         pool = [c for c, _ in fusion[:cfg.n_rerank]]
         pool += [c for c in forzados if c not in pool]

@@ -6,7 +6,8 @@ import os
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from src.agent.citas import borrador_con_citas_legibles, con_normas_consultadas, respuesta_concisa, sin_encabezados
+from src.agent.citas import (abierta_concisa, borrador_con_citas_legibles, con_normas_consultadas, respuesta_concisa,
+                             sin_encabezados)
 from src.agent.graph import _FLAG_KEYS, construir_grafo, estado_inicial
 from src.agent.salida import normalizar
 from src.agent.schemas import CanonicalPassage, QuestionState
@@ -66,6 +67,8 @@ class LegalAgent:
         borrador = sin_encabezados(borrador_con_citas_legibles(borrador, state.pasajes_recuperados))
         if state.formato == "semi_open" and not state.abstencion:
             borrador = respuesta_concisa(borrador)
+        if state.formato == "open_ended" and not state.abstencion:
+            borrador = abierta_concisa(borrador)
         if not state.abstencion:
             borrador = con_normas_consultadas(borrador, state.formato, state.pasajes_recuperados)
         return {
