@@ -133,7 +133,10 @@ class Config:
     # Sin instrucciones de examen ("lea con atención cada pregunta y responda la siguiente pregunta",
     # "Pregunta jurídica:"; `sin_instrucciones` en src/knowledge/siglas.py): BM25 las toma como términos
     # de búsqueda. En la 748 traían artículos de interrogatorio de parte; sin ellas el art. 137 del
-    # CPACA (falsa motivación) pasa del puesto 258 al 35 en BM25 de normas. A medir (2/oct).
+    # CPACA (falsa motivación) pasa del puesto 258 al 35 en BM25 de normas. Medido (2/oct, A40): métricas
+    # idénticas, solo cambia la 748, pero el art. 137 sigue fuera del top-10 (el reranker no lo sube) y
+    # el agente pasa de D a C (las dos erradas; v15 42,90/50 igual que v14). Apagada: sin beneficio y con
+    # evidencia de un solo caso.
     sin_instrucciones: bool = False
 
 
