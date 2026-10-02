@@ -160,3 +160,26 @@ def test_bm25_solo_en_las_cerradas():
     sin_opcion = _rec(Config(normas=0, usar_citas=False, bm25_solo_cerradas=False), bm25, almacen).buscar_item(
         {"pregunta": "leasing"})
     assert sin_opcion.etapas["bm25"] == ["ley_1/art_1"]  # apagada: BM25 en todas
+
+
+def test_siglas_se_expanden_una_vez_y_solo_en_mayusculas():
+    from src.knowledge.siglas import con_siglas
+    assert con_siglas("¿Qué norma regula las actuaciones ante la SIC?") == \
+        "¿Qué norma regula las actuaciones ante la SIC (Superintendencia de Industria y Comercio)?"
+    assert con_siglas("La DIAN y otra vez la DIAN") == \
+        "La DIAN (Dirección de Impuestos y Aduanas Nacionales) y otra vez la DIAN"
+    # Minúsculas, parte de otra palabra o de un id ("SU-123"): no se tocan.
+    assert con_siglas("sic transit; SICARIO; Sentencia SU-123; EPSx") == "sic transit; SICARIO; Sentencia SU-123; EPSx"
+    # Si el nombre completo ya está, no se repite.
+    texto = "la Superintendencia de Industria y Comercio (SIC)"
+    assert con_siglas(texto) == texto
+
+
+def test_siglas_en_la_busqueda():
+    bm25 = BM25Falso({"superintendencia de industria": "codigo_general_proceso/art_24"})
+    almacen = AlmacenFalso({})
+    item = {"pregunta": "¿Qué normativa regula las actuaciones ante la SIC?", "opciones": {"A": "Ley 1564"}}
+    apagado = _rec(Config(normas=0, usar_citas=False), bm25, almacen).buscar_item(item)
+    assert apagado.etapas["bm25"] == []
+    con = _rec(Config(normas=0, usar_citas=False, siglas=True), bm25, almacen).buscar_item(item)
+    assert con.etapas["bm25"] == ["codigo_general_proceso/art_24"]

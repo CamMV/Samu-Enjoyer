@@ -48,7 +48,7 @@ def test_rag_device_denso_llega_al_recuperador(monkeypatch, tmp_path):
 
     monkeypatch.setattr(agent_mod, "ROOT", tmp_path)
     monkeypatch.setattr(agent_mod, "Recuperador", Falso)
-    monkeypatch.setattr(agent_mod, "Config", lambda: None)
+    monkeypatch.setattr(agent_mod, "Config", lambda **kw: None)
     monkeypatch.setenv("RAG_DEVICE_DENSO", "cpu")
     agent_mod.get_real_retriever()
     assert visto["dispositivo_denso"] == "cpu"

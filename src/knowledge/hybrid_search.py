@@ -24,6 +24,7 @@ from .chunk_store import Almacen, es_sentencia
 from .vector_store import IndiceDenso
 from .citation_lookup import chunks_citados, documentos_citados
 from .reranker import Reranker
+from .siglas import con_siglas
 
 K_RRF = 60
 # "$30.000.000", "30.000.000 COP", "1.500.000 pesos": montos de un millón o más.
@@ -121,6 +122,11 @@ class Config:
     # semiabiertas 0,986 / 0,944. El formato es un dato de la pregunta: la elección es determinista.
     # Activada (1/oct): total 0,919 / 0,809 / MRR 0,419 / nDCG 0,561 -> 0,931 / 0,858 / 0,423 / 0,577.
     bm25_solo_cerradas: bool = True
+    # Siglas jurídicas (src/knowledge/siglas.py): la consulta se busca y se reordena con el nombre
+    # completo tras cada sigla ("SIC" -> "SIC (Superintendencia de Industria y Comercio)"). Las citas
+    # expresas se detectan sobre la consulta original. En la 58 ("…ante la SIC") el art. 24 del CGP,
+    # que da a la SIC funciones jurisdiccionales, no llegaba al top-10. A medir (2/oct).
+    siglas: bool = False
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -168,6 +174,7 @@ PERFILES.update({
     "ganador_dedup50": {**_NORMAS50, "dedup": 0.5},
     "ganador_dedup70": {**_NORMAS50, "dedup": 0.7},
 })
+PERFILES["ganador_siglas"] = {**PERFILES["ganador_dedup70"], "siglas": True}
 
 
 def _hermano(ruta: Path) -> Path:
@@ -254,6 +261,10 @@ class Recuperador:
         t0 = time.perf_counter()
         citadas = chunks_citados(consulta, self.almacen) if cfg.usar_citas else []
         t["citas"] = time.perf_counter() - t0
+        if cfg.siglas:
+            consulta = con_siglas(consulta)
+            pregunta = con_siglas(pregunta) if pregunta else pregunta
+            extras = [(nombre, con_siglas(q)) for nombre, q in extras]
 
         forzados = list(self._decreto_smlmv()) if cfg.smlmv and _PESOS_RE.search(consulta) else []
         etapas["forzados"] = forzados
