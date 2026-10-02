@@ -50,7 +50,9 @@ _SYSTEM_BASE = (
     "PASAJES entregados; no uses conocimiento externo ni inventes normas. Cita cada norma con su "
     "ID canónico exactamente como aparece entre corchetes (ej. [codigo_general_proceso/art_42]). No cites "
     "ningún ID que no esté en los pasajes. No presentes como vigente una norma marcada derogada o "
-    "transitoria. Si los pasajes no bastan para responder, devuelve {\"abstencion\": true}. "
+    "transitoria. Afirma el contenido jurídico de forma directa: nunca hables de los pasajes ni del "
+    "contexto (nada de 'según los pasajes', 'los pasajes mencionan', 'es importante señalar'). "
+    "Si los pasajes no bastan para responder, devuelve {\"abstencion\": true}. "
     "Responde SOLO con un objeto JSON válido, sin texto adicional."
 )
 
@@ -160,6 +162,49 @@ def datos_calculados(pregunta: str, pasajes: list[CanonicalPassage]) -> str:
     return "DATOS CALCULADOS POR EL SISTEMA (aritmética exacta; úsalos tal cual):\n" + "\n".join(lineas)
 
 
+# --- Primera oración según la sub-tarea (semiabiertas) -------------------------------------------
+# RAGAS premia que la respuesta contenga las afirmaciones de la esperada y castiga las que sobran. La
+# primera oración debe dar exactamente lo que la sub-tarea pide, en la forma en que se pregunta. Las
+# sub-tareas son el catálogo público del banco (enunciado, sección 4.2): sirve igual en el test.
+_GUIA_SUBTAREA = (
+    (r"existencia normativa", "di si existe (sí o no) y nombra la norma que lo regula (tipo, número y año)"),
+    (r"autoridad competente", "nombra la autoridad competente"),
+    (r"juez que decide", "nombra el juez o tribunal que decide"),
+    (r"jerarqu", "ubica la norma o el acto en la jerarquía normativa (qué rango tiene y frente a qué)"),
+    (r"definici", "define el concepto: '<concepto> es …'"),
+    (r"clasificaci", "di en qué categoría jurídica encaja: '<figura> es un/una …'"),
+    (r"elementos? esencial", "enumera los elementos esenciales"),
+    (r"sentido del fallo", "di qué decidió el tribunal (p. ej. declaró exequible o inexequible, concedió o negó)"),
+    (r"reproducci", "reproduce entre comillas el texto de la norma tal como aparece en el pasaje"),
+    (r"precedente", "nombra la sentencia y la regla que fija"),
+    (r"vigencia", "di si la norma está vigente y desde o hasta cuándo"),
+    (r"distinci", "di la diferencia principal entre los conceptos"),
+    (r"requisito", "enumera los requisitos legales"),
+    (r"excepci", "enumera las excepciones legales"),
+    (r"imparcialidad", "di si se garantiza o se afecta la imparcialidad y por qué"),
+    (r"conflicto normativo", "di qué norma prevalece y con qué criterio (jerarquía, especialidad o temporalidad)"),
+    (r"f[aá]ctic", "resume los hechos jurídicamente relevantes"),
+    (r"postura procesal", "di qué posición o actuación procesal procede"),
+    (r"problema jur", "responde de forma directa la cuestión jurídica planteada con su conclusión"),
+    (r"fundamento jur|ratio", "di la razón central de la decisión (ratio decidendi)"),
+    (r"ponderaci", "di qué principio o derecho prevalece en el caso y por qué"),
+    (r"interpretaci", "di qué resulta de leer las normas en conjunto"),
+)
+_VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
+
+
+def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
+    """Instrucción para la primera oración de una semiabierta, según la pregunta y su sub-tarea."""
+    if _VERDADERO_FALSO.search(pregunta or ""):
+        guia = "empieza con 'La afirmación es verdadera' o 'La afirmación es falsa' y da la razón"
+    else:
+        sub = (sub_tarea or "").lower()
+        guia = next((g for rx, g in _GUIA_SUBTAREA if re.search(rx, sub)),
+                    "responde directamente lo que se pregunta")
+    return (f"PRIMERA ORACIÓN (sub-tarea: {sub_tarea or 'sin dato'}): {guia}, retomando los términos de la "
+            "pregunta. Las dos oraciones siguientes, solo el fundamento esencial.")
+
+
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
@@ -176,6 +221,8 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     calculo = datos_calculados(pregunta, pasajes)
     if calculo:
         partes.insert(-1, calculo)
+    if flags.get("formato") == "semi_open":
+        partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea")))
     if opciones:
         partes.append("OPCIONES:\n" + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     return system, "\n\n".join(partes)

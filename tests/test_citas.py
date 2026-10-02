@@ -107,3 +107,16 @@ def test_sin_encabezados_de_seccion():
          "otro": ["Corte Constitucional, Sentencia T-1 de 2020 › Inicio (3/5)"]}
     assert sin_encabezados(b) == {"jurisprudencia": "Sentencia SC-13208 de 2015 fija la regla.",
                                   "otro": ["Corte Constitucional, Sentencia T-1 de 2020"]}
+
+
+def test_sin_meta_texto_solo_en_los_campos_de_ragas():
+    from src.agent.citas import sin_meta_texto
+    b = {"respuesta": "Según los pasajes proporcionados, la acción procede. La norma, según los pasajes, exige veinte "
+                      "personas. El juez decide en los pasajes de su despacho.",
+         "referencia_legal": "Según los pasajes, Ley 472 de 1998"}
+    r = sin_meta_texto(b, "semi_open")
+    assert r["respuesta"] == ("La acción procede. La norma exige veinte personas. "
+                              "El juez decide en los pasajes de su despacho.")   # "pasajes" sin calificativo se queda
+    assert r["referencia_legal"] == b["referencia_legal"]                       # RAGAS no lo lee: no se toca
+    abierta = sin_meta_texto({"marco_normativo": "Los pasajes indican que rige la Ley 472 de 1998."}, "open_ended")
+    assert abierta["marco_normativo"] == "Rige la Ley 472 de 1998."

@@ -192,3 +192,16 @@ def test_cerrada_con_letra_no_se_abstiene(monkeypatch):
 def test_quitar_anuncios_no_borra_frases_normales():
     texto = "Lo que es a la vez un deber del juez. La opción correcta es la B. Según el artículo 25, B) no aplica."
     assert writer_tool._sin_anuncios(texto) == "Lo que es a la vez un deber del juez."
+
+
+def test_guia_de_la_primera_oracion_segun_la_sub_tarea():
+    g = writer_tool.guia_primera_oracion
+    assert "verdadera" in g("Establezca si es falsa o verdadera: el Congreso puede…", "Problema jurídico")
+    assert "define el concepto" in g("¿Cómo se define el litisconsorcio facultativo?", "Definición básica")
+    assert "nombra la norma" in g("¿Existe regulación del acoso laboral?", "Existencia normativa")
+    assert "responde directamente" in g("¿Qué pasa?", None)                    # sin sub-tarea conocida
+    _, user = writer_tool.build_prompts("¿Qué es X?", {"formato": "semi_open", "sub_tarea": "Definición básica"},
+                                        [ART25], None)
+    assert "PRIMERA ORACIÓN (sub-tarea: Definición básica)" in user
+    _, user_c = writer_tool.build_prompts("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert "PRIMERA ORACIÓN" not in user_c                                      # solo en semiabiertas

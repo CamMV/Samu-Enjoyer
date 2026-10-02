@@ -96,6 +96,46 @@ _ORACION = re.compile(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ¿¡])")
 _SECCION = re.compile(r"\s*›[^›()\n;]*?\(\d+/\d+\)")
 
 
+# Meta-texto: frases que hablan de la evidencia en vez de afirmar el derecho. Para RAGAS son
+# afirmaciones sobrantes ("los pasajes mencionan…" no está en ninguna respuesta esperada).
+_META = re.compile(
+    r"\b(?:según|de acuerdo con|conforme a|con base en)\s+(?:lo\s+\w+\s+en\s+)?(?:los|el|la información de los)\s+"
+    r"pasajes?(?:\s+(?:proporcionados?|recuperados?|entregados?|consultados?|disponibles?))?"
+    # "en los pasajes" solo con calificativo o con "se menciona que": "pasajes" también es una palabra común.
+    r"|\b(?:en|de)\s+los\s+pasajes(?:\s+(?:proporcionados|recuperados|entregados|consultados)"
+    r"(?:\s*,?\s*se\s+(?:menciona|indica|establece|señala|observa)\s+que)?"
+    r"|\s*,?\s*se\s+(?:menciona|indica|establece|señala|observa)\s+que)"
+    r"|\blos\s+pasajes(?:\s+(?:proporcionados|recuperados))?\s+(?:mencionan|indican|establecen|señalan|muestran)\s+que"
+    r"|\bes\s+importante\s+(?:señalar|destacar|mencionar|resaltar)\s+que",
+    re.I)
+_CAMPOS_RAGAS = {"semi_open": ("respuesta",), "open_ended": ("marco_normativo", "analisis", "jurisprudencia", "conclusion")}
+
+
+_META_ENTRE_COMAS = re.compile(r",\s*(?:" + _META.pattern + r")\s*,", re.I)
+
+
+def _sin_meta_texto(texto: str) -> str:
+    if not _META.search(texto):
+        return texto   # sin meta-texto no se normaliza nada ("lit. a" no debe volverse "lit. A")
+    t = _META_ENTRE_COMAS.sub("", texto)   # "La norma, según los pasajes, exige" -> "La norma exige"
+    t = _META.sub("", t)
+    t = re.sub(r"\s+,", ",", t)
+    t = re.sub(r",\s*,", ",", t)
+    t = re.sub(r"(^|[.!?]\s+)[,;:]\s*", r"\1", t)
+    t = re.sub(r"[ \t]{2,}", " ", t).strip()
+    # Mayúscula al inicio de cada oración que quedó empezando en minúscula.
+    return re.sub(r"(^|[.!?]\s+)([a-záéíóúñ])", lambda m: m.group(1) + m.group(2).upper(), t)
+
+
+def sin_meta_texto(borrador: dict, formato: str) -> dict:
+    """Quita el meta-texto de los campos que lee RAGAS."""
+    out = dict(borrador)
+    for campo in _CAMPOS_RAGAS.get(formato, ()):
+        if isinstance(out.get(campo), str):
+            out[campo] = _sin_meta_texto(out[campo])
+    return out
+
+
 def sin_encabezados(borrador: dict) -> dict:
     """Quita de todos los textos los encabezados de sección de sentencias que el LLM copia de los pasajes."""
     def limpiar(v):
