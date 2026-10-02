@@ -52,7 +52,9 @@ _SYSTEM_BASE = (
     "ningún ID que no esté en los pasajes. No presentes como vigente una norma marcada derogada o "
     "transitoria. Afirma el contenido jurídico de forma directa: nunca hables de los pasajes ni del "
     "contexto (nada de 'según los pasajes', 'los pasajes mencionan', 'es importante señalar'). "
-    "Si la pregunta nombra una sentencia o una norma, responde con los pasajes de esa misma (verifica el "
+    # Solo sentencias: con normas, una opción puede traer el año errado y aun así ser la correcta (pregunta 58,
+    # "Ley 1564 de 2002" por la de 2012), y esta regla la hacía descartar.
+    "Si la pregunta nombra una sentencia, responde con los pasajes de esa misma sentencia (verifica el "
     "número y el año en el encabezado del pasaje) y no con otra de número parecido. "
     "Si los pasajes no bastan para responder, devuelve {\"abstencion\": true}. "
     "Responde SOLO con un objeto JSON válido, sin texto adicional."
@@ -67,10 +69,7 @@ _FORMATO_INSTRUCCIONES = {
         'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
         'opción incorrecta y una razón breve), "abstencion" (boolean). Si una opción nombra una norma '
         'con el número correcto pero otro año (error de digitación), identifícala por su número y por el '
-        'nombre que trae el encabezado del pasaje. Si las opciones son listas de sujetos o elementos que se '
-        'contienen unas a otras, revisa cada elemento contra los pasajes: descarta la lista que incluya '
-        'alguno sin respaldo y elige la más completa cuyos elementos estén todos respaldados. '
-        'Si la pregunta da un monto en pesos y un pasaje fija '
+        'nombre que trae el encabezado del pasaje. Si la pregunta da un monto en pesos y un pasaje fija '
         'el salario mínimo, convierte el monto a salarios mínimos antes de compararlo con los umbrales.'
     ),
     # RAGAS cuenta como error toda afirmación que no esté en la respuesta esperada, aunque sea cierta:
