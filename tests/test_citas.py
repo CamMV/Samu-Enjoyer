@@ -156,3 +156,48 @@ def test_topes_oficiales_de_palabras():
     total = lambda b: sum(len(b[c].split()) for c in campos)
     assert total(abierta_concisa(campos)) <= 370
     assert 370 < total(abierta_concisa(campos, largo=True)) <= 500              # abiertas: máximo oficial
+
+
+def test_cita_que_es_parte_de_la_frase(monkeypatch):
+    from src.agent import citas
+    b = {"respuesta": "El término es de tres días, según (artículo 318 del Código General del Proceso).", "referencia_legal": ""}
+    monkeypatch.setattr(citas, "CITA_RESPUESTA", False)
+    assert respuesta_concisa(b, 3)["respuesta"].endswith("según.")
+    monkeypatch.setattr(citas, "CITA_RESPUESTA", True)
+    r = respuesta_concisa(b, 3)["respuesta"]
+    assert r == "El término es de tres días, según artículo 318 del Código General del Proceso."
+    b = {"respuesta": "Existe el artículo (artículo 64 del Código Penal) que lo regula.", "referencia_legal": ""}
+    assert respuesta_concisa(b, 3)["respuesta"] == "Existe el artículo 64 del Código Penal que lo regula."
+    b = {"respuesta": "La acción procede (artículo 5 de la Ley 472 de 1998).", "referencia_legal": ""}
+    assert respuesta_concisa(b, 3)["respuesta"] == "La acción procede."              # cita que sobra: sale
+
+
+def test_poda_de_oraciones_accesorias(monkeypatch):
+    from src.agent import citas
+    b = {"respuesta": "La Ley 1010 de 2006 regula el acoso laboral. Define sus modalidades. Fue modificada por la "
+                      "Ley 2365 de 2024. Adicionalmente, la Ley 1257 de 2008 protege a las mujeres.",
+         "referencia_legal": "x"}
+    monkeypatch.setattr(citas, "PODA_ACCESORIAS", True)
+    r = citas.sin_oraciones_accesorias(b, "¿Existe norma sobre acoso laboral?", "Existencia normativa", "low")
+    assert r["respuesta"] == "La Ley 1010 de 2006 regula el acoso laboral. Define sus modalidades."
+    assert "Ley 2365 de 2024" in r["referencia_legal"] and "Ley 1257 de 2008" in r["referencia_legal"]
+    assert citas.sin_oraciones_accesorias(b, "¿…?", "Existencia normativa", "high") == b       # alta: no toca
+    assert citas.sin_oraciones_accesorias(b, "¿…?", "Precedente jurisprudencial", "low") == b  # sub-tarea exenta
+    monkeypatch.setattr(citas, "PODA_ACCESORIAS", False)
+    assert citas.sin_oraciones_accesorias(b, "¿…?", "Existencia normativa", "low") == b
+
+
+def test_fuentes_compactas_en_abiertas(monkeypatch):
+    from src.agent import citas
+    pasajes = [CanonicalPassage(id="ley_1562_2012/art_3", texto="Ley 1562 de 2012 › Artículo 3.\nAccidente de trabajo…"),
+               CanonicalPassage(id="jurisprudencia_sl-3385_2022/ficha",
+                                texto="Corte Suprema de Justicia, Sala de Casación Laboral, Sentencia SL-3385 de 2022 › Ficha\nTraslado…"),
+               CanonicalPassage(id="codigo_sustantivo_trabajo/art_199",
+                                texto="Código Sustantivo del Trabajo (Decreto 2663 de 1950) › Artículo 199.\n…")]
+    b = {"marco_normativo": "El problema jurídico es determinar si… La Ley 1562 de 2012 lo define.", "analisis": "a",
+         "jurisprudencia": "j", "conclusion": "c"}
+    monkeypatch.setattr(citas, "FUENTES_ABIERTAS", False)
+    assert citas.con_fuentes_abiertas(b, pasajes) == b
+    monkeypatch.setattr(citas, "FUENTES_ABIERTAS", True)
+    m = citas.con_fuentes_abiertas(b, pasajes)["marco_normativo"]
+    assert m.endswith("Fuentes consultadas: Sentencia SL-3385 de 2022; Código Sustantivo del Trabajo.")  # sin la ya citada

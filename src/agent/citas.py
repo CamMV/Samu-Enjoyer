@@ -149,13 +149,37 @@ def sin_encabezados(borrador: dict) -> dict:
     return limpiar(borrador)
 
 
+# Cita que es parte de la frase (CITA_RESPUESTA=1; apagado mientras se mide). Al quitar una cita entre
+# paréntesis de `respuesta`, la frase quedaba rota cuando la cita era el complemento: "…, según (artículo X)."
+# -> "…, según." (1089) o "existe el artículo (artículo 64 del Código Penal) del código penal" -> sin el 64
+# (280). Si la palabra anterior es una preposición o "artículo", la cita se queda en el texto sin paréntesis.
+CITA_RESPUESTA = os.environ.get("CITA_RESPUESTA", "0") == "1"
+_COLGANTE = re.compile(r"\b(según|conforme(?: a| con)?|de acuerdo con|en|de|del|por|mediante|a|al|artículo|"
+                       r"es|son|establece|dispone|señala|consagra)\s*$", re.I)
+
+
+def _sin_cita(m: re.Match, texto: str) -> str:
+    """Reemplazo de un paréntesis de `respuesta`: vacío si es una cita que sobra; su contenido sin paréntesis
+    si la frase la necesita (ver CITA_RESPUESTA); el paréntesis tal cual si no es una cita."""
+    if not _ES_CITA.search(m.group(0)):
+        return m.group(0)
+    previo = _COLGANTE.search(texto[:m.start()])
+    if not (CITA_RESPUESTA and previo):
+        return ""
+    cita = m.group(0).strip()[1:-1].strip()
+    # "el artículo (artículo 64 …)" -> "el artículo 64 …": sin repetir la palabra anterior
+    if cita.lower().startswith(previo.group(1).lower() + " "):
+        cita = cita[len(previo.group(1)) + 1:]
+    return " " + cita
+
+
 def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
     """Semiabiertas: las citas entre paréntesis de `respuesta` pasan a `referencia_legal` y la respuesta
     queda en sus primeras `max_oraciones` oraciones (el esquema pide de 3 a 5)."""
     n = MAX_ORACIONES_RESPUESTA if max_oraciones is None else max_oraciones
     texto = str(borrador.get("respuesta") or "")
     citas = [m.group(0).strip()[1:-1].strip() for m in _PAREN.finditer(texto) if _ES_CITA.search(m.group(0))]
-    texto = _PAREN.sub(lambda m: "" if _ES_CITA.search(m.group(0)) else m.group(0), texto)
+    texto = _PAREN.sub(lambda m: _sin_cita(m, texto), texto)
     texto = re.sub(r"\s+([.,;:])", r"\1", texto).strip()
     # Restos de puntuación donde estaban las citas: "servicio., " -> "servicio.", "norma, ." -> "norma."
     texto = re.sub(r"([.;:])(?:\s*[,;])+", r"\1", texto)
@@ -304,3 +328,92 @@ def fuentes_ampliadas(ya_citado: str, pasajes: List[CanonicalPassage]) -> str:
     if leyes:
         out += " Leyes y códigos mencionados en los pasajes consultados: " + "; ".join(leyes) + "."
     return out
+
+
+# Oraciones accesorias de las semiabiertas (PODA_ACCESORIAS=1; apagado mientras se mide). RAGAS cuenta como
+# error cada afirmación que la respuesta esperada no trae. En complejidad baja y media, las oraciones 2+ que
+# son notas de vigencia ("fue modificado por…", "declaró exequible…") o que agregan otra norma con
+# "Adicionalmente/Además…" restan (agentes B y C, comparando versiones de una misma pregunta: −0,02 a −0,1 de
+# F1 por oración). No se borran: pasan a `referencia_legal`, así que la citación no cambia. Nunca la primera
+# oración, ni en complejidad alta, ni en sub-tareas donde esa información es la respuesta.
+PODA_ACCESORIAS = os.environ.get("PODA_ACCESORIAS", "0") == "1"
+_VIGENCIA = re.compile(r"\b(modificad[oa]s?|derogad[oa]s?|subrogad[oa]s?|adicionad[oa]s?|(in)?exequib\w*|"
+                       r"declar(ó|ada|ado) (la )?(in)?exequib)", re.I)
+_ADITIVA = re.compile(r"^(Adicionalmente|Además|También|Asimismo|De igual (forma|manera))\b", re.I)
+_SUBTAREAS_EXENTAS = ("vigencia", "sentido del fallo", "precedente", "fundamento", "ratio", "conflicto",
+                      "jerarqu", "antecedentes")
+
+
+def sin_oraciones_accesorias(borrador: dict, pregunta: str, sub_tarea: str | None, complejidad: str | None) -> dict:
+    """Semiabiertas: mueve a `referencia_legal` las oraciones accesorias de `respuesta` (ver PODA_ACCESORIAS)."""
+    nivel = {"low": "baja", "medium": "media", "high": "alta"}.get((complejidad or "").strip().lower(),
+                                                                   (complejidad or "").strip().lower())
+    sub = (sub_tarea or "").lower()
+    if not PODA_ACCESORIAS or nivel not in ("baja", "media") or any(s in sub for s in _SUBTAREAS_EXENTAS):
+        return borrador
+    from src.knowledge.citation_lookup import cuerpos  # extractor de citas del evaluador oficial
+    oraciones = _ORACION.split(str(borrador.get("respuesta") or "").strip())
+    if len(oraciones) < 2:
+        return borrador
+    conocidas = cuerpos(f"{pregunta} {oraciones[0]}")
+    quedan, movidas = [oraciones[0]], []
+    for o in oraciones[1:]:
+        nueva_norma = bool(cuerpos(o) - conocidas)
+        if _VIGENCIA.search(o) or (_ADITIVA.match(o) and nueva_norma):
+            movidas.append(o)
+        else:
+            quedan.append(o)
+    if not movidas:
+        return borrador
+    previa = str(borrador.get("referencia_legal") or "").strip().rstrip(".;")
+    return {**borrador, "respuesta": " ".join(quedan).strip(),
+            "referencia_legal": "; ".join(x for x in [previa] + movidas if x)}
+
+
+# Lista compacta de fuentes en las abiertas (FUENTES_ABIERTAS=1; apagado mientras se mide). En las abiertas la
+# citación depende solo del LLM (sus 4 campos los lee RAGAS, por eso no llevan la lista larga de las
+# semiabiertas). Una sola oración corta al final de `marco_normativo` con las normas y sentencias de los 10
+# pasajes que el texto no nombra ya: "Fuentes consultadas: Ley 1562 de 2012; Sentencia SL-3385 de 2022." Solo
+# cuerpos (sin artículos), nombres cortos, como máximo 6, y cada una con respaldo en los pasajes. Simulado sobre
+# v22: citación 17,55 -> 18,37 con 14-34 palabras más por abierta (agente C).
+FUENTES_ABIERTAS = os.environ.get("FUENTES_ABIERTAS", "0") == "1"
+_CAMPOS_ABIERTA = ("marco_normativo", "analisis", "jurisprudencia", "conclusion")
+
+
+def _nombre_corto(p: CanonicalPassage) -> str:
+    nombre = nombre_documento(p)
+    if nombre.lower().startswith(_ES_SENTENCIA):
+        i = nombre.find("Sentencia")
+        return nombre[i:].strip() if i >= 0 else nombre
+    return nombre.split(" (", 1)[0].strip()
+
+
+def con_fuentes_abiertas(borrador: dict, pasajes: List[CanonicalPassage], max_fuentes: int = 6) -> dict:
+    """Abiertas: agrega "Fuentes consultadas: …" al final de `marco_normativo` (ver FUENTES_ABIERTAS)."""
+    if not FUENTES_ABIERTAS:
+        return borrador
+    from src.knowledge.citation_lookup import cuerpos
+    ya = cuerpos(" ".join(str(borrador.get(c) or "") for c in _CAMPOS_ABIERTA))
+    respaldo = set()
+    for p in pasajes[:10]:
+        respaldo |= cuerpos(p.texto or "")
+    fuentes = []
+    for p in pasajes[:10]:
+        if nombre_documento(p).lower().startswith("csj"):
+            continue
+        nombre = _nombre_corto(p)
+        c = cuerpos(nombre)
+        if not c or not c <= respaldo or c <= ya or nombre in fuentes:
+            continue
+        fuentes.append(nombre)
+        ya |= c
+    if not fuentes:
+        return borrador
+    total = sum(len(str(borrador.get(c) or "").split()) for c in _CAMPOS_ABIERTA)
+    while fuentes and total + len(("Fuentes consultadas: " + "; ".join(fuentes[:max_fuentes])).split()) > 500:
+        fuentes.pop()  # tope oficial de 500 palabras en las abiertas
+    if not fuentes:
+        return borrador
+    lista = "Fuentes consultadas: " + "; ".join(fuentes[:max_fuentes]) + "."
+    marco = str(borrador.get("marco_normativo") or "").strip()
+    return {**borrador, "marco_normativo": f"{marco} {lista}".strip()}
