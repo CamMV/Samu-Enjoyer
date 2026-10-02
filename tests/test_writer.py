@@ -247,3 +247,23 @@ def test_ejemplos_de_estilo_y_oraciones_sustantivas(monkeypatch):
     assert "contenido sustantivo" in w.guia_primera_oracion("¿Qué es?", "Definición básica")
     monkeypatch.setattr(w, "ORACIONES_SUSTANTIVAS", False)
     assert "fundamento esencial" in w.guia_primera_oracion("¿Qué es?", "Definición básica")
+
+
+def test_pensar_arma_la_peticion(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    vistos = []
+
+    class Resp:
+        def raise_for_status(self): pass
+        def json(self): return {"choices": [{"message": {"content": "{}"}}]}
+
+    monkeypatch.setattr(w.requests, "post", lambda url, json, timeout: (vistos.append(json), Resp())[1])
+    monkeypatch.setattr(w, "LLM_BASE_URL", "http://127.0.0.1:8010/v1")
+    monkeypatch.setattr(w, "PENSAR", True)
+    w._llamar_llm("s", "u")
+    w._llamar_llm("s", "u", {"type": "object"})               # paso de la letra (gramática): sin razonamiento
+    assert vistos[0]["chat_template_kwargs"]["enable_thinking"] is True and vistos[0]["max_tokens"] == w.PENSAR_MAX_TOKENS
+    assert vistos[1]["chat_template_kwargs"]["enable_thinking"] is False and "max_tokens" not in vistos[1]
+    monkeypatch.setattr(w, "PENSAR", False)
+    w._llamar_llm("s", "u")
+    assert vistos[2]["chat_template_kwargs"]["enable_thinking"] is False and vistos[2]["cache_prompt"] is False

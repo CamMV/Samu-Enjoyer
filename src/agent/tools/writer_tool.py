@@ -325,6 +325,13 @@ def _verificar_host_local(base_url: str) -> None:
         raise ValueError(f"LLM_BASE_URL apunta a un proveedor cerrado prohibido: {host}")
 
 
+# Modo de razonamiento de Qwen3 (PENSAR=1; apagado mientras se mide). Se había descartado porque el portátil
+# (CPU, ~2 tokens/s) no podía reproducirlo en la verificación en vivo; con una GPU de 32 GB sí. Ataca los
+# errores de razonamiento con los pasajes correctos (453, 563, 1065 en v14).
+PENSAR = os.environ.get("PENSAR", "0") == "1"
+PENSAR_MAX_TOKENS = int(os.environ.get("PENSAR_MAX_TOKENS", "6000"))
+
+
 def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
     """POST al Qwen3-8B local (modelo abierto). Lanza `requests.exceptions.RequestException`
     si falla la conexión, hay timeout o el servidor responde con error HTTP.
@@ -332,17 +339,23 @@ def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
     Sin modo de razonamiento: con él las cerradas tardarían minutos más en el portátil (CPU,
     ~2 tokens/s) y la verificación en vivo no reproduciría las respuestas de la A40."""
     _verificar_host_local(LLM_BASE_URL)
+    pensar = PENSAR and not esquema  # el paso de la letra (gramática) va siempre sin razonamiento
     payload = {
         "model": LLM_MODEL,
         "temperature": 0,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-        "chat_template_kwargs": {"enable_thinking": False},  # Qwen3: sin bloque <think>
+        "chat_template_kwargs": {"enable_thinking": pensar},  # Qwen3: con o sin bloque <think>
         # Sin caché de prompts: llama-server reutiliza por defecto el prefijo común con la petición anterior
         # (el system prompt) y solo calcula el resto, así que la salida dependía de qué pregunta se procesó
         # antes. Con el mismo código y los mismos pasajes, dos corridas de las 50 dieron 0/50 respuestas
         # idénticas (42,90 contra 38,96 de 50). Cada pregunta se calcula siempre completa: reproducible.
         "cache_prompt": False,
     }
+    if pensar:
+        # Con decodificación codiciosa el razonamiento puede repetirse sin fin: tope de tokens y una
+        # penalización de presencia leve (llama.cpp la aplica sobre los últimos 64 tokens; determinista).
+        payload["max_tokens"] = PENSAR_MAX_TOKENS
+        payload["presence_penalty"] = 1.5
     if esquema:  # salida guiada por gramática (llama.cpp): el JSON y sus valores quedan acotados
         payload["response_format"] = {"type": "json_schema", "json_schema": {"name": "salida", "schema": esquema}}
     resp = requests.post(f"{LLM_BASE_URL.rstrip('/')}/chat/completions", json=payload, timeout=LLM_TIMEOUT)
@@ -481,6 +494,18 @@ _SYSTEM_LETRA = (
     "\"letra\" (la opción cuyo contenido coincide con esa conclusión). Si una opción nombra la misma norma "
     "que el razonamiento con otro año (error de digitación), cuenta como coincidencia."
 )
+
+# Tolerancia a un año errado en las opciones (TOLERAR_ANIO=0 la quita, para medir). Salió de la 58, cuya
+# clave dice "Ley 1564 de 2002" (el CGP es de 2012); en el test podría confundir opciones que solo
+# difieren en el año.
+TOLERAR_ANIO = os.environ.get("TOLERAR_ANIO", "1") == "1"
+if not TOLERAR_ANIO:
+    _FORMATO_INSTRUCCIONES["multiple_choice"] = _FORMATO_INSTRUCCIONES["multiple_choice"].replace(
+        "Si una opción nombra una norma con el número correcto pero otro año (error de digitación), identifícala "
+        "por su número y por el nombre que trae el encabezado del pasaje. ", "")
+    _SYSTEM_LETRA = _SYSTEM_LETRA.replace(
+        " Si una opción nombra la misma norma que el razonamiento con otro año (error de digitación), cuenta "
+        "como coincidencia.", "")
 
 
 def _sin_anuncios(texto: str) -> str:

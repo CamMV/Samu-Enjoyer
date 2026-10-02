@@ -125,7 +125,10 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
     # RAG_DEVICE_DENSO=cpu (en el .env) embebe la consulta en CPU: necesario en GPUs de 4 GB, donde
     # embedder y reranker juntos desbordan la memoria y la búsqueda pasa de 6 s a 60 s. Los pasajes
     # salen idénticos. Vacío = los dos modelos en la GPU (A40).
-    recuperador = Recuperador(bm25_path, denso_path, "bge-reranker-v2-m3", Config(),
+    # RAG_LIDERES=0 quita el cupo fijo del 1.º de BM25 de normas en cerradas (Config.lideres), para medir
+    # si sobra: se puso por la 128 ("Fintech") y nunca mostró beneficio.
+    recuperador = Recuperador(bm25_path, denso_path, "bge-reranker-v2-m3",
+                              Config(lideres=int(os.environ.get("RAG_LIDERES", "1"))),
                               dispositivo_denso=os.environ.get("RAG_DEVICE_DENSO") or None)
 
     def hook(consulta) -> List[CanonicalPassage]:
