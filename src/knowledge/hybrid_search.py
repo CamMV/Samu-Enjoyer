@@ -138,6 +138,10 @@ class Config:
     # el agente pasa de D a C (las dos erradas; v15 42,90/50 igual que v14). Apagada: sin beneficio y con
     # evidencia de un solo caso.
     sin_instrucciones: bool = False
+    # BM25 de normas también en semiabiertas y abiertas: `bm25_solo_cerradas` apaga los dos BM25 en texto
+    # libre; con esto vuelve solo la lista de normas (276.958 artículos, sin ventanas de sentencias, que
+    # eran las que metían pasajes con palabras comunes pero sin tema). A medir (2/oct).
+    bm25_normas_libre: bool = False
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -187,6 +191,7 @@ PERFILES.update({
 })
 PERFILES["ganador_siglas"] = {**PERFILES["ganador_dedup70"], "siglas": True}
 PERFILES["ganador_instrucciones"] = {**PERFILES["ganador_siglas"], "sin_instrucciones": True}
+PERFILES["ganador_normas_libre"] = {**PERFILES["ganador_siglas"], "bm25_normas_libre": True}
 
 
 def _hermano(ruta: Path) -> Path:
@@ -298,7 +303,7 @@ class Recuperador:
             listas.append(etapas["denso"])
         if self.bm25_normas or self.denso_normas:
             t0 = time.perf_counter()
-            if self.bm25_normas and usar_bm25:
+            if self.bm25_normas and (usar_bm25 or cfg.bm25_normas_libre):
                 etapas["bm25_normas"] = [c for c, _ in self.bm25_normas.buscar(consulta, cfg.normas)]
                 listas.append(etapas["bm25_normas"])
             if self.denso_normas:

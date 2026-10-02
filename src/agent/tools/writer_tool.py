@@ -205,6 +205,39 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
             "pregunta. Las dos oraciones siguientes, solo el fundamento esencial.")
 
 
+# Largo de las semiabiertas según la complejidad del ítem (LARGO_COMPLEJIDAD=1; apagado mientras se mide).
+# En la muestra, la respuesta esperada tiene una mediana de 116 palabras en complejidad alta, 66 en media
+# y 32 en baja; con 3 oraciones respondemos ~40 en todas, y en alta el RAGAS medio era 0,357 contra 0,547
+# en baja y 0,644 en media (v8sj): faltan afirmaciones de la esperada. Baja queda como está.
+LARGO_COMPLEJIDAD = os.environ.get("LARGO_COMPLEJIDAD", "0") == "1"
+_EXTENSION = {
+    "alta": (5, 120, "después de la primera, la regla jurídica, las normas o sentencias que la fundamentan, "
+                     "sus requisitos o excepciones relevantes y su aplicación a lo que se pregunta"),
+    "media": (4, 80, "después de la primera, la regla jurídica, su fundamento y su aplicación a lo que se pregunta"),
+}
+
+
+def nivel_complejidad(complejidad: Optional[str]) -> str:
+    c = (complejidad or "").strip().lower()
+    return {"high": "alta", "medium": "media", "low": "baja"}.get(c, c)
+
+
+def oraciones_semiabierta(complejidad: Optional[str]) -> Optional[int]:
+    """Oraciones de `respuesta` para `respuesta_concisa` (None = el valor por defecto)."""
+    if not LARGO_COMPLEJIDAD or nivel_complejidad(complejidad) not in _EXTENSION:
+        return None
+    return _EXTENSION[nivel_complejidad(complejidad)][0]
+
+
+def extension_por_complejidad(complejidad: Optional[str]) -> str:
+    if not LARGO_COMPLEJIDAD or nivel_complejidad(complejidad) not in _EXTENSION:
+        return ""
+    n, palabras, contenido = _EXTENSION[nivel_complejidad(complejidad)]
+    return (f"EXTENSIÓN (prevalece sobre la indicada arriba; pregunta de complejidad {nivel_complejidad(complejidad)}): "
+            f"\"respuesta\" de exactamente {n} oraciones, máximo {palabras} palabras; {contenido}. Nada que la "
+            "pregunta no pida.")
+
+
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
@@ -223,6 +256,9 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
         partes.insert(-1, calculo)
     if flags.get("formato") == "semi_open":
         partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea")))
+        extension = extension_por_complejidad(flags.get("complejidad"))
+        if extension:
+            partes.append(extension)
     if opciones:
         partes.append("OPCIONES:\n" + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     return system, "\n\n".join(partes)

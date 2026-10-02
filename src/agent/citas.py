@@ -238,4 +238,56 @@ def con_normas_consultadas(borrador: dict, formato: str, pasajes: List[Canonical
         return borrador
     previo = str(borrador.get(campo) or "").strip()
     lista = "Normas de los pasajes consultados: " + "; ".join(normas) + "."
+    if FUENTES_AMPLIADAS:
+        lista += fuentes_ampliadas(f"{previo} {lista}", pasajes)
     return {**borrador, campo: f"{previo} {lista}".strip() if previo else lista}
+
+
+# Fuentes ampliadas (FUENTES_AMPLIADAS=1; apagado mientras se mide): además de las normas de los pasajes,
+# (1) las sentencias de los pasajes y (2) las leyes, códigos y la Constitución que el texto de los pasajes
+# menciona (p. ej. una sentencia que aplica el Código Sustantivo del Trabajo). Todas salen de la evidencia
+# recuperada: quedan respaldadas. Decretos, resoluciones y sentencias solo mencionadas no se listan
+# (multiplicaban la lista por tres sin agregar ninguna cita de referencia). Simulado sobre v14 sin
+# regenerar: citación 16,73 -> 18,37 (45 de 49 cuerpos de referencia) y abstención 8,84 -> 9,07.
+FUENTES_AMPLIADAS = os.environ.get("FUENTES_AMPLIADAS", "0") == "1"
+_NOMBRE_CUERPO = {
+    "constitucion": "Constitución Política", "codigo_civil": "Código Civil", "codigo_penal": "Código Penal",
+    "codigo_procedimiento_penal": "Código de Procedimiento Penal", "codigo_comercio": "Código de Comercio",
+    "codigo_sustantivo_trabajo": "Código Sustantivo del Trabajo", "codigo_procesal_trabajo": "Código Procesal del Trabajo",
+    "codigo_general_proceso": "Código General del Proceso",
+    "cpaca": "Código de Procedimiento Administrativo y de lo Contencioso Administrativo",
+    "estatuto_tributario": "Estatuto Tributario", "codigo_infancia": "Código de la Infancia y la Adolescencia",
+    "codigo_nacional_policia": "Código Nacional de Seguridad y Convivencia Ciudadana",
+    "codigo_disciplinario": "Código General Disciplinario", "estatuto_consumidor": "Estatuto del Consumidor",
+    "decision_andina_486": "Decisión 486 de la Comisión de la Comunidad Andina",
+}
+_ES_SENTENCIA = ("corte", "consejo", "sentencia", "tribunal", "csj")
+
+
+def _nombre_cuerpo(cuerpo: tuple) -> str | None:
+    tipo, numero, anio = cuerpo
+    if tipo in _NOMBRE_CUERPO:
+        return _NOMBRE_CUERPO[tipo]
+    if tipo == "ley" and numero and anio:
+        return f"Ley {numero} de {anio}"
+    return None
+
+
+def fuentes_ampliadas(ya_citado: str, pasajes: List[CanonicalPassage]) -> str:
+    """Texto a agregar tras la lista de normas: sentencias de los pasajes y leyes o códigos que mencionan."""
+    from src.knowledge.citation_lookup import cuerpos  # extractor de citas del evaluador oficial
+    # Las de la CSJ con prefijo csj_ traen un encabezado sin cita reconocible ("Csj sp 24 01 1977"): fuera.
+    sentencias = list(dict.fromkeys(nombre_documento(p) for p in pasajes[:10]
+                                    if nombre_documento(p).lower().startswith(_ES_SENTENCIA)
+                                    and not nombre_documento(p).lower().startswith("csj")))
+    vistos = cuerpos(ya_citado) | cuerpos(" ".join(sentencias))
+    mencionados = set()
+    for p in pasajes[:10]:
+        mencionados |= cuerpos(p.texto or "")
+    leyes = [n for n in sorted({_nombre_cuerpo(c) for c in mencionados - vistos} - {None})]
+    out = ""
+    if sentencias:
+        out += " Sentencias de los pasajes consultados: " + "; ".join(sentencias) + "."
+    if leyes:
+        out += " Leyes y códigos mencionados en los pasajes consultados: " + "; ".join(leyes) + "."
+    return out

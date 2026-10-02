@@ -120,3 +120,26 @@ def test_sin_meta_texto_solo_en_los_campos_de_ragas():
     assert r["referencia_legal"] == b["referencia_legal"]                       # RAGAS no lo lee: no se toca
     abierta = sin_meta_texto({"marco_normativo": "Los pasajes indican que rige la Ley 472 de 1998."}, "open_ended")
     assert abierta["marco_normativo"] == "Rige la Ley 472 de 1998."
+
+
+def test_fuentes_ampliadas_sentencias_y_leyes_mencionadas(monkeypatch):
+    from src.agent import citas
+    from src.agent.schemas import CanonicalPassage
+    pasajes = [
+        CanonicalPassage(id="codigo_general_proceso/art_24#1",
+                         texto="Código General del Proceso (Ley 1564 de 2012) › Artículo 24.\nLa Superintendencia..."),
+        CanonicalPassage(id="jurisprudencia_t-173_2011/ficha",
+                         texto="Corte Constitucional, Sentencia T-173 de 2011 › Ficha\nSegún el Código Sustantivo del "
+                               "Trabajo y el Decreto 1072 de 2015, en concordancia con la Ley 1233 de 2008..."),
+        CanonicalPassage(id="csj_sp_1977/ficha", texto="Csj sp 24 01 1977 › Ficha\nTexto."),
+    ]
+    monkeypatch.setattr(citas, "FUENTES_AMPLIADAS", False)
+    base = citas.con_normas_consultadas({"referencia_legal": "x"}, "semi_open", pasajes)["referencia_legal"]
+    assert "Sentencias" not in base
+    monkeypatch.setattr(citas, "FUENTES_AMPLIADAS", True)
+    ref = citas.con_normas_consultadas({"referencia_legal": "x"}, "semi_open", pasajes)["referencia_legal"]
+    assert "Sentencias de los pasajes consultados: Corte Constitucional, Sentencia T-173 de 2011." in ref
+    assert "Código Sustantivo del Trabajo" in ref and "Ley 1233 de 2008" in ref
+    assert "Decreto 1072" not in ref.split("Leyes y códigos")[1]       # decretos mencionados: no
+    assert "Csj sp" not in ref                                          # encabezado sin cita reconocible
+    assert ref.count("Código General del Proceso") == 1                 # ya estaba en las normas consultadas

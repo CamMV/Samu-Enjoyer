@@ -218,3 +218,15 @@ def test_cerrada_sin_letra_usa_la_de_mas_respaldo(monkeypatch, capsys):
     b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
     assert b["respuesta_correcta"] in CUANTIA and b["abstencion"] is False
     assert "cerrada sin letra" in capsys.readouterr().err
+
+
+def test_largo_segun_complejidad(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", False)
+    assert w.extension_por_complejidad("high") == "" and w.oraciones_semiabierta("high") is None
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", True)
+    assert "5 oraciones" in w.extension_por_complejidad("high") and w.oraciones_semiabierta("alta") == 5
+    assert "4 oraciones" in w.extension_por_complejidad("medium") and w.oraciones_semiabierta("media") == 4
+    assert w.extension_por_complejidad("low") == "" and w.oraciones_semiabierta("baja") is None
+    _, user = w.build_prompts("¿Qué exige la norma?", {"formato": "semi_open", "complejidad": "high"}, [])
+    assert "EXTENSIÓN" in user
