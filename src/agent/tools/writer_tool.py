@@ -62,12 +62,17 @@ _SYSTEM_BASE = (
 
 _FORMATO_INSTRUCCIONES = {
     "multiple_choice": (
-        # La justificación va ANTES de la letra: el modelo escribe en orden y, con la letra primero,
-        # elegía antes de razonar (pregunta 671: razonaba la C y había respondido B).
-        'Devuelve JSON con las llaves, en este orden: "justificacion" (primero razona con los pasajes '
-        'qué opción es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de '
-        'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
-        'opción incorrecta y una razón breve), "abstencion" (boolean). Si una opción nombra una norma '
+        # El modelo escribe en orden: primero analiza cada opción contra los pasajes, después justifica y al
+        # final elige. Con la letra primero elegía antes de razonar (671); con una justificación libre se
+        # quedaba con el pasaje más visible y no revisaba cada elemento de las opciones (128).
+        # `analisis_opciones` es trabajo intermedio: no va a la entrega (salida.normalizar lo descarta).
+        'Devuelve JSON con las llaves, en este orden: "analisis_opciones" (objeto con cada letra como llave: '
+        'para cada elemento o afirmación de esa opción, qué dicen los pasajes, citando IDs canónicos; escribe '
+        '"sin respaldo" si ningún pasaje lo menciona), "justificacion" (a partir de ese análisis, qué opción '
+        'es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de la opción que tu '
+        'justificación respalda), "descarte_opciones" (objeto con la letra de cada opción incorrecta y una '
+        'razón breve), "abstencion" (boolean). Si más de una opción tiene respaldo en los pasajes, elige la '
+        'más completa y precisa frente a lo que se pregunta. Si una opción nombra una norma '
         'con el número correcto pero otro año (error de digitación), identifícala por su número y por el '
         'nombre que trae el encabezado del pasaje. Si la pregunta da un monto en pesos y un pasaje fija '
         'el salario mínimo, convierte el monto a salarios mínimos antes de compararlo con los umbrales.'
@@ -195,6 +200,11 @@ _GUIA_SUBTAREA = (
     (r"interpretaci", "di qué resulta de leer las normas en conjunto"),
 )
 _VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
+# Preguntas de sí o no por su forma. En v8sj y v9, cuando la esperada empezaba con "Sí"/"No" y la
+# nuestra también, RAGAS daba 0,53; cuando no, 0,21.
+_SI_NO = re.compile(r"(?:^|[.?]\s*)¿\s*(?:se\s+)?(?:puede|pueden|podr[ií]a|es|son|existe|existen|procede|proceden|"
+                    r"tiene|tienen|debe|deben|hay|est[aá]|est[aá]n|cabe|constituye|requiere|aplica|resulta|"
+                    r"configura|vulnera|viola|opera|implica)\b", re.I)
 
 
 def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str], complejidad: Optional[str] = None) -> str:
@@ -206,9 +216,15 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str], complejidad: O
         sub = (sub_tarea or "").lower()
         guia = next((g for rx, g in _GUIA_SUBTAREA if re.search(rx, sub)),
                     "responde directamente lo que se pregunta")
-    if (complejidad or "").strip().lower() in ("alta", "high"):
+        if _SI_NO.search(pregunta or ""):
+            guia = f"empieza con 'Sí' o 'No' y, en la misma oración, {guia}"
+    nivel = (complejidad or "").strip().lower()
+    if nivel in ("alta", "high"):
         extension = ("EXTENSIÓN: 5 oraciones, máximo 130 palabras; después de la primera, la regla jurídica, las "
                      "normas o sentencias que la fundamentan y su aplicación a lo que se pregunta.")
+    elif nivel in ("media", "medium"):
+        extension = ("EXTENSIÓN: 4 oraciones, máximo 90 palabras; después de la primera, la regla jurídica y los "
+                     "elementos concretos que pide la pregunta (requisitos, plazos, autoridad o efectos).")
     else:
         extension = "EXTENSIÓN: exactamente 3 oraciones breves, máximo 70 palabras; las dos últimas, solo el fundamento esencial."
     return (f"PRIMERA ORACIÓN (sub-tarea: {sub_tarea or 'sin dato'}): {guia}, retomando los términos de la "
@@ -401,6 +417,18 @@ def con_letra_de_la_justificacion(borrador: dict, opciones: dict) -> dict:
     razonamiento = _sin_anuncios(str(borrador.get("justificacion") or ""))
     if not razonamiento:
         return borrador
+    # El análisis por opción va con el TEXTO de cada opción, no con su letra: el verificador decide por el
+    # contenido y no se ancla en una letra anunciada.
+    analisis = borrador.get("analisis_opciones")
+    if isinstance(analisis, dict):
+        lineas = []
+        for letra, v in sorted(analisis.items()):
+            texto = v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
+            opcion = opciones.get(str(letra).strip().upper()[:1])
+            if opcion and texto.strip():
+                lineas.append(f"- Sobre «{opcion}»: {_sin_anuncios(texto) or texto}")
+        if lineas:
+            razonamiento = "ANÁLISIS DE CADA OPCIÓN:\n" + "\n".join(lineas) + f"\n\nCONCLUSIÓN: {razonamiento}"
     user = (f"RAZONAMIENTO:\n{razonamiento}\n\nOPCIONES:\n"
             + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     esquema = {"type": "object", "properties": {"conclusion": {"type": "string"},

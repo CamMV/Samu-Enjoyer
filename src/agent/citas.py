@@ -157,7 +157,14 @@ def oraciones_para(complejidad: str | None) -> int:
     """Oraciones de `respuesta` según la complejidad del ítem. En la muestra, la respuesta esperada de
     las semiabiertas de complejidad alta tiene una mediana de 116 palabras y 5 oraciones; las de baja y
     media, de 32 y 64 palabras. El esquema admite de 3 a 5 oraciones."""
-    return 5 if es_alta(complejidad) else MAX_ORACIONES_RESPUESTA
+    if es_alta(complejidad):
+        return 5
+    # Media: la esperada tiene ~64 palabras y con 3 oraciones (~40) quedaba corta; en v8sj y v9, las
+    # respuestas con menos del 60 % de las palabras de la esperada promediaron 0,42 en RAGAS y las de largo
+    # parecido, 0,55.
+    if (complejidad or "").strip().lower() in ("media", "medium"):
+        return 4
+    return MAX_ORACIONES_RESPUESTA
 
 
 def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
