@@ -87,9 +87,9 @@ flowchart TB
         C --> D{"¿Formato?"}
     end
 
-    subgraph L2["2 · Orquestador — Qwen3-8B, T=0"]
+    subgraph L2["2 · Orquestador — LangGraph · escritor Qwen3-8B, T=0"]
         MEM[("Memoria de corto plazo: flags, consultas, pasajes, borrador, ciclo — se reinicia por pregunta")]
-        D -->|cerrada| E["Consulta por opción: pregunta + A/B/C/D — sin LLM, sin reescritura"]
+        D -->|cerrada| E["Consulta cerrada: pregunta + opciones A/B/C/D en una sola búsqueda — sin LLM, sin reescritura"]
         D -->|semiabierta / abierta| F["Rewriter query: reformula con términos jurídicos y propone normas candidatas"]
         F --> W["Agente de escritura: redacta solo con los 10 pasajes · JSON guiado"]
         W --> RESP["Responde: JSON + pasajes_recuperados (citados primero)"]
@@ -98,32 +98,34 @@ flowchart TB
     subgraph L3["3 · Tools y subagentes"]
         RULES[["Restricciones: T=0, claves JSON fijas, límites de extensión, solo se cita lo recuperado"]]
         VAL["Valida fuentes: cada cita -> ID canónico, ¿está en los 10 pasajes? — determinista, sin LLM"]
-        JUDGE["LLM as judge: ¿responde la sub_tarea? ¿cada afirmación tiene pasaje? — señal blanda de área"]
-        SEARCH["Subagente de búsqueda: busca la norma citada; existe -> agrega pasaje; si no -> se suprime"]
+        JUDGE["LLM as judge — Gemma 4 E4B, servidor aparte: ¿responde la sub_tarea? ¿cada afirmación tiene pasaje? · en cerradas vota a ciegas"]
+        SEARCH["Subagente de búsqueda de citas: suprime del borrador las citas fuera de los 10 pasajes — sin LLM (agregar pasajes: apagado)"]
     end
 
     subgraph L4["4 · Sistema de recuperación híbrida"]
-        BM25["BM25 — texto lematizado · top-50"]
-        DENSE["Densa · coseno — bge-m3 en HNSW · top-50"]
-        LOOKUP["Lookup exacto — norma + artículo nombrados"]
-        RRF["Unificación RRF: fusiona por posición, no por puntaje normalizado"]
-        RERANK["Reranker — bge-reranker-v2-m3 -> top-10 pasajes"]
+        BM25["BM25 — bm25s, raíces Snowball · top-100"]
+        DENSE["Densa — Qwen3-Embedding-0.6B en HNSW SQ8 · top-100"]
+        LOOKUP["Lookup exacto — citas expresas de la pregunta"]
+        NORMAS["Lista de normas — BM25 + HNSW solo sobre normas · top-50 cada uno"]
+        RRF["Unificación RRF k=60: fusiona por posición, no por puntaje normalizado"]
+        RERANK["Reranker — bge-reranker-v2-m3 sobre 150 -> castigo por tipo y vigencia, topes por documento, sin casi duplicados -> top-10 pasajes"]
         BM25 --> RRF
         DENSE --> RRF
         LOOKUP --> RRF
+        NORMAS --> RRF
         RRF --> RERANK
     end
 
     subgraph L5["5 · Corpus e índice — offline"]
-        CORP["Corpus: PDF/HTML — SUIN, Senado, relatorías CC/CSJ/CE, DIAN, SIC"]
+        CORP["Corpus: PDF/HTML/DOC — Senado, Presidencia, relatorías CC/CSJ/CE, DIAN, Función Pública, Cancillería, Colpensiones"]
         MD["Conversión a Markdown: conserva libro, título, capítulo, artículo"]
-        CHUNK["Chunking por artículo: sentencias por sección + metadatos + ID canónico (ley_1564_2012/art_42)"]
+        CHUNK["Chunking por artículo: sentencias en ficha + ventanas por sección + metadatos + ID canónico (codigo_general_proceso/art_42)"]
         FILT["Filtro + manifest: quita texto del banco, corpus_manifest.json, CORPUS.md"]
-        LEX["Rama léxica: normalización, stopwords, lematización/stemming"]
+        LEX["Rama léxica: normalización, raíces Snowball, sin quitar stopwords, ids normativos en un token"]
         DEN["Rama densa: texto original sin stem + prefijo del encoder"]
-        IBM25["Índice BM25 — bm25s o Pyserini"]
-        IEMB["Embeddings bge-m3 -> HNSW efSearch alto / FAISS Flat"]
-        FREEZE["Índice congelado: tar.gz + SHA-256 + LICENSE — build_index.py lo rehace"]
+        IBM25["Índice BM25 — bm25s (todo y solo normas)"]
+        IEMB["Embeddings Qwen3-Embedding-0.6B (dim 1024) -> FAISS HNSW SQ8, M=32, efSearch=256"]
+        FREEZE["Índice congelado: zip + SHA-256 + LICENSE — verify_indices lo comprueba"]
         CORP --> MD --> CHUNK --> FILT
         FILT --> LEX --> IBM25
         FILT --> DEN --> IEMB
@@ -136,7 +138,7 @@ flowchart TB
     RERANK --> W
     W --> VAL
     VAL -->|cita no recuperada| SEARCH
-    SEARCH -->|pasaje o supresión| VAL
+    SEARCH -->|supresión| VAL
     VAL --> JUDGE
     JUDGE -->|no aprueba -> nuevo ciclo, máx. 2| F
     JUDGE -->|aprueba o ciclo 2| RESP
@@ -151,7 +153,9 @@ flowchart TB
 y abiertas 3 (rewriter + escritura + juez); +3 si el juez rechaza el primer
 ciclo. Validación, flags, fusión RRF y búsqueda de citas son deterministas y
 no usan el LLM — presupuesto de referencia: ~22 s/pregunta sobre 992
-preguntas en 6 horas, con *vLLM* sirviendo varias en paralelo.
+preguntas en 6 horas. El escritor corre en *llama.cpp* con peticiones
+secuenciales (mismo motor en la A40 y en el portátil de la verificación en
+vivo); la recuperación toma ~1 s por pregunta en la A40.
 
 **Por qué también recuperan las preguntas cerradas.** Sin pasajes
 recuperados, cualquier norma citada en `justificacion` vale como máximo 0,5
@@ -168,15 +172,33 @@ memoria de conversación, si se implementa, vive solo en la interfaz.
 
 | Componente | Elección | Motivo |
 |---|---|---|
-| Decoder | `Qwen/Qwen3-8B` (T=0) | Modelo abierto ≤ 8B usado también como juez |
-| Encoder | `BAAI/bge-m3` | Multilingüe, admite recuperación densa + prefijos |
-| Reranker | `BAAI/bge-reranker-v2-m3` | Reordena el top-100 fusionado a top-10 |
-| Recuperación | Híbrida: BM25 + densa (coseno) + lookup exacto por ID canónico, fusión RRF | El vector de "artículo 42" y "artículo 24" es casi idéntico; BM25 y el lookup exacto resuelven identificadores numéricos |
-| Segmentación | Un chunk por artículo; sentencias por sección | Exigido por el paso 1 y el anexo B.2 del enunciado |
-| Índice vectorial | Exacto (FAISS Flat) o HNSW con `efSearch` alto | El corpus es lo bastante pequeño para un índice exacto |
-| Validación de citas | Determinista: ID canónico contra los 10 `pasajes_recuperados` | El evaluador no mira el corpus, mira esos 10 pasajes |
-| Abstención | `abstencion: true` cuando ninguna cita queda respaldada | Vale más que citar sin respaldo (sección 6.1 del enunciado) |
+| Decoder | `Qwen/Qwen3-8B` GGUF Q4_K_M en llama.cpp (T=0, top_k=1, semilla fija, contexto 32k, sin modo de razonamiento) | Modelo abierto ≤ 8B; mismo motor y mismo archivo en la A40 y en el portátil |
+| Encoder | `Qwen/Qwen3-Embedding-0.6B` (dim 1024) | Ganador del banco de pruebas: mejor recall de documentos y mejor orden que `bge-m3` y `e5-large-instruct` |
+| Léxico | BM25 (`bm25s`) con raíces Snowball, sin quitar stopwords, ids normativos y sentencias en un token | El vector de "artículo 42" y "artículo 24" es casi idéntico; BM25 resuelve identificadores numéricos. Sin raíces rinde menos |
+| Recuperación | Híbrida: citas expresas de la pregunta + BM25 (100) + HNSW (100) + lista de normas (BM25 y HNSW solo sobre normas, 50 + 50), fusión RRF k=60 | La lista de normas evita que las sentencias (~86 % de los chunks) entierren códigos y Constitución |
+| Reranker | `BAAI/bge-reranker-v2-m3` (fp16) sobre los 150 primeros de la fusión | `Qwen3-Reranker-0.6B` fue peor y 4,5× más lento |
+| Selección final | Castigo por tipo (preámbulo, notas, ventana de sentencia, anexo) y por vigencia (derogada 0,15), +0,1 a normas de prioridad alta, máximo 4 sentencias y 3 pasajes por documento, sin casi duplicados (≥ 70 % de texto repetido) → 10 pasajes | recall_docs@10 0,439 → 0,809; el evaluador solo cuenta los 10 primeros pasajes |
+| Segmentación | Un chunk por artículo (partes reunidas al entregar); sentencias en ficha + ventanas de ~1.700 caracteres por sección | Exigido por el paso 1 y el anexo B.2 del enunciado |
+| Índice vectorial | FAISS `IndexHNSWSQ` 8 bits (M=32, efConstruction=200, efSearch=256) | 2.210.629 chunks: un índice exacto no cabe en el portátil |
+| Orquestación | LangGraph (`StateGraph` en `src/agent/graph.py`), sin checkpointer ni ramas paralelas | Sin memoria entre preguntas: cada respuesta se reproduce sola |
+| Validación de citas | Determinista: ID canónico `<doc_id>/art_<N>` contra los 10 `pasajes_recuperados`; la cita ausente se suprime | El evaluador no mira el corpus, mira esos 10 pasajes |
+| Juez | Gemma 4 E4B en Ollama, servidor distinto del escritor; en cerradas vota a ciegas | Con la URL del escritor juzgaría el mismo Qwen (llama.cpp ignora el campo `model`) |
+| Abstención | `abstencion: true` cuando ninguna cita queda respaldada, cuando el juez declara que los pasajes no bastan o cuando el LLM no responde | Vale más que citar sin respaldo (sección 6.1 del enunciado) |
 | Ciclos del juez | Máximo 2 | Presupuesto de tiempo: 992 preguntas / 6 horas |
+
+### Recuperación sobre las 50 preguntas de muestra (corpus completo)
+
+| Métrica @10 | Sin ajustes | Configuración final |
+|---|---|---|
+| recall_citas | 0,862 | **0,919** |
+| recall_docs | 0,439 | **0,809** |
+| MRR | 0,236 | **0,419** |
+| nDCG | 0,314 | **0,561** |
+
+Por formato (recall_citas / recall_docs): cerradas 0,962 / 0,808, semiabiertas
+0,965 / 0,819, abiertas 0,5 / 0,5 (5 preguntas). Comparaciones completas en
+`evaluation/retrieval_benchmark/results/` (`comparacion_banco_normas_fichas.md`
+para la selección de modelos y `comparacion.md` para el corpus completo).
 
 ## Pipeline y pasos obligatorios
 
@@ -203,14 +225,16 @@ Samu-Enjoyer/
 ├── CORPUS.md                  # bitácora del corpus
 ├── corpus_manifest.json       # inventario de documentos del corpus
 ├── informe/
+│   ├── main.tex               # fuente del informe técnico
 │   └── INFORME_TECNICO.pdf    # máximo 3 páginas
 ├── interfaz/                  # interfaz gráfica (identidad Software Colombia)
 ├── src/                       # pipeline reproducible
-│   ├── ingest/                 # paso 1 — ingesta y normalización
-│   ├── index/                  # paso 2 — indexación híbrida (BM25 + denso)
-│   ├── agent/                  # paso 3-4 — orquestador, rewriter, escritura, validación, juez
-│   └── evaluate/               # wrapper de scripts/evaluate.py
-└── scripts/                    # material oficial del reto (evaluate.py, schema, etc.)
+│   ├── ingest/                 # paso 1 — ingesta y conversión a Markdown
+│   ├── knowledge/              # paso 2 — chunking, BM25, HNSW, búsqueda híbrida, reranker
+│   └── agent/                  # paso 3-4 — grafo LangGraph, rewriter, escritura, validación, juez
+├── evaluation/
+│   └── retrieval_benchmark/    # banco de pruebas de recuperación y sus resultados
+└── scripts/                    # material oficial del reto (evaluate.py, citations.py)
 ```
 
 El corpus procesado, el índice vectorial y el video **no se versionan** en
@@ -291,23 +315,50 @@ Sábado 18-19h   Resultados y premiación
 |---|---|---|---|
 | Corpus procesado e índice vectorial | `<URL>` | | |
 
-El comprimido contiene `LICENSE`, `corpus_manifest.json`, `corpus/` (un
-archivo por norma) e `indice/` (índice serializado + `chunks.jsonl` con
-`doc_id`, offsets y metadatos). El enlace permanece activo hasta
+El comprimido se descomprime en la raíz del repositorio y deja todo bajo
+`corpus/`: `LICENSE` (CC BY 4.0), `LEEME.md`, `SHA256SUMS.txt`,
+`corpus_manifest.json`, `chunks/chunks.sqlite` (corpus enriquecido:
+2.210.629 pasajes con `doc_id` y metadatos) e `indices/` (`bm25_todo`,
+`bm25_normas`, `qwen3-emb-0.6b_todo` y `qwen3-emb-0.6b_normas`, cada índice
+denso con `hnsw.faiss` + `ids.json` + `info.json`). Pesa ~15 GB
+descomprimido. `python -m src.knowledge.verify_indices` debe terminar en
+`TODO CORRECTO`. El enlace permanece activo hasta
 `<fecha, treinta días después del evento>`.
+
+Corpus: 31.157 documentos objetivo, 31.037 procesados (99,6 %), 24,86 GB de
+originales; 117 fallas permanentes en la fuente oficial (detalle en
+`DESCARGA.md`).
 
 ## Reproducción
 
-Un único comando reconstruye el índice y genera la entrega, en un contenedor
-limpio.
+<!-- PENDIENTE: envolver estos pasos en un único comando (run.sh); hoy no existe. -->
 
 ```bash
-pip install -r requirements.txt
-bash run.sh                       # o: python src/main.py --split sample
-python scripts/evaluate.py --submission submissions.jsonl --split sample --ragas
+# 1. Dependencias (Python 3.12; en GPU, primero torch con CUDA)
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install -r requirements.txt -r requirements-rag.txt -r requirements-agent.txt
+
+# 2. Índice: descomprimir el zip de "Corpus e índice" en la raíz del repo
+python -m src.knowledge.verify_indices            # debe terminar en TODO CORRECTO
+
+# 3. Configuración por máquina
+cp .env.example .env                              # RAG_DEVICE_DENSO=cpu en GPUs de <= 8 GB
+
+# 4. Modelos locales: escritor (llama.cpp) y juez (Ollama)
+llama-server -m Qwen3-8B-Q4_K_M.gguf --host 127.0.0.1 --port 8010 -c 32768 -np 1 --jinja --temp 0 --top-k 1 --seed 42 -ngl 99
+ollama pull gemma4:e4b
+
+# 5. Generar y evaluar
+python -m src.agent.batch_runner --juez --salida entregables/submissions.jsonl
+python scripts/evaluate.py --submission entregables/submissions.jsonl --split sample
 ```
 
-**Requisitos de hardware:** 48GB-96GB (Nvidia A40 / sala Turing / Colab).
+`LLM_BASE_URL` en `.env` debe apuntar al puerto de `llama-server`. Prueba de
+humo sin índices ni LLM: `python -m src.agent.batch_runner --mock --limite 3`.
+
+**Requisitos de hardware:** Nvidia A40 (48 GB) para la corrida completa. En un
+portátil con GPU de 4 GB la recuperación corre con el embedder en CPU y el
+reranker en GPU (6,4 s por pregunta, mismos pasajes que la A40) y el LLM en CPU.
 **Tiempo estimado sobre las 50 preguntas de muestra:** 1500s (~25m).
 
 ### Subagente de búsqueda de citas
@@ -380,8 +431,20 @@ no se modifica después.
 
 ## Limitaciones conocidas
 
-1. Urls que redireccionan a página de filtro 
-2. Diferentes formatos de fuentes (HTML vs PDF)
+1. **Preguntas abiertas:** son casos que no nombran la norma; el recall de la
+   recuperación cae a 0,5 / 0,5 (5 preguntas en la muestra). Depende del
+   reescritor de consultas, aún sin medir.
+2. **Dispersión jurisprudencial:** las ventanas de sentencias son ~86 % de los
+   chunks y muchas repiten el mismo párrafo. Se contiene con la lista de normas,
+   el tope de 4 sentencias y el filtro de casi duplicados, que son reglas fijas.
+3. **Ajuste sobre 50 preguntas:** castigos, topes y umbrales se eligieron con la
+   misma muestra con que se reportan.
+4. **Datos anuales** (salario mínimo, UVT) no siempre llegan a los 10 pasajes.
+5. **Fuentes:** 117 documentos no se pudieron descargar (URLs que redirigen a
+   una página de filtro o que el servidor entrega vacías) y los formatos de
+   origen son heterogéneos (HTML, PDF, DOC), con OCR en parte de los PDF.
+6. **Determinismo del decoder:** los pasajes son idénticos entre máquinas; el
+   texto generado en GPU y en CPU puede diferir aun con temperatura 0.
 
 ## Checklist antes de la entrega
 
