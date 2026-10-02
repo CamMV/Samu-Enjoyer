@@ -179,7 +179,18 @@ def test_siglas_en_la_busqueda():
     bm25 = BM25Falso({"superintendencia de industria": "codigo_general_proceso/art_24"})
     almacen = AlmacenFalso({})
     item = {"pregunta": "¿Qué normativa regula las actuaciones ante la SIC?", "opciones": {"A": "Ley 1564"}}
-    apagado = _rec(Config(normas=0, usar_citas=False), bm25, almacen).buscar_item(item)
+    apagado = _rec(Config(normas=0, usar_citas=False, siglas=False), bm25, almacen).buscar_item(item)
     assert apagado.etapas["bm25"] == []
-    con = _rec(Config(normas=0, usar_citas=False, siglas=True), bm25, almacen).buscar_item(item)
+    con = _rec(Config(normas=0, usar_citas=False), bm25, almacen).buscar_item(item)  # activada por defecto
     assert con.etapas["bm25"] == ["codigo_general_proceso/art_24"]
+
+
+def test_sin_instrucciones_de_examen():
+    from src.knowledge.siglas import sin_instrucciones
+    p = ("Habiendo hecho la lectura previa de la Resolución No. 368 de 2014 expedida por el Ministerio de "
+         "Ambiente, lea con atención cada pregunta y responda la siguiente pregunta. \n\nPregunta jurídica: "
+         "No tener en cuenta lo presentado en la consulta previa puede configurar el vicio:")
+    limpio = sin_instrucciones(p)
+    assert "Resolución No. 368 de 2014" in limpio and "consulta previa puede configurar el vicio" in limpio
+    assert "lea con" not in limpio and "responda" not in limpio and "Pregunta jurídica" not in limpio
+    assert sin_instrucciones("¿Qué pregunta debe responder el testigo?") == "¿Qué pregunta debe responder el testigo?"

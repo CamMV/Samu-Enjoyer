@@ -81,3 +81,22 @@ def con_siglas(texto: str) -> str:
         return f"{sigla} ({nombre})"
 
     return _SIGLA_RE.sub(expandir, texto)
+
+
+# Instrucciones de examen ("lea con atención cada pregunta y responda…"): no son contenido jurídico,
+# pero BM25 las usa. En la 748, "pregunta" y "responda" traían artículos de interrogatorio de parte
+# (CPC art. 208) y el art. 137 del CPACA quedaba en el puesto 258 de BM25 de normas (35 sin ellas).
+# Se quitan solo las fórmulas de instrucción; lo que nombran (la resolución, el caso) se conserva.
+_INSTRUCCIONES_RE = re.compile(
+    r"(?i)\bhabiendo (?:hecho|realizado) (?:una |la )?lectura (?:previa )?del?\b"
+    r"|,?\s*\blea con atenci[oó]n(?: cada| la| las)? preguntas?(?: y responda(?: la siguiente pregunta)?)?[.:]?"
+    r"|\bresponda la siguiente pregunta[.:]?"
+    r"|\bpregunta jur[ií]dica\s*:"
+    r"|\b(?:seleccione|elija|marque) la (?:respuesta|opci[oó]n) correcta[.:]?")
+
+
+def sin_instrucciones(texto: str) -> str:
+    """`texto` sin las fórmulas de instrucción de examen (ver `_INSTRUCCIONES_RE`); sin ellas, intacto."""
+    if not _INSTRUCCIONES_RE.search(texto):
+        return texto
+    return re.sub(r"[ \t]{2,}", " ", _INSTRUCCIONES_RE.sub(" ", texto)).strip()

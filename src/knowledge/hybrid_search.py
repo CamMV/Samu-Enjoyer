@@ -24,7 +24,7 @@ from .chunk_store import Almacen, es_sentencia
 from .vector_store import IndiceDenso
 from .citation_lookup import chunks_citados, documentos_citados
 from .reranker import Reranker
-from .siglas import con_siglas
+from .siglas import con_siglas, sin_instrucciones
 
 K_RRF = 60
 # "$30.000.000", "30.000.000 COP", "1.500.000 pesos": montos de un millón o más.
@@ -125,8 +125,16 @@ class Config:
     # Siglas jurídicas (src/knowledge/siglas.py): la consulta se busca y se reordena con el nombre
     # completo tras cada sigla ("SIC" -> "SIC (Superintendencia de Industria y Comercio)"). Las citas
     # expresas se detectan sobre la consulta original. En la 58 ("…ante la SIC") el art. 24 del CGP,
-    # que da a la SIC funciones jurisdiccionales, no llegaba al top-10. A medir (2/oct).
-    siglas: bool = False
+    # que da a la SIC funciones jurisdiccionales, no llegaba al top-10. Medido (2/oct, A40): métricas
+    # idénticas (0,931 / 0,858 / MRR 0,423 / nDCG 0,577, también por formato), solo cambian los pasajes
+    # de la 58 y la 679; con el agente, la 58 pasa a la A citando el art. 24 (v14: 13/15, 42,90/50
+    # contra 12/15 y 41,33 de v13). Activada.
+    siglas: bool = True
+    # Sin instrucciones de examen ("lea con atención cada pregunta y responda la siguiente pregunta",
+    # "Pregunta jurídica:"; `sin_instrucciones` en src/knowledge/siglas.py): BM25 las toma como términos
+    # de búsqueda. En la 748 traían artículos de interrogatorio de parte; sin ellas el art. 137 del
+    # CPACA (falsa motivación) pasa del puesto 258 al 35 en BM25 de normas. A medir (2/oct).
+    sin_instrucciones: bool = False
 
 
 # Perfiles comparados en el banco de pruebas (evaluation/retrieval_benchmark).
@@ -175,6 +183,7 @@ PERFILES.update({
     "ganador_dedup70": {**_NORMAS50, "dedup": 0.7},
 })
 PERFILES["ganador_siglas"] = {**PERFILES["ganador_dedup70"], "siglas": True}
+PERFILES["ganador_instrucciones"] = {**PERFILES["ganador_siglas"], "sin_instrucciones": True}
 
 
 def _hermano(ruta: Path) -> Path:
@@ -184,7 +193,7 @@ def _hermano(ruta: Path) -> Path:
 
 def config_de(perfil: str, **base) -> "Config":
     # Los perfiles sin "normas" o sin "dedup" se midieron sin esas opciones: así se siguen reproduciendo.
-    return Config(**{"normas": 0, "dedup": 0.0, **base, **PERFILES[perfil]})
+    return Config(**{"normas": 0, "dedup": 0.0, "siglas": False, **base, **PERFILES[perfil]})
 
 
 @dataclass
@@ -261,6 +270,10 @@ class Recuperador:
         t0 = time.perf_counter()
         citadas = chunks_citados(consulta, self.almacen) if cfg.usar_citas else []
         t["citas"] = time.perf_counter() - t0
+        if cfg.sin_instrucciones:
+            consulta = sin_instrucciones(consulta)
+            pregunta = sin_instrucciones(pregunta) if pregunta else pregunta
+            extras = [(nombre, sin_instrucciones(q)) for nombre, q in extras]
         if cfg.siglas:
             consulta = con_siglas(consulta)
             pregunta = con_siglas(pregunta) if pregunta else pregunta
