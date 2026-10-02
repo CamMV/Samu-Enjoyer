@@ -1,0 +1,303 @@
+% Informe técnico — Samu-Enjoyer — Hackathon 2026 (Universidad de los Andes)
+% Estructura: plantilla oficial entregables/sabado/INFORME_TECNICO.md (6 secciones, máximo 3 páginas).
+%
+% Compilar desde entregables/informe/ (dos pasadas: la segunda resuelve las referencias a las
+% tablas) y copiar el PDF a entregables/INFORME_TECNICO.pdf y entregables/informe/INFORME_TECNICO.pdf:
+%   PowerShell:
+%     pdflatex main.tex; pdflatex main.tex; Copy-Item main.pdf INFORME_TECNICO.pdf; Copy-Item main.pdf ../INFORME_TECNICO.pdf
+%   bash:
+%     pdflatex main.tex && pdflatex main.tex && cp main.pdf INFORME_TECNICO.pdf && cp main.pdf ../INFORME_TECNICO.pdf
+%
+% Celdas que faltan: buscar PENDIENTE_EVALUATE. Se llenan con
+%   python scripts/evaluate.py --submission entregables/submissions_v2.jsonl --split sample
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage[margin=1.8cm,top=1.8cm,bottom=1.8cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+
+\setlength{\columnsep}{0.7cm}
+\setlength{\parskip}{3pt plus 1pt}
+\setlength{\textfloatsep}{12pt plus 3pt minus 2pt}
+\setlength{\dbltextfloatsep}{12pt plus 3pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt plus 3pt minus 2pt}{5pt plus 1pt}
+\setlist{itemsep=3pt,topsep=3pt,parsep=0pt,leftmargin=*}
+
+\newcommand{\cod}[1]{\texttt{#1}}
+% Celda pendiente: se ve como "---" en el PDF y se encuentra con grep en el fuente.
+\newcommand{\pend}{---}
+
+\title{\vspace{-1.0cm}\Large\bfseries Informe técnico --- Samu-Enjoyer\\[3pt]
+  \large\mdseries RAG agéntico de derecho colombiano con modelos abiertos pequeños}
+\author{Santiago Gómez \quad Camilo Murcia \quad Angie Gutiérrez\\[2pt]
+  \small Hackathon 2026 $\cdot$ Universidad de los Andes}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-0.9cm}
+
+% ---------------------------------------------------------------------------
+\section{Arquitectura del sistema}
+
+El sistema responde preguntas de derecho colombiano con un decoder abierto de 8B de
+parámetros y un corpus propio, bajo una regla: \emph{toda norma citada debe figurar en
+los diez pasajes recuperados}. Tiene una parte fuera de línea y una en línea.
+
+\textbf{Fuera de línea (corpus e índice).} Se descargaron 31.157 documentos objetivo de
+fuentes oficiales (Senado, Presidencia, relatorías de la Corte Constitucional, la Corte
+Suprema y el Consejo de Estado, DIAN, Función Pública, Cancillería y Colpensiones):
+\textbf{31.037 quedaron procesados (99,6\,\%)}, 24,86~GB de originales; las 117 fallas
+son documentos que la fuente oficial ya no entrega. Cada documento se convirtió a Markdown
+con metadatos (\cod{tipo\_norma}, \cod{numero}, \cod{anio}, \cod{vigencia}); las capas de
+texto ilegibles se releyeron con OCR. La segmentación produjo \textbf{2.210.629 chunks}:
+276.958 de normas (un artículo por chunk), 23.954 fichas de sentencias y 1.909.717
+ventanas de sentencias.
+
+\textbf{En línea.} El flujo es un \cod{StateGraph} de LangGraph, sin memoria entre
+preguntas y sin ramas paralelas:
+\cod{entrada} $\to$ \cod{consulta\_cerrada} | \cod{reescribir\_consulta} $\to$
+\cod{recuperar} $\to$ \cod{escribir} $\to$ \cod{validar\_fuentes} $\leftrightarrow$
+\cod{buscar\_citas} $\to$ \cod{juzgar} $\to$ \cod{finalizar}.
+Las cerradas buscan con la pregunta más sus cuatro opciones, sin LLM; las semiabiertas
+y abiertas pasan por un reescritor de consulta. El escritor redacta solo con los diez
+pasajes, un validador determinista revisa las citas y un juez (otro modelo) puede pedir
+un segundo y último ciclo con nueva búsqueda. Ninguna llamada sale de la máquina: los
+modelos se sirven en \cod{localhost} y el trazado externo está apagado.
+
+% ---------------------------------------------------------------------------
+\section{Selección de encoder y decoder}
+
+La elección se hizo con un banco de pruebas sobre las 50 preguntas de muestra: 3
+encoders $\times$ BM25 con y sin raíces $\times$ 2 rerankers y sin reranker, en el
+subcorpus de normas y fichas (300.912 chunks). La Tabla~\ref{tab:modelos} resume los
+brazos comparables y la Tabla~\ref{tab:componentes}, la decisión.
+
+\begin{table}[!ht]
+\centering\footnotesize
+\caption{Banco de pruebas, subcorpus de normas y fichas, $k=10$, $n=50$. R-c: recall de
+citas; R-d: recall de documentos; s: segundos del reranker por pregunta (servidor de referencia).}
+\label{tab:modelos}
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Brazo & R-c & R-d & MRR & nDCG & s \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Encoder (BM25 con raíces + bge-reranker-v2-m3, sin ajustes)}}\\
+Qwen3-Embedding-0.6B   & 0,898 & \textbf{0,715} & \textbf{0,431} & \textbf{0,554} & 0,25 \\
+e5-large-instruct      & \textbf{0,911} & 0,667 & 0,390 & 0,509 & 0,26 \\
+bge-m3                 & 0,874 & 0,679 & 0,405 & 0,522 & 0,26 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Reranker (Qwen3-Embedding-0.6B + BM25 con raíces)}}\\
+bge-reranker-v2-m3     & \textbf{0,898} & \textbf{0,715} & 0,431 & 0,554 & 0,25 \\
+Qwen3-Reranker-0.6B    & 0,833 & 0,654 & 0,337 & 0,461 & 1,14 \\
+Sin reranker           & 0,841 & 0,707 & \textbf{0,436} & \textbf{0,572} & --- \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Con ajustes de orden (perfil \cod{completo})}}\\
+Qwen3-Emb. + bge-rer.  & \textbf{0,935} & \textbf{0,837} & \textbf{0,448} & \textbf{0,601} & 0,25 \\
+e5-large + bge-rer.    & 0,898 & 0,752 & 0,399 & 0,537 & 0,26 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Sin ajustes, e5-large-instruct recupera algo más de citas (0,911 contra 0,898), pero
+Qwen3-Embedding-0.6B trae más documentos de referencia y los ordena mejor, y con los
+ajustes de orden gana en las cuatro métricas. Qwen3-Reranker-0.6B empeora todas las
+métricas frente a no reordenar y es 4,5 veces más lento (1,14~s contra 0,25~s).
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{Componentes elegidos.}
+\label{tab:componentes}
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{4.1cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{4.4cm}@{}}
+\toprule
+Componente & Modelo & Motivo de la elección & Alternativas descartadas \\
+\midrule
+Encoder & \cod{Qwen/Qwen3-Embedding-0.6B} (dim.\ 1024), FAISS HNSW con cuantización
+escalar de 8 bits &
+Mejor recall de documentos y mejor orden del banco; 0,935 / 0,837 con ajustes. Cabe en
+un portátil de 4~GB (corre en CPU) con los mismos pasajes que en el servidor de
+referencia. &
+bge-m3 (0,874 / 0,679) y e5-large-instruct (0,911 / 0,667) \\
+Decoder & \cod{Qwen/Qwen3-8B}, GGUF Q4\_K\_M en llama.cpp &
+Abierto, dentro del límite de 8B; el mismo motor y el mismo archivo corren en el
+servidor de referencia y en el portátil de la verificación en vivo. &
+Modo de razonamiento de Qwen3: no es replicable en CPU ($\approx$2 tokens/s) \\
+Reranker & \cod{BAAI/bge-reranker-v2-m3} (fp16) sobre 150 candidatos &
+Sube el recall de citas de 0,841 a 0,898 en el banco; 0,66~s por pregunta en el corpus
+completo. &
+Qwen3-Reranker-0.6B: peor (0,833 / 0,654) y 4,5$\times$ más lento \\
+Juez & Gemma 4 E4B en Ollama, servidor aparte &
+Un modelo abierto distinto del escritor: llama.cpp ignora el campo \cod{model}, así que
+con la misma URL Qwen se juzgaba a sí mismo. &
+Qwen3-8B como juez de sus propios borradores \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\textbf{Configuración de inferencia.} Cuantización de 4 bits (Q4\_K\_M), contexto de
+32.768 tokens, temperatura 0, \cod{top\_k}~=~1, semilla fija, sin modo de razonamiento y
+peticiones secuenciales. Los diez pasajes comparten un presupuesto de 85.000 caracteres:
+los que caben van completos y solo se recortan los gigantes; en la muestra, 45 de 50
+preguntas entran sin recorte y el prompt más largo mide 25.318 tokens. La recuperación
+toma $\approx$1~s por pregunta en el servidor de referencia y 6,4~s en un portátil de
+consumo (RTX~3050~Ti de 4~GB, encoder en CPU y reranker en GPU), con los mismos pasajes
+y las mismas métricas: el sistema se reproduce en el hardware de la verificación en vivo
+sin degradar resultados. % Tiempo total por pregunta con el LLM: sin medir en la configuración final.
+
+% ---------------------------------------------------------------------------
+\section{Estrategia de recuperación}
+
+\textbf{Segmentación.} Un chunk por artículo, con su ruta jerárquica y un encabezado
+citable; los artículos largos se parten y se reúnen al entregar. Notas, preámbulos y
+anexos van aparte. Cada sentencia aporta una ficha (tesis y resuelve) y ventanas de
+$\approx$1.700 caracteres por sección. El identificador canónico es
+\cod{<doc\_id>/art\_<N>}, por ejemplo \cod{codigo\_general\_proceso/art\_42}.
+
+\textbf{Búsqueda híbrida.} Cinco listas entran a una fusión RRF ($k=60$): las citas
+expresas de la pregunta (búsqueda exacta por identificador), BM25 (\cod{bm25s}, raíces
+Snowball, sin quitar \emph{stopwords}, identificadores normativos en un solo token; 100
+candidatos), HNSW denso ($M=32$, \cod{efSearch}~=~256; 100 candidatos) y una
+\emph{lista de normas}: BM25 y HNSW sobre solo los 276.958 chunks de normas, 50
+candidatos cada uno. Esta lista existe porque las sentencias son el 86\,\% del corpus y
+dejaban los códigos y la Constitución en las posiciones 100 a 900.
+
+\textbf{Reordenamiento y selección.} El reranker puntúa los 150 primeros de la fusión.
+Después se castiga por tipo (preámbulo 0,2; notas 0,15; ventana de sentencia 0,1; anexo
+0,1) y por vigencia (\textbf{norma derogada 0,15}), se suma 0,1 a las normas de
+prioridad alta, y se limita a 4 sentencias y 3 pasajes por documento. Un filtro de
+casi duplicados salta el pasaje que no es artículo de norma y repite al menos el 70\,\%
+del texto de uno ya elegido (65 de 500 pasajes de la muestra repetían a otro). Salen
+\textbf{10 pasajes}; todo empate se resuelve por identificador, así que el resultado es
+determinista: el portátil (RTX~3050~Ti / CPU) devolvió los mismos 10 pasajes en el mismo
+orden que el servidor de referencia en 50 de 50 preguntas.
+
+\begin{table}[!ht]
+\centering\footnotesize
+\caption{Corpus completo (2.210.629 chunks), $k=10$, $n=50$.}
+\label{tab:recuperacion}
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Configuración & R-c & R-d & MRR & nDCG \\
+\midrule
+Sin ajustes (\cod{base})                 & 0,862 & 0,439 & 0,236 & 0,314 \\
++ castigos, prioridad y topes            & 0,862 & 0,667 & 0,294 & 0,421 \\
++ 150 al reranker, castigo ventanas      & 0,898 & 0,764 & 0,380 & 0,520 \\
++ lista de normas (50 + 50)              & 0,919 & 0,785 & 0,416 & 0,552 \\
+\textbf{+ sin casi duplicados (final)}   & \textbf{0,919} & \textbf{0,809} & \textbf{0,419} & \textbf{0,561} \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Por formato (R-c / R-d, antes del filtro de duplicados)}}\\
+\multicolumn{5}{@{}l}{Cerradas (15): 0,962 / 0,808}\\
+\multicolumn{5}{@{}l}{Semiabiertas (30): 0,965 / 0,819}\\
+\multicolumn{5}{@{}l}{Abiertas (5): 0,500 / 0,500}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La Tabla~\ref{tab:recuperacion} muestra el recorrido. El recall de documentos casi se
+duplica (0,439 a 0,809): es el techo de citas del agente, porque el validador solo
+acepta citas de documentos presentes en los diez pasajes. Se probaron y descartaron,
+con datos: una búsqueda por cada opción en las cerradas (recall de documentos 0,772),
+el seguimiento de las normas citadas por los primeros resultados (sin cambio), más
+candidatos sin más reranker, y topes más estrictos de sentencias.
+
+% ---------------------------------------------------------------------------
+\section{Verificación de citas y abstención}
+
+El escritor cita con identificadores canónicos entre corchetes. La verificación es
+\textbf{determinista y sin LLM}: cada cita se convierte a \cod{<doc\_id>/art\_<N>} y se
+busca entre los diez pasajes; la que no está se suprime del borrador (nodo
+\cod{buscar\_citas}). Agregar el pasaje de una cita ausente está implementado y apagado:
+la afirmación no se habría redactado con ese texto y los pasajes dejarían de depender
+solo de la búsqueda que se reproduce en la verificación en vivo.
+
+Al entregar, cada identificador se reescribe a la forma que reconoce el evaluador
+oficial con el nombre que trae el encabezado del pasaje (``artículo 42 del Código
+General del Proceso (Ley 1564 de 2012)''). Con los pasajes reales de las 50 preguntas,
+\textbf{401 de 410 citas quedan reconocidas y respaldadas}; las 9 restantes son
+sentencias de la Corte Suprema sin cita reconocible en su propio texto.
+
+\textbf{Abstención.} Se declara \cod{abstencion: true} cuando ninguna cita queda
+respaldada, cuando el juez indica que los pasajes no bastan, o cuando el LLM no responde
+en el tiempo límite; nunca se entrega una respuesta simulada. El juez revisa si el
+borrador responde la subtarea y si cada afirmación tiene soporte. En las cerradas vota a
+ciegas con los mismos pasajes: si su letra difiere de la del escritor hay un segundo
+ciclo con nueva búsqueda y, si la diferencia persiste, queda la respuesta del escritor;
+una discrepancia nunca fuerza la abstención.
+
+% ---------------------------------------------------------------------------
+\section{Resultados sobre las preguntas de muestra}
+
+\begin{table}[!ht]
+\centering\footnotesize
+\caption{Puntaje de \cod{scripts/evaluate.py -{}-split sample}.}
+\label{tab:resultados}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Componente & Puntos & Posibles \\
+\midrule
+Exactitud en cerradas   & \pend & 20 \\ % PENDIENTE_EVALUATE %
+Calidad de citación     & \pend & 20 \\ % PENDIENTE_EVALUATE %
+Abstención calibrada    & \pend & 10 \\ % PENDIENTE_EVALUATE %
+\midrule
+\textbf{Total automático sin RAGAS} & \textbf{\pend} & \textbf{50} \\ % PENDIENTE_EVALUATE %
+\bottomrule
+\end{tabular}
+\end{table}
+
+% PENDIENTE_EVALUATE: quitar este párrafo cuando la Tabla de resultados tenga cifras.
+La Tabla~\ref{tab:resultados} se llena con la corrida final del evaluador oficial. Los
+datos disponibles son de pruebas anteriores. En una prueba temprana del agente, el
+escritor acertó \textbf{11 de 15 cerradas}. Antes, con un corpus reducido de 291
+documentos, el mismo Qwen3-8B pasó de 9 a 12 cerradas correctas al darle pasajes, y las
+normas citadas que no existen bajaron de 21 de 80 a 0 de 91.
+
+\textbf{Errores más frecuentes.} De las 4 cerradas falladas, ninguna es de
+razonamiento: dos piden un dato que no está en ningún pasaje (el valor del salario
+mínimo para una cuantía; una opción con el término ``Fintech''), una es de recuperación
+(no llega el CPACA) y una tiene la clave errada (cita una ``Ley 1564 de 2002'' que no
+existe). Un error de formato sí se corrigió: con la letra antes de la justificación el
+modelo elegía antes de razonar; ahora el prompt pide primero la justificación.
+
+% ---------------------------------------------------------------------------
+\section{Limitaciones}
+
+\begin{enumerate}
+\item \textbf{Preguntas abiertas.} Son casos que no nombran la norma: el recall cae a
+0,500 / 0,500 contra $\approx$0,96 / 0,81 en los otros formatos. Son solo 5 preguntas en
+la muestra, así que la cifra es poco precisa, y el reescritor de consultas que debe
+cubrir este caso no está medido.
+\item \textbf{Dispersión jurisprudencial.} Las ventanas de sentencias son el 86\,\% de
+los chunks y muchas copian el mismo párrafo. La lista de normas, el tope de 4 sentencias
+y el filtro de duplicados lo contienen, pero son reglas fijas: una pregunta que necesite
+más de 4 pasajes de jurisprudencia queda corta, y las sentencias de la Corte Suprema se
+tratan como normas y no siempre producen una cita reconocible (9 de 410).
+\item \textbf{Ajuste sobre 50 preguntas.} Castigos, topes y umbrales se eligieron con la
+misma muestra con que se reportan; el desempeño en las 992 preguntas ciegas puede ser
+menor.
+\item \textbf{Datos que el corpus no trae en forma útil.} Valores anuales (salario
+mínimo, UVT) no siempre llegan a los diez pasajes, y 117 documentos no se pudieron
+descargar de la fuente oficial.
+\item \textbf{Determinismo del decoder.} Los pasajes son idénticos entre máquinas, pero
+el texto generado en GPU (nodo de cómputo) y en CPU (portátil) puede diferir aun con
+temperatura 0;
+falta la comparación de normas citadas entre ambas.
+\item \textbf{Pasajes gigantes.} En 5 de 50 preguntas un solo artículo con anexos
+supera el contexto y se recorta.
+\item \textbf{Sin medir.} El voto del juez en las cerradas y el juez Gemma no tienen
+todavía resultados sobre la muestra.
+\end{enumerate}
+
+\end{document}

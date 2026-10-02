@@ -10,4 +10,4 @@ logs/
 *.tar
 # Configuración por máquina y llaves (la plantilla versionada es .env.example)
 .env
-
+.vscode/
