@@ -162,6 +162,8 @@ def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
     texto = re.sub(r",\s*([.;:])", r"\1", texto).rstrip(" ,;")
     if n:
         texto = " ".join(_ORACION.split(texto)[:n]).strip()
+    if len(texto.split()) > MAX_PALABRAS_RESPUESTA:  # máximo oficial (esquema y organizadores)
+        texto = _recortar(texto, n or 99, MAX_PALABRAS_RESPUESTA)
     previa = str(borrador.get("referencia_legal") or "").strip()
     nuevas = [c for c in dict.fromkeys(citas) if c not in previa]
     referencia = "; ".join([x for x in [previa.rstrip(".;")] + nuevas if x])
@@ -174,8 +176,15 @@ def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
 # Además, un tope de palabras: en v6 el marco normativo salió como lista "id: … contenido: …" que
 # copiaba los pasajes (237 palabras sin un punto). Con ~350 palabras en total (como en v2) el juez sí
 # da veredicto.
+# Con IRAC (2/oct) el marco normativo abre con el problema jurídico: 100 palabras en vez de 80 (total ≤ 370).
+# Con LARGO_OFICIAL (writer_tool) los topes suman 500, el máximo que indicaron los organizadores; ojo: en
+# v6, con ~500 palabras, el juez de RAGAS (180 s por llamada en el evaluador oficial) no daba veredicto.
 MAX_ORACIONES_ABIERTA = {"marco_normativo": 3, "analisis": 5, "jurisprudencia": 2, "conclusion": 2}
-MAX_PALABRAS_ABIERTA = {"marco_normativo": 80, "analisis": 160, "jurisprudencia": 60, "conclusion": 50}
+MAX_PALABRAS_ABIERTA = {"marco_normativo": 100, "analisis": 160, "jurisprudencia": 60, "conclusion": 50}
+MAX_ORACIONES_ABIERTA_LARGA = {"marco_normativo": 4, "analisis": 8, "jurisprudencia": 3, "conclusion": 3}
+MAX_PALABRAS_ABIERTA_LARGA = {"marco_normativo": 130, "analisis": 250, "jurisprudencia": 70, "conclusion": 50}
+# Semiabiertas: máximo oficial de palabras de `respuesta` (esquema: "De 3 a 5 oraciones, maximo 150 palabras").
+MAX_PALABRAS_RESPUESTA = 150
 
 
 def _recortar(texto: str, oraciones: int, palabras: int) -> str:
@@ -193,13 +202,16 @@ def _recortar(texto: str, oraciones: int, palabras: int) -> str:
     return salida
 
 
-def abierta_concisa(borrador: dict) -> dict:
-    """Abiertas: cada campo en sus primeras oraciones y dentro de su tope de palabras."""
+def abierta_concisa(borrador: dict, largo: bool = False) -> dict:
+    """Abiertas: cada campo en sus primeras oraciones y dentro de su tope de palabras (los de LARGO_OFICIAL
+    con `largo`). En los dos casos el total queda por debajo de las 500 palabras oficiales."""
+    oraciones = MAX_ORACIONES_ABIERTA_LARGA if largo else MAX_ORACIONES_ABIERTA
+    palabras = MAX_PALABRAS_ABIERTA_LARGA if largo else MAX_PALABRAS_ABIERTA
     out = dict(borrador)
-    for campo, n in MAX_ORACIONES_ABIERTA.items():
+    for campo, n in oraciones.items():
         texto = str(out.get(campo) or "").strip()
         if texto:
-            out[campo] = _recortar(texto, n, MAX_PALABRAS_ABIERTA[campo])
+            out[campo] = _recortar(texto, n, palabras[campo])
     return out
 
 

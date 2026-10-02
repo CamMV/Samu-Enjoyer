@@ -301,3 +301,20 @@ def test_letra_con_texto_se_interpreta_como_en_la_entrega(monkeypatch):
     assert b["respuesta_correcta"] == "A"          # no queda "C" ni vacía: respaldo léxico
     monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: '{"justificacion": "x", "respuesta_correcta": "B) Ley 906"}')
     assert w.write_legal_response("¿Qué norma?", {"formato": "multiple_choice"}, pasajes, opciones)["respuesta_correcta"] == "B"
+
+
+def test_irac_y_largo_oficial(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    monkeypatch.setattr(w, "LARGO_OFICIAL", False)
+    monkeypatch.setattr(w, "IRAC", True)
+    sistema, _ = w.build_prompts("¿Procede la acción?", {"formato": "open_ended"}, [])
+    assert "IRAC" in sistema and "El problema jurídico es determinar si" in sistema and "menos de 350 palabras" in sistema
+    monkeypatch.setattr(w, "IRAC", False)
+    assert "IRAC" not in w.instrucciones_formato("open_ended")
+    assert w.instrucciones_formato("semi_open") == w._FORMATO_INSTRUCCIONES["semi_open"]   # semiabiertas: sin cambio
+    monkeypatch.setattr(w, "IRAC", True)
+    monkeypatch.setattr(w, "LARGO_OFICIAL", True)
+    assert "entre 400 y 500 palabras" in w.instrucciones_formato("open_ended")
+    assert "entre 120 y 150" in w.extension_por_complejidad("low") and w.oraciones_semiabierta("low") == 5
+    _, user = w.build_prompts("¿Qué es?", {"formato": "semi_open", "complejidad": "low"}, [])
+    assert "entre 120 y 150" in user

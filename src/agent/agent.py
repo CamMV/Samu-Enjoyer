@@ -12,6 +12,7 @@ from src.agent.graph import _FLAG_KEYS, construir_grafo, estado_inicial
 from src.agent.salida import normalizar
 from src.agent.schemas import CanonicalPassage, QuestionState
 from src.agent.tools.citation_search_tool import Buscador, buscar_cita
+from src.agent.tools import writer_tool
 from src.agent.tools.writer_tool import oraciones_semiabierta
 
 # La recuperación depende de requirements-rag.txt (faiss, bm25s, torch); el agente debe poder
@@ -71,7 +72,7 @@ class LegalAgent:
         if state.formato == "semi_open" and not state.abstencion:
             borrador = respuesta_concisa(borrador, oraciones_semiabierta(state.complejidad))
         if state.formato == "open_ended" and not state.abstencion:
-            borrador = abierta_concisa(borrador)
+            borrador = abierta_concisa(borrador, largo=writer_tool.LARGO_OFICIAL)
         if not state.abstencion:
             borrador = con_normas_consultadas(borrador, state.formato, state.pasajes_recuperados)
         return {

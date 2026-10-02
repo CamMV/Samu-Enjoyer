@@ -145,3 +145,14 @@ def test_fuentes_ampliadas_sentencias_y_leyes_mencionadas(monkeypatch):
     assert "Decreto 1072" not in ref.split("Leyes y códigos")[1]       # decretos mencionados: no
     assert "Csj sp" not in ref                                          # encabezado sin cita reconocible
     assert ref.count("Código General del Proceso") == 1                 # ya estaba en las normas consultadas
+
+
+def test_topes_oficiales_de_palabras():
+    from src.agent.citas import abierta_concisa
+    larga = " ".join(f"Oración número {i} " + "con muchas palabras de relleno " * 8 + "para el tope." for i in range(40))
+    r = respuesta_concisa({"respuesta": larga, "referencia_legal": ""}, max_oraciones=40)
+    assert len(r["respuesta"].split()) <= 150                                   # semiabiertas: máximo oficial
+    campos = {c: larga for c in ("marco_normativo", "analisis", "jurisprudencia", "conclusion")}
+    total = lambda b: sum(len(b[c].split()) for c in campos)
+    assert total(abierta_concisa(campos)) <= 370
+    assert 370 < total(abierta_concisa(campos, largo=True)) <= 500              # abiertas: máximo oficial

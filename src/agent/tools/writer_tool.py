@@ -242,6 +242,43 @@ def ejemplos_de_estilo(pregunta: str, flags: dict) -> str:
             "sale solo de los PASAJES):\n\n" + "\n\n".join(bloques))
 
 
+# Abiertas en formato IRAC (requisito de los organizadores, 2/oct; IRAC=0 vuelve al formato anterior para
+# comparar). Los 4 campos los fija el esquema, así que IRAC va dentro de ellos: marco_normativo = Issue +
+# Rule (la primera oración plantea el problema jurídico), analisis = Application, jurisprudencia = Rule de
+# las sentencias, conclusion = Conclusion. El juez de RAGAS los lee en ese orden: I, R, A, R, C.
+IRAC = os.environ.get("IRAC", "1") == "1"
+# Largos que indicaron los organizadores (2/oct): semiabiertas hasta 150 palabras y abiertas hasta 500.
+# Con LARGO_OFICIAL=1 se apunta a esos largos (semiabiertas de 5 oraciones, 120-150 palabras; abiertas de
+# 400-500); sin él, las respuestas cortas de v14 (medido: más largas bajaron RAGAS en v16). En los dos
+# modos los máximos oficiales son tope duro (citas.respuesta_concisa y citas.abierta_concisa).
+LARGO_OFICIAL = os.environ.get("LARGO_OFICIAL", "0") == "1"
+_ABIERTA_IRAC = (
+    'Devuelve JSON con las llaves, todas de tipo texto corrido (nunca listas ni objetos), siguiendo el método '
+    'IRAC: "marco_normativo" (Issue y Rule: la PRIMERA oración plantea el problema jurídico del caso y empieza con '
+    '"El problema jurídico es determinar si"; después, {reglas} con las normas que lo resuelven, con su ID canónico, '
+    'y lo que establecen para el caso; no copies el texto de los pasajes ni los describas), "analisis" (Application: '
+    '{aplicacion} que aplican esas normas a los hechos del caso, paso a paso, citando IDs canónicos), '
+    '"jurisprudencia" (Rule de las sentencias: {juris} con las sentencias de los pasajes que aplican y la regla que '
+    'fijan; si no hay, escribe "No se identificó jurisprudencia aplicable en el corpus."), "conclusion" (Conclusion: '
+    '{conclusion} que responden directamente el problema jurídico), "abstencion" (boolean). {total}'
+)
+
+
+def instrucciones_formato(formato: str) -> str:
+    """Instrucciones de salida para el system prompt, según el formato y los interruptores IRAC y LARGO_OFICIAL."""
+    if formato == "open_ended" and IRAC:
+        if LARGO_OFICIAL:
+            return _ABIERTA_IRAC.format(reglas="máximo 3 oraciones", aplicacion="8 oraciones",
+                                        juris="máximo 3 oraciones", conclusion="dos o tres oraciones",
+                                        total="En total, entre 400 y 500 palabras.")
+        return _ABIERTA_IRAC.format(reglas="máximo 2 oraciones", aplicacion="5 oraciones", juris="máximo 2 oraciones",
+                                    conclusion="una o dos oraciones", total="En total, menos de 350 palabras.")
+    texto = _FORMATO_INSTRUCCIONES[formato]
+    if formato == "open_ended" and LARGO_OFICIAL:
+        texto = texto.replace("En total, menos de 300 palabras.", "En total, entre 400 y 500 palabras.")
+    return texto
+
+
 def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
     """Instrucción para la primera oración de una semiabierta, según la pregunta y su sub-tarea."""
     if _VERDADERO_FALSO.search(pregunta or ""):
@@ -277,12 +314,18 @@ def nivel_complejidad(complejidad: Optional[str]) -> str:
 
 def oraciones_semiabierta(complejidad: Optional[str]) -> Optional[int]:
     """Oraciones de `respuesta` para `respuesta_concisa` (None = el valor por defecto)."""
+    if LARGO_OFICIAL:
+        return 5
     if not LARGO_COMPLEJIDAD or nivel_complejidad(complejidad) not in _EXTENSION:
         return None
     return _EXTENSION[nivel_complejidad(complejidad)][0]
 
 
 def extension_por_complejidad(complejidad: Optional[str]) -> str:
+    if LARGO_OFICIAL:
+        return ("EXTENSIÓN (prevalece sobre la indicada arriba): \"respuesta\" de 5 oraciones, entre 120 y 150 "
+                "palabras; después de la primera, la regla jurídica, las normas o sentencias que la fundamentan, sus "
+                "requisitos o excepciones relevantes y su aplicación a lo que se pregunta. Nada que la pregunta no pida.")
     if not LARGO_COMPLEJIDAD or nivel_complejidad(complejidad) not in _EXTENSION:
         return ""
     n, palabras, contenido = _EXTENSION[nivel_complejidad(complejidad)]
@@ -294,7 +337,7 @@ def extension_por_complejidad(complejidad: Optional[str]) -> str:
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
-    system = f"{_SYSTEM_BASE}\n{_FORMATO_INSTRUCCIONES[flags['formato']]}"
+    system = f"{_SYSTEM_BASE}\n{instrucciones_formato(flags['formato'])}"
     bloques = []
     for p, texto in zip(pasajes, textos_para_prompt(pasajes)):
         vig = p.metadatos.get("vigencia", "desconocida")
