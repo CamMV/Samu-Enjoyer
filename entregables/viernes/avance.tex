@@ -1,0 +1,49 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{booktabs,enumitem}
+\usepackage[expansion=false]{microtype}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.2em}
+\pagestyle{empty}
+\newcommand{\seccion}[1]{\vspace{3pt}{\large\bfseries #1}\par\vspace{-2pt}\hrule\vspace{3pt}}
+\begin{document}
+{\LARGE\bfseries Avance --- Samu Enjoyers}\\[1pt]
+{\large Punto de control --- Hackathon 2026}\hfill 2 de octubre de 2026\\[1pt]
+Santiago Gómez, Camilo Murcia, Angie Gutiérrez\par
+
+\seccion{1. Corpus y descarga}
+31.157 documentos objetivo; \textbf{31.037 descargados y convertidos a Markdown} (99,6\,\%; 117 fallas y 3 duplicados documentados en la auditoría), 24,9\,GB de originales, con OCR (Tesseract) donde la capa de texto era ilegible. Fuentes: Senado, SUIN-Juriscol, relatorías de la Corte Constitucional, la Corte Suprema y el Consejo de Estado, DAPRE, DIAN y SIC. Las 10 áreas del banco tienen cobertura de su código o ley principal y de jurisprudencia. Segmentación: un chunk por artículo con ruta jerárquica y encabezado citable (artículos largos en partes) y sentencias en ficha (tesis y resuelve) más ventanas de unos 1.700 caracteres; \textbf{2.210.629 chunks} indexados con metadatos de vigencia.
+
+\seccion{2. Recuperación híbrida (congelada)}
+BM25 (\texttt{bm25s}, raíces Snowball) + FAISS HNSW SQ8 con \textbf{Qwen3-Embedding-0.6B} + lista extra solo de normas (para que las sentencias, 85\,\% del corpus, no entierren códigos) $\to$ fusión RRF ($k{=}60$) $\to$ \textbf{bge-reranker-v2-m3} sobre 150 candidatos $\to$ 10 pasajes. Ajustes: castigo por tipo y por norma derogada, tope de pasajes por documento, filtro de casi duplicados ($\geq$70\,\%), salario mínimo para montos en pesos y expansión de siglas. Sobre \texttt{sample\_50}: \textbf{recall\_citas@10 0,931, recall\_docs@10 0,858} (sin ajustes: 0,862 / 0,439; opción múltiple 0,962 / 0,808). El resultado es determinista y coincide pasaje a pasaje entre la A40 y el portátil (50/50); ${\sim}1$\,s por pregunta.
+
+\seccion{3. Agente y grounding}
+\texttt{LegalAgent} sobre un grafo LangGraph (entrada $\to$ consulta/reescritura $\to$ recuperación $\to$ escritura $\to$ validación de fuentes $\to$ salida), sin memoria entre preguntas. Escritor \textbf{Qwen3-8B} GGUF Q4\_K\_M (llama.cpp), $T{=}0$, \texttt{top\_k}=1, semilla fija, sin modo de razonamiento, JSON guiado y redacción \emph{exclusivamente} con los 10 pasajes. Las flags de formato/área/complejidad/sub-tarea deciden el buscador y el estilo de respuesta. \textbf{Validación determinista (sin LLM):} cada cita se mapea a un ID canónico \texttt{doc\_id/art\_N} y se suprime si no está en los 10 pasajes; sin citas respaldadas o sin respuesta del LLM, el agente se abstiene (\texttt{abstencion: true}); las cerradas siempre entregan letra. Con \texttt{cache\_prompt: false} dos corridas dan respuestas idénticas (reproducible para la verificación en vivo). Solo modelos abiertos y locales.
+
+\seccion{4. Pruebas y resultados en \texttt{sample\_50}}
+\begin{center}\small
+\begin{tabular}{lrrr}\toprule
+Componente (evaluador oficial, sin RAGAS) & Puntos & Posibles & Detalle\\\midrule
+Exactitud en cerradas & 17,33 & 20 & 13/15 (0,867; ref. 0,905)\\
+Calidad de citación & 18,37 & 20 & 0 citas sin respaldo\\
+Abstención calibrada & 9,07 & 10 & \\\midrule
+\textbf{Total automático} & \textbf{44,77} & \textbf{50} & \\
+RAGAS (juez oficial, 35 ítems) & $\sim$14,1 & 30 & 0,470 (ref. 0,451)\\
+\textbf{Total estimado} & \textbf{$\sim$58,9} & \textbf{80} & \\\bottomrule
+\end{tabular}\end{center}
+Latencia en la A40: \textbf{8,9\,s por pregunta} (cerradas 10,8; semiabiertas 7,5; abiertas 12,3), unos 7\,min para las 50. Hoy se probaron y \textbf{descartaron con datos} (RAGAS contra 0,470): largo según complejidad (0,447), ejemplos de estilo (0,468), oraciones sustantivas (0,457) y modo de razonamiento (0,441, con el doble de tiempo); el juez Gemma salió también de la entrega (sin juez: 13/15 y RAGAS 0,485 contra 12/15 y 0,469, y la mitad del tiempo). Incluidas: siglas y fuentes ampliadas (+1,9 pts de citación y abstención). Una auditoría de sobreajuste (remuestreo y ablaciones) no halló reglas atadas a preguntas concretas. Las cerradas 128 y 748 no tienen respaldo alcanzable en el corpus.
+
+\seccion{5. Riesgos y próximos pasos (sábado)}
+\begin{enumerate}
+\item \textbf{Verificación en vivo:} correr 3 preguntas dos veces en la RTX 4090 (24\,GB) y comprobar respuestas idénticas a las de la corrida de las 992; un solo proceso, sin \texttt{-np}\,$>$\,1. Mismo GGUF y banderas en ambas.
+\item \textbf{Tiempo:} las 992 preguntas, estimadas en ${\sim}1{,}7$--$2$\,h (${\sim}6$--7\,s cada una) en \texttt{tmux}; margen amplio frente al límite de 5\,h.
+\item \textbf{Pruebas a ciegas:} confirmar métricas y tiempos con \texttt{evaluate.py} en la 4090 y revisar que no haya \texttt{null} en cerradas ni citas fuera de los pasajes; el juez LLM queda apagado (opcional con \texttt{--juez}).
+\item \textbf{Entregables restantes:} enlace público del zip del índice (4,59\,GB) en README, \texttt{CORPUS.md} y manifiesto; interfaz gráfica, video y limpieza de resultados de prueba del repositorio.
+\item \textbf{Techo de contenido:} el puntaje queda limitado por lo que la búsqueda no trae (60, 247, 679) y por el razonamiento del 8B en preguntas de borde.
+\end{enumerate}
+\end{document}

@@ -77,7 +77,7 @@ preguntas, o divergencia en la verificación en vivo del sábado.
 
 Flujo agéntico con máximo **dos ciclos** por pregunta: entrada y ruteo →
 orquestador → recuperación híbrida con reranker → escritura → validación
-determinista de fuentes → juez → reintento si no aprueba.
+determinista de fuentes → (juez opcional, apagado en la entrega).
 
 ```mermaid
 flowchart TB
@@ -149,9 +149,9 @@ flowchart TB
     FREEZE -.-> SEARCH
 ```
 
-**Costo por pregunta:** cerradas 2 llamadas (escritura + juez); semiabiertas
-y abiertas 3 (rewriter + escritura + juez); +3 si el juez rechaza el primer
-ciclo. Validación, flags, fusión RRF y búsqueda de citas son deterministas y
+**Costo por pregunta (configuración de la entrega, sin juez):** 1 llamada de
+escritura (+1 de elección de letra en cerradas); con `--juez` (apagado, medido
+y descartado el 1/oct) se suman las llamadas del juez. Validación, flags, fusión RRF y búsqueda de citas son deterministas y
 no usan el LLM — presupuesto de referencia: ~22 s/pregunta sobre 992
 preguntas en 6 horas. El escritor corre en *llama.cpp* con peticiones
 secuenciales (mismo motor en la A40 y en el portátil de la verificación en
@@ -182,9 +182,9 @@ memoria de conversación, si se implementa, vive solo en la interfaz.
 | Índice vectorial | FAISS `IndexHNSWSQ` 8 bits (M=32, efConstruction=200, efSearch=256) | 2.210.629 chunks: un índice exacto no cabe en el portátil |
 | Orquestación | LangGraph (`StateGraph` en `src/agent/graph.py`), sin checkpointer ni ramas paralelas | Sin memoria entre preguntas: cada respuesta se reproduce sola |
 | Validación de citas | Determinista: ID canónico `<doc_id>/art_<N>` contra los 10 `pasajes_recuperados`; la cita ausente se suprime | El evaluador no mira el corpus, mira esos 10 pasajes |
-| Juez | Gemma 4 E4B en Ollama, servidor distinto del escritor; en cerradas vota a ciegas | Con la URL del escritor juzgaría el mismo Qwen (llama.cpp ignora el campo `model`) |
-| Abstención | `abstencion: true` cuando ninguna cita queda respaldada, cuando el juez declara que los pasajes no bastan o cuando el LLM no responde | Vale más que citar sin respaldo (sección 6.1 del enunciado) |
-| Ciclos del juez | Máximo 2 | Presupuesto de tiempo: 992 preguntas / 6 horas |
+| Juez (opcional, `--juez`, **apagado en la entrega**) | Gemma 4 E4B en Ollama, servidor distinto del escritor; en cerradas vota a ciegas | Con la URL del escritor juzgaría el mismo Qwen (llama.cpp ignora el campo `model`) |
+| Abstención | `abstencion: true` cuando ninguna cita queda respaldada, o cuando el LLM no responde (con `--juez`, también si el juez declara que los pasajes no bastan) | Vale más que citar sin respaldo (sección 6.1 del enunciado) |
+| Ciclos del juez (solo con `--juez`) | Máximo 2 | Presupuesto de tiempo: 992 preguntas / 6 horas |
 
 ### Recuperación sobre las 50 preguntas de muestra (corpus completo)
 
@@ -344,22 +344,21 @@ python -m src.knowledge.verify_indices            # debe terminar en TODO CORREC
 # 3. Configuración por máquina
 cp .env.example .env                              # RAG_DEVICE_DENSO=cpu en GPUs de <= 8 GB
 
-# 4. Modelos locales: escritor (llama.cpp) y juez (Ollama)
+# 4. Modelo local: escritor (llama.cpp). El juez (Ollama, `ollama pull gemma4:e4b`) solo con --juez
 llama-server -m Qwen3-8B-Q4_K_M.gguf --host 127.0.0.1 --port 8010 -c 32768 -np 1 --jinja --temp 0 --top-k 1 --seed 42 -ngl 99
-ollama pull gemma4:e4b
 
 # 5. Generar y evaluar
-python -m src.agent.batch_runner --juez --salida entregables/submissions.jsonl
+python -m src.agent.batch_runner --salida submissions.jsonl
 python scripts/evaluate.py --submission entregables/submissions.jsonl --split sample
 ```
 
 `LLM_BASE_URL` en `.env` debe apuntar al puerto de `llama-server`. Prueba de
 humo sin índices ni LLM: `python -m src.agent.batch_runner --mock --limite 3`.
 
-**Requisitos de hardware:** Nvidia A40 (48 GB) para la corrida completa. En un
+**Requisitos de hardware:** corrida oficial y verificación en vivo en una Dell Precision 3680 con RTX 4090 de 24 GB, 64 GB de RAM y Ubuntu 22.04 (un solo proceso, `-np 1`; ~13-14 GB de GPU). Las mediciones de la muestra se hicieron en una A40 (48 GB). En un
 portátil con GPU de 4 GB la recuperación corre con el embedder en CPU y el
 reranker en GPU (6,4 s por pregunta, mismos pasajes que la A40) y el LLM en CPU.
-**Tiempo estimado sobre las 50 preguntas de muestra:** 1500s (~25m).
+**Tiempo en la A40 sobre las 50 de muestra:** ~8,9 s por pregunta (~7 min); en la 4090 se estiman ~6-7 s.
 
 ### Subagente de búsqueda de citas
 
@@ -375,7 +374,7 @@ determinista, que es lo que se reproduce en la verificación en vivo.
 
 ### LLM as judge
 
-El juez (`src/agent/tools/judge_tool.py`) revisa cada borrador contra los 10
+El juez (`src/agent/tools/judge_tool.py`) revisa (solo con `--juez`; **descartado para la entrega**: RAGAS 0,485 sin juez contra 0,469 con juez, 13/15 contra 12/15 en cerradas) cada borrador contra los 10
 pasajes y el grafo de LangGraph (`src/agent/graph.py`) reintenta una vez, con la
 consulta ajustada por su feedback, si lo rechaza. Es opcional y se activa con `--juez`:
 
