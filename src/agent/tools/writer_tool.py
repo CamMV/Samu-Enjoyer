@@ -60,19 +60,31 @@ _SYSTEM_BASE = (
     "Responde SOLO con un objeto JSON válido, sin texto adicional."
 )
 
+# Análisis previo por opción en las cerradas (apagado): cada elemento de cada opción contra los pasajes,
+# antes de justificar. Con la regla adicional "si varias tienen respaldo, la más completa", v10 dio 12/15:
+# la 128 pasó de B a A (la lista más larga, con un elemento sin respaldo) y la 617 se perdió. Sin esa
+# regla, a medir con ANALISIS_OPCIONES=1. `analisis_opciones` no va a la entrega (salida.normalizar).
+ANALISIS_OPCIONES = os.environ.get("ANALISIS_OPCIONES", "0") == "1"
+_ANALISIS_OPCIONES = ('"analisis_opciones" (objeto con cada letra como llave: para cada elemento o afirmación '
+                      'de esa opción, qué dicen los pasajes, citando IDs canónicos; escribe "sin respaldo" si '
+                      'ningún pasaje lo menciona), ')
+# Regla estricta para opciones que son listas (REGLA_LISTAS=1), en dos pasos: primero se descarta toda opción
+# con algún elemento sin respaldo; solo entre las que quedan, la más completa. La versión floja ("si varias
+# tienen respaldo, la más completa") empujaba a la lista más larga aunque tuviera un elemento sin respaldo.
+REGLA_LISTAS = os.environ.get("REGLA_LISTAS", "0") == "1"
+_REGLA_LISTAS = (" Si las opciones son listas de sujetos, requisitos o elementos: (1) descarta toda opción que "
+                 "tenga AL MENOS UN elemento que ningún pasaje respalde; (2) entre las opciones que quedan, elige "
+                 "la más completa.")
+
 _FORMATO_INSTRUCCIONES = {
     "multiple_choice": (
-        # El modelo escribe en orden: primero analiza cada opción contra los pasajes, después justifica y al
-        # final elige. Con la letra primero elegía antes de razonar (671); con una justificación libre se
-        # quedaba con el pasaje más visible y no revisaba cada elemento de las opciones (128).
-        # `analisis_opciones` es trabajo intermedio: no va a la entrega (salida.normalizar lo descarta).
-        'Devuelve JSON con las llaves, en este orden: "analisis_opciones" (objeto con cada letra como llave: '
-        'para cada elemento o afirmación de esa opción, qué dicen los pasajes, citando IDs canónicos; escribe '
-        '"sin respaldo" si ningún pasaje lo menciona), "justificacion" (a partir de ese análisis, qué opción '
-        'es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de la opción que tu '
-        'justificación respalda), "descarte_opciones" (objeto con la letra de cada opción incorrecta y una '
-        'razón breve), "abstencion" (boolean). Si más de una opción tiene respaldo en los pasajes, elige la '
-        'más completa y precisa frente a lo que se pregunta. Si una opción nombra una norma '
+        # La justificación va ANTES de la letra: el modelo escribe en orden y, con la letra primero,
+        # elegía antes de razonar (pregunta 671: razonaba la C y había respondido B). El análisis previo por
+        # opción se agrega con ANALISIS_OPCIONES=1 (ver _ANALISIS_OPCIONES).
+        'Devuelve JSON con las llaves, en este orden: {analisis}"justificacion" (primero razona con los pasajes '
+        'qué opción es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de '
+        'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
+        'opción incorrecta y una razón breve), "abstencion" (boolean). Si una opción nombra una norma '
         'con el número correcto pero otro año (error de digitación), identifícala por su número y por el '
         'nombre que trae el encabezado del pasaje. Si la pregunta da un monto en pesos y un pasaje fija '
         'el salario mínimo, convierte el monto a salarios mínimos antes de compararlo con los umbrales.'
@@ -234,7 +246,11 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str], complejidad: O
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
-    system = f"{_SYSTEM_BASE}\n{_FORMATO_INSTRUCCIONES[flags['formato']]}"
+    instrucciones = _FORMATO_INSTRUCCIONES[flags["formato"]].replace(
+        "{analisis}", _ANALISIS_OPCIONES if ANALISIS_OPCIONES else "")
+    if flags["formato"] == "multiple_choice" and REGLA_LISTAS:
+        instrucciones += _REGLA_LISTAS
+    system = f"{_SYSTEM_BASE}\n{instrucciones}"
     bloques = []
     for p, texto in zip(pasajes, textos_para_prompt(pasajes)):
         vig = p.metadatos.get("vigencia", "desconocida")
