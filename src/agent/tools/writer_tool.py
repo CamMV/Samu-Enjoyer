@@ -255,11 +255,14 @@ LARGO_OFICIAL = os.environ.get("LARGO_OFICIAL", "0") == "1"
 _ABIERTA_IRAC = (
     'Devuelve JSON con las llaves, todas de tipo texto corrido (nunca listas ni objetos), siguiendo el método '
     'IRAC: "marco_normativo" (Issue y Rule: la PRIMERA oración plantea el problema jurídico del caso y empieza con '
-    '"El problema jurídico es determinar si"; después, {reglas} con las normas que lo resuelven, con su ID canónico, '
-    'y lo que establecen para el caso; no copies el texto de los pasajes ni los describas), "analisis" (Application: '
+    '"El problema jurídico es determinar si"; después, {reglas} en las que cada oración NOMBRA la norma que aplica, '
+    'con su número y su ID canónico, y dice lo que establece para el caso (forma: «La Ley N de AAAA '
+    '[ley_N_AAAA/art_X] establece que…»); nunca "la norma establece" sin decir cuál; no copies el texto de los '
+    'pasajes ni los describas), "analisis" (Application: '
     '{aplicacion} que aplican esas normas a los hechos del caso, paso a paso, citando IDs canónicos), '
-    '"jurisprudencia" (Rule de las sentencias: {juris} con las sentencias de los pasajes que aplican y la regla que '
-    'fijan; si no hay, escribe "No se identificó jurisprudencia aplicable en el corpus."), "conclusion" (Conclusion: '
+    '"jurisprudencia" (Rule de las sentencias: {juris} que nombran cada sentencia de los pasajes que aplica, con su '
+    'número y su ID canónico, y la regla que fija; si no hay, escribe "No se identificó jurisprudencia aplicable en el '
+    'corpus."), "conclusion" (Conclusion: '
     '{conclusion} que responden directamente el problema jurídico), "abstencion" (boolean). {total}'
 )
 
