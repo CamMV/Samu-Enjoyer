@@ -267,3 +267,37 @@ def test_pensar_arma_la_peticion(monkeypatch):
     monkeypatch.setattr(w, "PENSAR", False)
     w._llamar_llm("s", "u")
     assert vistos[2]["chat_template_kwargs"]["enable_thinking"] is False and vistos[2]["cache_prompt"] is False
+
+
+def test_cerrada_nunca_queda_sin_letra_si_el_llm_falla(monkeypatch):
+    import requests
+    from src.agent.schemas import CanonicalPassage
+    from src.agent.tools import writer_tool as w
+    pasajes = [CanonicalPassage(id="codigo_general_proceso/art_24#1", texto="La Superintendencia de Industria y "
+                                "Comercio ejerce funciones jurisdiccionales en la Ley 1564.")]
+    opciones = {"A": "Ley 1564", "B": "Ley 906 penal", "C": "Ley 472 populares"}
+    flags = {"formato": "multiple_choice"}
+    monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: "<think>sin terminar…")      # sin JSON (tope de tokens)
+    b = w.write_legal_response("¿Qué norma?", flags, pasajes, opciones)
+    assert b["respuesta_correcta"] == "A" and not b["abstencion"] and "[codigo_general_proceso/art_24#1]" in b["justificacion"]
+    assert "MOCK" not in b["justificacion"] and set(b["descarte_opciones"]) == {"B", "C"}
+
+    def caido(*a, **k):
+        raise requests.exceptions.ConnectionError("caído")
+    monkeypatch.setattr(w, "_llamar_llm", caido)
+    assert w.write_legal_response("¿Qué norma?", flags, pasajes, opciones)["respuesta_correcta"] == "A"
+    assert w.write_legal_response("¿Qué es?", {"formato": "semi_open"}, pasajes)["abstencion"] is True  # texto libre: abstención
+
+
+def test_letra_con_texto_se_interpreta_como_en_la_entrega(monkeypatch):
+    from src.agent.schemas import CanonicalPassage
+    from src.agent.tools import writer_tool as w
+    pasajes = [CanonicalPassage(id="codigo_general_proceso/art_24#1", texto="Superintendencia de Industria y Comercio, Ley 1564.")]
+    opciones = {"A": "Ley 1564", "B": "Ley 906 penal", "C": "Ley 472 populares"}
+    monkeypatch.setattr(w, "ELEGIR_LETRA", False)
+    monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: '{"justificacion": "x", "respuesta_correcta": '
+                                                          '"Código General del Proceso", "abstencion": false}')
+    b = w.write_legal_response("¿Qué norma?", {"formato": "multiple_choice"}, pasajes, opciones)
+    assert b["respuesta_correcta"] == "A"          # no queda "C" ni vacía: respaldo léxico
+    monkeypatch.setattr(w, "_llamar_llm", lambda *a, **k: '{"justificacion": "x", "respuesta_correcta": "B) Ley 906"}')
+    assert w.write_legal_response("¿Qué norma?", {"formato": "multiple_choice"}, pasajes, opciones)["respuesta_correcta"] == "B"

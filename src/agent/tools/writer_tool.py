@@ -34,6 +34,7 @@ from urllib.parse import urlparse
 import requests
 from dotenv import load_dotenv
 
+from src.agent.salida import _letra
 from src.agent.schemas import CanonicalPassage
 
 load_dotenv()
@@ -435,6 +436,21 @@ def mock_write_legal_response(pregunta: str, flags: dict, pasajes: list[Canonica
     }
 
 
+def cerrada_de_respaldo(pasajes: list[CanonicalPassage], opciones: dict) -> dict:
+    """Cerrada cuando el LLM falla: la opción con más respaldo léxico en los pasajes (el criterio del escritor
+    simulado), con una justificación que cita el pasaje principal. Una cerrada sin letra vale 0 seguro y el
+    esquema la rechaza (en v19 la 58 quedó así: el razonamiento llegó al tope de tokens sin cerrar el JSON)."""
+    tok_p = _tokens(" ".join(p.texto for p in pasajes))
+    puntajes = {k: len(_tokens(v) & tok_p) / (len(_tokens(v)) or 1) for k, v in opciones.items()}
+    letra = max(sorted(puntajes), key=lambda k: puntajes[k])
+    return {
+        "formato": "multiple_choice", "abstencion": False, "respuesta_correcta": letra,
+        "justificacion": f"La opción {letra} es la que tiene mayor respaldo en los pasajes consultados, en especial "
+                         f"[{pasajes[0].id}].",
+        "descarte_opciones": {k: "Tiene menor respaldo en los pasajes consultados." for k in sorted(opciones) if k != letra},
+    }
+
+
 def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                          opciones: dict = None) -> dict:
     """Redacta la respuesta según `flags['formato']` usando solo `pasajes`.
@@ -447,19 +463,27 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
     if not pasajes:
         return _abstencion(formato)
     system, user = build_prompts(pregunta, flags, pasajes, opciones)
+    cerrada = formato == "multiple_choice" and bool(opciones)
     try:
         salida = _llamar_llm(system, user)
     except requests.exceptions.RequestException as e:  # conexión caída, timeout, HTTP error
-        print(f"   AVISO: el LLM no respondió ({type(e).__name__}: {e}); la pregunta queda en abstención",
+        print(f"   AVISO: el LLM no respondió ({type(e).__name__}: {e}); "
+              + ("cerrada con la opción de más respaldo léxico" if cerrada else "la pregunta queda en abstención"),
               file=sys.stderr, flush=True)
-        return _abstencion(formato)
+        return cerrada_de_respaldo(pasajes, opciones) if cerrada else _abstencion(formato)
     try:
         borrador = _parsear_json(salida)
-    except ValueError:  # JSON inválido: el servidor respondió, no se enmascara con el mock
+    except ValueError:  # JSON inválido (p. ej. el razonamiento llegó al tope de tokens sin cerrar el JSON)
+        if cerrada:
+            print("   AVISO: salida sin JSON; cerrada con la opción de más respaldo léxico", file=sys.stderr, flush=True)
+            return cerrada_de_respaldo(pasajes, opciones)
         return _abstencion(formato)
     borrador["formato"] = formato
     borrador["abstencion"] = bool(borrador.get("abstencion", False))
     if formato == "multiple_choice" and opciones:
+        # La letra se interpreta con el mismo criterio que la entrega (salida._letra). Antes bastaba el primer
+        # carácter: "Código General del Proceso" pasaba como "C" aquí y la entrega la dejaba vacía (v19, la 58).
+        borrador["respuesta_correcta"] = _letra(borrador.get("respuesta_correcta"), opciones)
         # Una cerrada con letra válida se responde aunque el modelo marque abstención (ver graph.finalizar).
         letra = str(borrador.get("respuesta_correcta") or "").strip().upper()[:1]
         if borrador["abstencion"] and letra in opciones:
