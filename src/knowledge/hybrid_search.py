@@ -140,7 +140,8 @@ class Config:
     sin_instrucciones: bool = False
     # BM25 de normas también en semiabiertas y abiertas: `bm25_solo_cerradas` apaga los dos BM25 en texto
     # libre; con esto vuelve solo la lista de normas (276.958 artículos, sin ventanas de sentencias, que
-    # eran las que metían pasajes con palabras comunes pero sin tema). A medir (2/oct).
+    # eran las que metían pasajes con palabras comunes pero sin tema). Medido (2/oct, A40): peor, semiabiertas
+    # 0,986 / 0,944 -> 0,951 / 0,847 y abiertas igual (0,5 / 0,5; no trae la Ley 472 a la 247 ni la 1581 a la 679). Apagado.
     bm25_normas_libre: bool = False
 
 

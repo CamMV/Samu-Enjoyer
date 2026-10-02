@@ -67,7 +67,9 @@ def test_borrador_anidado():
     assert b == {"descarte_opciones": {"A": "No (artículo 88 de la Constitución Política de Colombia)"}, "n": 3}
 
 
-def test_normas_consultadas_en_el_campo_de_fundamento():
+def test_normas_consultadas_en_el_campo_de_fundamento(monkeypatch):
+    from src.agent import citas
+    monkeypatch.setattr(citas, "FUENTES_AMPLIADAS", False)  # la lista base; las ampliadas tienen su prueba
     b = con_normas_consultadas({"referencia_legal": "artículo 42 del CGP", "respuesta": "x"}, "semi_open", PASAJES)
     assert b["respuesta"] == "x"
     assert b["referencia_legal"] == (

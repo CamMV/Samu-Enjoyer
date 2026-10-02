@@ -243,13 +243,14 @@ def con_normas_consultadas(borrador: dict, formato: str, pasajes: List[Canonical
     return {**borrador, campo: f"{previo} {lista}".strip() if previo else lista}
 
 
-# Fuentes ampliadas (FUENTES_AMPLIADAS=1; apagado mientras se mide): además de las normas de los pasajes,
+# Fuentes ampliadas (activadas; FUENTES_AMPLIADAS=0 las apaga): además de las normas de los pasajes,
 # (1) las sentencias de los pasajes y (2) las leyes, códigos y la Constitución que el texto de los pasajes
 # menciona (p. ej. una sentencia que aplica el Código Sustantivo del Trabajo). Todas salen de la evidencia
 # recuperada: quedan respaldadas. Decretos, resoluciones y sentencias solo mencionadas no se listan
 # (multiplicaban la lista por tres sin agregar ninguna cita de referencia). Simulado sobre v14 sin
-# regenerar: citación 16,73 -> 18,37 (45 de 49 cuerpos de referencia) y abstención 8,84 -> 9,07.
-FUENTES_AMPLIADAS = os.environ.get("FUENTES_AMPLIADAS", "0") == "1"
+# regenerar: citación 16,73 -> 18,37 (45 de 49 cuerpos de referencia) y abstención 8,84 -> 9,07;
+# confirmado en la A40 (v16: 44,77/50 sin RAGAS, 0 citas sin respaldo). No entra en el texto de RAGAS.
+FUENTES_AMPLIADAS = os.environ.get("FUENTES_AMPLIADAS", "1") == "1"
 _NOMBRE_CUERPO = {
     "constitucion": "Constitución Política", "codigo_civil": "Código Civil", "codigo_penal": "Código Penal",
     "codigo_procedimiento_penal": "Código de Procedimiento Penal", "codigo_comercio": "Código de Comercio",
