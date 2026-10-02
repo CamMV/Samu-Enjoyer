@@ -246,6 +246,11 @@ def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
         "temperature": 0,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         "chat_template_kwargs": {"enable_thinking": False},  # Qwen3: sin bloque <think>
+        # Sin caché de prompts: llama-server reutiliza por defecto el prefijo común con la petición anterior
+        # (el system prompt) y solo calcula el resto, así que la salida dependía de qué pregunta se procesó
+        # antes. Con el mismo código y los mismos pasajes, dos corridas de las 50 dieron 0/50 respuestas
+        # idénticas (42,90 contra 38,96 de 50). Cada pregunta se calcula siempre completa: reproducible.
+        "cache_prompt": False,
     }
     if esquema:  # salida guiada por gramática (llama.cpp): el JSON y sus valores quedan acotados
         payload["response_format"] = {"type": "json_schema", "json_schema": {"name": "salida", "schema": esquema}}

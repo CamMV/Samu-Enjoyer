@@ -191,6 +191,7 @@ def _llamar_juez(system: str, user: str, esquema: Optional[dict] = None) -> str:
         "temperature": 0,
         "max_tokens": JUDGE_MAX_TOKENS,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        "cache_prompt": False,  # reproducible: ver writer_tool._llamar_llm
     }
     guiado = {
         "response_format": {"type": "json_schema", "json_schema": {"name": "veredicto", "schema": esquema or _ESQUEMA}},
