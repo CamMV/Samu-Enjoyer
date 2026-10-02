@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 from src.agent.citas import (abierta_concisa, borrador_con_citas_legibles, con_normas_consultadas, respuesta_concisa,
-                             sin_encabezados, sin_meta_texto)
+                             oraciones_para, sin_encabezados, sin_meta_texto)
 from src.agent.graph import _FLAG_KEYS, construir_grafo, estado_inicial
 from src.agent.salida import normalizar
 from src.agent.schemas import CanonicalPassage, QuestionState
@@ -68,7 +68,7 @@ class LegalAgent:
         if not state.abstencion:
             borrador = sin_meta_texto(borrador, state.formato)
         if state.formato == "semi_open" and not state.abstencion:
-            borrador = respuesta_concisa(borrador)
+            borrador = respuesta_concisa(borrador, oraciones_para(state.complejidad))
         if state.formato == "open_ended" and not state.abstencion:
             borrador = abierta_concisa(borrador)
         if not state.abstencion:
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         # LegalAgent llama al retriever con el QuestionState; el hook recibe el texto de búsqueda
         # (pregunta + opciones en las cerradas).
         agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"  # ver batch_runner.crear_agente
-        agente = LegalAgent(lambda s: hook({"pregunta": s.pregunta, "opciones": s.opciones}),
+        agente = LegalAgent(lambda s: hook({"pregunta": s.pregunta, "opciones": s.opciones, "expansion": s.expansion}),
                             buscador_citas=hook.buscar_cita if agregar else None)
         print("Retriever REAL (corpus/indices)")
     except Exception as e:  # índices ausentes, dependencias RAG o modelos no disponibles

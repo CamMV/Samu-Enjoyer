@@ -39,6 +39,7 @@ from src.agent.tools.citation_search_tool import resolver_citas  # noqa: E402
 from src.agent.tools.flags_tool import extract_query_flags  # noqa: E402
 from src.agent.tools.judge_tool import (Veredicto, citas_fuera_de_pasajes, evaluate_with_judge,  # noqa: E402
                                         mock_evaluate_with_judge)
+from src.agent.tools.expansion_tool import expandir_consulta  # noqa: E402
 from src.agent.tools.writer_tool import _abstencion, mock_write_legal_response, write_legal_response  # noqa: E402
 
 JUDGE_ABSTENER = os.environ.get("JUDGE_ABSTENER", "1") != "0"
@@ -110,9 +111,15 @@ def construir_grafo(agente: Any, con_juez: bool = False):
         return {"consulta": s["state"].pregunta}
 
     def reescribir_consulta(s: EstadoGrafo) -> dict:
-        # Ciclo 1: la pregunta tal cual. Ciclo 2: ajustada con el feedback del juez.
+        # Ciclo 1: la pregunta tal cual, más la expansión (figuras y normas candidatas) que solo usa la
+        # búsqueda; el escritor ve la pregunta original. Ciclo 2: ajustada con el feedback del juez.
         if not s["intentos"]:
-            return {"consulta": s["state"].pregunta}
+            state = s["state"]
+            mock = agente.forzar_mock_escritor if s.get("mock_escritor") is None else s["mock_escritor"]
+            if not mock and agente.retriever is not None and not state.expansion:
+                flags = {k: getattr(state, k) for k in _FLAG_KEYS}
+                state.expansion = expandir_consulta(state.pregunta, flags)
+            return {"state": state, "consulta": state.pregunta}
         state, veredicto = s["intentos"][-1]
         return {"consulta": _consulta_ajustada(state, veredicto)}
 

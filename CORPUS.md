@@ -141,7 +141,10 @@ texto libre, referencia 0,451) donde se midió.
 | 2026-10-01 | v2 | 14,67 | 12,24 | 7,33 | 34,24 | 12,88 (0,429) | Agente con LangGraph, juez y contexto de 32k sobre el corpus completo |
 | 2026-10-01 | v3 | 14,67 | 13,88 | 7,44 | 35,99 | — | Sin pasajes casi duplicados en el top-10 |
 | 2026-10-01 | v4 | 14,67 | 16,56 | 8,37 | 39,60 | — | BM25 solo en cerradas, normas de los pasajes consultados en la respuesta, decreto del salario mínimo |
-| 2026-10-01 | v5 | 17,33 | — | — | — | — | Elección de la letra a partir del razonamiento, calculadora de montos, cerradas sin abstención (13/15 cerradas; corrida completa pendiente) |
+| 2026-10-01 | v6 | 17,33 | 16,73 | 8,84 | 42,90 | 13,23 (0,441)* | Elección de la letra a partir del razonamiento, calculadora de montos, cerradas sin abstención, respuestas semiabiertas de 3 oraciones |
+| 2026-10-01 | **v8** | **17,33** | **16,73** | **8,84** | **42,90** | **13,65 (0,455)** | Primera oración según la sub-tarea, abiertas recortadas (todas con veredicto), sin juez LLM. **Total 56,55 / 80** |
+
+\* 4 de 35 ítems sin veredicto del juez de RAGAS por tiempo de espera (cuentan como cero); con abiertas más cortas, en v8 ninguno.
 
 **Lectura de la curva.** La exactitud en cerradas se estancó en 11/15 hasta que se separó el
 razonamiento de la elección de la letra: el modelo razonaba bien y anunciaba otra opción. La citación

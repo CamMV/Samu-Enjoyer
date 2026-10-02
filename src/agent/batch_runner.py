@@ -63,7 +63,7 @@ def crear_agente(mock: bool) -> tuple[LegalAgent, str]:
     # se redactó con ese texto, y los pasajes dejarían de depender solo de la búsqueda determinista
     # (en la verificación en vivo, otro LLM/CPU puede citar distinto y cambiar los pasajes).
     agregar = os.environ.get("CITAS_AGREGAR_PASAJES", "0") == "1"
-    return LegalAgent(lambda s: hook({"pregunta": s.pregunta, "opciones": s.opciones}),
+    return LegalAgent(lambda s: hook({"pregunta": s.pregunta, "opciones": s.opciones, "expansion": s.expansion}),
                       buscador_citas=hook.buscar_cita if agregar else None), "real"
 
 

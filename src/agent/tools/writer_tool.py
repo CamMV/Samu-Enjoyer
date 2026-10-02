@@ -52,6 +52,8 @@ _SYSTEM_BASE = (
     "ningún ID que no esté en los pasajes. No presentes como vigente una norma marcada derogada o "
     "transitoria. Afirma el contenido jurídico de forma directa: nunca hables de los pasajes ni del "
     "contexto (nada de 'según los pasajes', 'los pasajes mencionan', 'es importante señalar'). "
+    "Si la pregunta nombra una sentencia o una norma, responde con los pasajes de esa misma (verifica el "
+    "número y el año en el encabezado del pasaje) y no con otra de número parecido. "
     "Si los pasajes no bastan para responder, devuelve {\"abstencion\": true}. "
     "Responde SOLO con un objeto JSON válido, sin texto adicional."
 )
@@ -65,17 +67,20 @@ _FORMATO_INSTRUCCIONES = {
         'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
         'opción incorrecta y una razón breve), "abstencion" (boolean). Si una opción nombra una norma '
         'con el número correcto pero otro año (error de digitación), identifícala por su número y por el '
-        'nombre que trae el encabezado del pasaje. Si la pregunta da un monto en pesos y un pasaje fija '
+        'nombre que trae el encabezado del pasaje. Si las opciones son listas de sujetos o elementos que se '
+        'contienen unas a otras, revisa cada elemento contra los pasajes: descarta la lista que incluya '
+        'alguno sin respaldo y elige la más completa cuyos elementos estén todos respaldados. '
+        'Si la pregunta da un monto en pesos y un pasaje fija '
         'el salario mínimo, convierte el monto a salarios mínimos antes de compararlo con los umbrales.'
     ),
     # RAGAS cuenta como error toda afirmación que no esté en la respuesta esperada, aunque sea cierta:
     # respuestas cortas y directas, sin describir los pasajes (ver src/agent/citas.py).
     "semi_open": (
-        'Devuelve JSON con las llaves: "respuesta" (exactamente 3 oraciones breves, máximo 70 palabras: '
-        'la PRIMERA responde directamente la pregunta —sí o no, la norma, la autoridad, la definición, el '
-        'plazo o el sentido del fallo—; las otras dos dan solo el fundamento esencial, citando IDs '
-        'canónicos; nada que la pregunta no pida), "palabras_clave" (lista de strings), "referencia_legal" '
-        '(IDs/normas citadas), "abstencion" (boolean).'
+        'Devuelve JSON con las llaves: "respuesta" (con la extensión que se indica al final: la PRIMERA '
+        'oración responde directamente la pregunta —sí o no, la norma, la autoridad, la definición, el '
+        'plazo o el sentido del fallo—; las demás dan el fundamento, citando IDs canónicos; nada que la '
+        'pregunta no pida), "palabras_clave" (lista de strings), "referencia_legal" (IDs/normas citadas), '
+        '"abstencion" (boolean).'
     ),
     "open_ended": (
         'Devuelve JSON con las llaves, todas de tipo texto corrido (nunca listas ni objetos): '
@@ -193,16 +198,22 @@ _GUIA_SUBTAREA = (
 _VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
 
 
-def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
-    """Instrucción para la primera oración de una semiabierta, según la pregunta y su sub-tarea."""
+def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str], complejidad: Optional[str] = None) -> str:
+    """Instrucción para la primera oración y la extensión de una semiabierta, según la pregunta, su
+    sub-tarea y su complejidad (las de complejidad alta esperan ~5 oraciones; ver citas.oraciones_para)."""
     if _VERDADERO_FALSO.search(pregunta or ""):
         guia = "empieza con 'La afirmación es verdadera' o 'La afirmación es falsa' y da la razón"
     else:
         sub = (sub_tarea or "").lower()
         guia = next((g for rx, g in _GUIA_SUBTAREA if re.search(rx, sub)),
                     "responde directamente lo que se pregunta")
+    if (complejidad or "").strip().lower() in ("alta", "high"):
+        extension = ("EXTENSIÓN: 5 oraciones, máximo 130 palabras; después de la primera, la regla jurídica, las "
+                     "normas o sentencias que la fundamentan y su aplicación a lo que se pregunta.")
+    else:
+        extension = "EXTENSIÓN: exactamente 3 oraciones breves, máximo 70 palabras; las dos últimas, solo el fundamento esencial."
     return (f"PRIMERA ORACIÓN (sub-tarea: {sub_tarea or 'sin dato'}): {guia}, retomando los términos de la "
-            "pregunta. Las dos oraciones siguientes, solo el fundamento esencial.")
+            f"pregunta. {extension}")
 
 
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
@@ -222,7 +233,7 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     if calculo:
         partes.insert(-1, calculo)
     if flags.get("formato") == "semi_open":
-        partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea")))
+        partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea"), flags.get("complejidad")))
     if opciones:
         partes.append("OPCIONES:\n" + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     return system, "\n\n".join(partes)
