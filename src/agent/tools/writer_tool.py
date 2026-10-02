@@ -401,6 +401,14 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
             borrador = con_letra_de_la_justificacion(borrador, opciones)
             if str(borrador.get("respuesta_correcta") or "").strip().upper()[:1] in opciones:
                 borrador["abstencion"] = False
+        # Respaldo: una cerrada sin letra vale 0 seguro (y el esquema la rechaza). Si ni el escritor ni el
+        # verificador dieron una letra válida, se elige la opción con más respaldo léxico en los pasajes
+        # (el mismo criterio del escritor simulado), determinista. En una variante de prueba, la 748 quedó
+        # sin letra.
+        if str(borrador.get("respuesta_correcta") or "").strip().upper()[:1] not in opciones:
+            respaldo = mock_write_legal_response(pregunta, flags, pasajes, opciones)["respuesta_correcta"]
+            print(f"   AVISO: cerrada sin letra; se usa la de más respaldo léxico ({respaldo})", file=sys.stderr, flush=True)
+            borrador = {**borrador, "respuesta_correcta": respaldo, "abstencion": False}
     return borrador
 
 

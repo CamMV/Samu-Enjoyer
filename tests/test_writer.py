@@ -239,3 +239,16 @@ def test_analisis_por_opcion_llega_al_verificador_y_no_a_la_entrega(monkeypatch)
     state = LegalAgent().build_state({"id": 528, "formato": "multiple_choice", "pregunta": "¿Cuantía?", "opciones": CUANTIA})
     state.pasajes_recuperados, state.borrador_respuesta = [ART25], b
     assert "analisis_opciones" not in LegalAgent.to_submission(state)
+
+
+def test_cerrada_sin_letra_usa_la_de_mas_respaldo(monkeypatch, capsys):
+    def llm(system, user, esquema=None):
+        if esquema is None:
+            return '{"justificacion": "No es posible decidir.", "respuesta_correcta": null, "descarte_opciones": {}}'
+        raise requests.exceptions.ConnectionError("verificador caído")
+
+    monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", True)
+    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
+    assert b["respuesta_correcta"] in CUANTIA and b["abstencion"] is False
+    assert "cerrada sin letra" in capsys.readouterr().err
