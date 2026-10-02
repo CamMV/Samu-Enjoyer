@@ -230,3 +230,20 @@ def test_largo_segun_complejidad(monkeypatch):
     assert w.extension_por_complejidad("low") == "" and w.oraciones_semiabierta("baja") is None
     _, user = w.build_prompts("¿Qué exige la norma?", {"formato": "semi_open", "complejidad": "high"}, [])
     assert "EXTENSIÓN" in user
+
+
+def test_ejemplos_de_estilo_y_oraciones_sustantivas(monkeypatch):
+    from src.agent.tools import writer_tool as w
+    pregunta = next(it["pregunta"] for it in w._muestra() if it["formato"] == "semi_open")
+    flags = {"formato": "semi_open", "sub_tarea": "Definición básica"}
+    monkeypatch.setattr(w, "EJEMPLOS_ESTILO", False)
+    assert w.ejemplos_de_estilo(pregunta, flags) == ""
+    monkeypatch.setattr(w, "EJEMPLOS_ESTILO", True)
+    bloque = w.ejemplos_de_estilo(pregunta, flags)
+    assert bloque.count("Respuesta esperada:") == 2 and pregunta.strip()[:50] not in bloque   # nunca la misma
+    assert w.ejemplos_de_estilo(pregunta, {"formato": "multiple_choice"}) == ""             # cerradas: no
+    assert w.ejemplos_de_estilo("otra", {"formato": "open_ended"}).count("Respuesta esperada:") == 1
+    monkeypatch.setattr(w, "ORACIONES_SUSTANTIVAS", True)
+    assert "contenido sustantivo" in w.guia_primera_oracion("¿Qué es?", "Definición básica")
+    monkeypatch.setattr(w, "ORACIONES_SUSTANTIVAS", False)
+    assert "fundamento esencial" in w.guia_primera_oracion("¿Qué es?", "Definición básica")

@@ -193,6 +193,54 @@ _GUIA_SUBTAREA = (
 _VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
 
 
+# Oraciones 2 y 3 de las semiabiertas (ORACIONES_SUSTANTIVAS=1; apagado mientras se mide). RAGAS divide la
+# respuesta en afirmaciones y cuenta como error cada una que la esperada no trae: con "el fundamento
+# esencial" el modelo agrega normas y contexto. En la prueba del 1/oct sobre v2 (mismas respuestas
+# recortadas), las de complejidad baja daban 0,465 con 1 oración y 0,383 con 3; el esquema exige 3.
+ORACIONES_SUSTANTIVAS = os.environ.get("ORACIONES_SUSTANTIVAS", "0") == "1"
+
+# Ejemplos de estilo (EJEMPLOS_ESTILO=1; apagado mientras se mide): pares pregunta/respuesta esperada de la
+# muestra pública (data/sample_50.jsonl), nunca la misma pregunta: 2 en semiabiertas (primero de la misma
+# sub-tarea) y 1 en abiertas. Muestran la extensión y el nivel de detalle que se espera; el prompt prohíbe
+# usar su contenido. Determinista.
+EJEMPLOS_ESTILO = os.environ.get("EJEMPLOS_ESTILO", "0") == "1"
+_MUESTRA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data", "sample_50.jsonl")
+_muestra_cache: Optional[list] = None
+
+
+def _muestra() -> list:
+    global _muestra_cache
+    if _muestra_cache is None:
+        try:
+            with open(_MUESTRA, encoding="utf-8") as f:
+                _muestra_cache = [json.loads(l) for l in f if l.strip()]
+        except OSError:
+            _muestra_cache = []
+    return _muestra_cache
+
+
+def ejemplos_de_estilo(pregunta: str, flags: dict) -> str:
+    formato = flags.get("formato")
+    if not EJEMPLOS_ESTILO or formato not in ("semi_open", "open_ended"):
+        return ""
+    propia = re.sub(r"\s+", " ", pregunta or "").strip()
+    candidatos = [it for it in _muestra() if it.get("formato") == formato and it.get("respuesta_esperada")
+                  and re.sub(r"\s+", " ", it.get("pregunta") or "").strip() != propia]
+    if formato == "semi_open":
+        sub = flags.get("sub_tarea")
+        candidatos.sort(key=lambda it: (it.get("sub_tarea") != sub, it["id"]))
+        elegidos = candidatos[:2]
+    else:  # abiertas: la de respuesta esperada más corta, para no alargar el prompt
+        elegidos = sorted(candidatos, key=lambda it: (len(it["respuesta_esperada"]), it["id"]))[:1]
+    if not elegidos:
+        return ""
+    bloques = [f"Pregunta: {it['pregunta'].strip()}\nRespuesta esperada: {it['respuesta_esperada'].strip()}"
+               for it in elegidos]
+    return ("EJEMPLOS DE ESTILO (otras preguntas, con la respuesta que espera el evaluador; muestran la extensión, "
+            "lo directo y el nivel de detalle. NO uses su contenido, sus normas ni sus sentencias: tu respuesta "
+            "sale solo de los PASAJES):\n\n" + "\n\n".join(bloques))
+
+
 def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
     """Instrucción para la primera oración de una semiabierta, según la pregunta y su sub-tarea."""
     if _VERDADERO_FALSO.search(pregunta or ""):
@@ -201,8 +249,12 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
         sub = (sub_tarea or "").lower()
         guia = next((g for rx, g in _GUIA_SUBTAREA if re.search(rx, sub)),
                     "responde directamente lo que se pregunta")
+    siguientes = ("Las dos oraciones siguientes completan la respuesta con el contenido sustantivo que la pregunta "
+                  "pide (requisitos, condiciones, efectos, excepciones o la razón jurídica); sin contexto, antecedentes, "
+                  "fechas ni normas que no respondan la pregunta." if ORACIONES_SUSTANTIVAS
+                  else "Las dos oraciones siguientes, solo el fundamento esencial.")
     return (f"PRIMERA ORACIÓN (sub-tarea: {sub_tarea or 'sin dato'}): {guia}, retomando los términos de la "
-            "pregunta. Las dos oraciones siguientes, solo el fundamento esencial.")
+            f"pregunta. {siguientes}")
 
 
 # Largo de las semiabiertas según la complejidad del ítem (LARGO_COMPLEJIDAD=1; apagado mientras se mide).
@@ -254,6 +306,9 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     calculo = datos_calculados(pregunta, pasajes)
     if calculo:
         partes.insert(-1, calculo)
+    ejemplos = ejemplos_de_estilo(pregunta, flags)
+    if ejemplos:
+        partes.insert(-1, ejemplos)
     if flags.get("formato") == "semi_open":
         partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea")))
         extension = extension_por_complejidad(flags.get("complejidad"))
