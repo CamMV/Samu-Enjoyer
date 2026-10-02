@@ -1,5 +1,4 @@
 """Pruebas de las fallas del escritor y del arranque del lote. Sin red, sin índices y sin LLM."""
-import json
 import pytest
 import requests
 
@@ -206,39 +205,6 @@ def test_guia_de_la_primera_oracion_segun_la_sub_tarea():
     assert "PRIMERA ORACIÓN (sub-tarea: Definición básica)" in user
     _, user_c = writer_tool.build_prompts("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
     assert "PRIMERA ORACIÓN" not in user_c                                      # solo en semiabiertas
-
-
-def test_guia_si_no_y_extension_por_complejidad():
-    g = writer_tool.guia_primera_oracion
-    assert "empieza con 'Sí' o 'No'" in g("Una ministra renunció. ¿Puede ser sujeto activo de peculado?", "Problema jurídico")
-    assert "empieza con 'Sí' o 'No'" in g("¿Existe alguna norma que regule el acoso laboral?", "Existencia normativa")
-    assert "Sí' o 'No'" not in g("¿Cuáles son los requisitos de la tutela?", "Requisitos legales")
-    assert "3 oraciones" in g("¿Qué es X?", None, "low") and "4 oraciones" in g("¿Qué es X?", None, "medium")
-    assert "5 oraciones" in g("¿Qué es X?", None, "alta")
-    from src.agent.citas import oraciones_para
-    assert [oraciones_para(c) for c in ("low", "baja", "medium", "media", "high", "alta", None)] == [3, 3, 4, 4, 5, 5, 3]
-
-
-def test_analisis_por_opcion_llega_al_verificador_y_no_a_la_entrega(monkeypatch):
-    from src.agent.agent import LegalAgent
-    vistos = []
-
-    def llm(system, user, esquema=None):
-        if esquema is None:
-            return json.dumps({"analisis_opciones": {"C": "[codigo_general_proceso/art_25] la fija hasta 40 smlmv.",
-                                                     "D": "sin respaldo"},
-                               "justificacion": "Es de mínima cuantía [codigo_general_proceso/art_25].",
-                               "respuesta_correcta": "C", "descarte_opciones": {"D": "No."}, "abstencion": False})
-        vistos.append(user)
-        return '{"conclusion": "Mínima.", "letra": "C"}'
-
-    monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
-    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", True)
-    b = writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)
-    assert "Sobre «Mínima cuantía»" in vistos[0] and "Sobre «Mayor cuantía»: sin respaldo" in vistos[0]
-    state = LegalAgent().build_state({"id": 528, "formato": "multiple_choice", "pregunta": "¿Cuantía?", "opciones": CUANTIA})
-    state.pasajes_recuperados, state.borrador_respuesta = [ART25], b
-    assert "analisis_opciones" not in LegalAgent.to_submission(state)
 
 
 def test_cerrada_sin_letra_usa_la_de_mas_respaldo(monkeypatch, capsys):

@@ -112,18 +112,6 @@ class Config:
     # Los `fijos_rrf` primeros de la fusión (BM25 + HNSW por RRF, antes del reranker) entran al top-k
     # aunque el reranker los baje; el reranker ordena el resto. Con `fijos_solo_cerradas`, solo en las
     # cerradas. Respetan los topes por documento y de sentencias. 0 = no se usa.
-    # Expansión de la consulta (src/agent/tools/expansion_tool.py): figuras jurídicas y normas candidatas
-    # que nombra el LLM. Entran como listas extra en el RRF: las citas expresas que contenga, HNSW y,
-    # con `expansion_bm25`, BM25 (la expansión es una lista de términos: BM25 sí sirve aquí aunque
-    # la pregunta sea abierta), `expansion_n` candidatos de cada uno. El reranker sigue puntuando
-    # contra la pregunta original. Sin expansión en el ítem, no cambia nada.
-    # Sentencia citada en la pregunta ("¿qué decidió la Corte en la C-145 de 2018?"): entran fijas su ficha
-    # y sus `cupo_sentencia` secciones más pertinentes para la pregunta (BM25 y denso dentro de esa sentencia).
-    # Sin esto, sentencias de número parecido (T-256 de 2024 frente a T-256 de 2025) ocupaban los lugares y
-    # de la citada llegaba solo la ficha, que no trae los hechos. 0 = no se usa.
-    cupo_sentencia: int = 2
-    expansion_n: int = 50
-    expansion_bm25: bool = True
     fijos_rrf: int = 0
     fijos_solo_cerradas: bool = True
     # BM25 solo en las cerradas: en semiabiertas y abiertas (lenguaje natural) BM25 mete pasajes que
@@ -253,11 +241,10 @@ class Recuperador:
         pregunta = item.get("pregunta", "").strip()
         extras = [(k, f"{pregunta}\n{k}) {v}") for k, v in sorted(opciones.items())]
         usar_bm25 = bool(opciones) or not self.cfg.bm25_solo_cerradas
-        return self.buscar(consulta_de(item), extras, opciones, pregunta, usar_bm25,
-                           expansion=str(item.get("expansion") or ""))
+        return self.buscar(consulta_de(item), extras, opciones, pregunta, usar_bm25)
 
     def buscar(self, consulta: str, extras: list[tuple[str, str]] = (), opciones: dict | None = None,
-               pregunta: str | None = None, usar_bm25: bool = True, expansion: str = "") -> Resultado:
+               pregunta: str | None = None, usar_bm25: bool = True) -> Resultado:
         """`extras`: (nombre, consulta) por opción ("pregunta + opción X"); con `por_opcion` cada una
         aporta su lista de BM25 y de HNSW a la fusión, y con `rerank_opciones` el reranker también
         puntúa contra cada una. `opciones`: las de la cerrada (para `solo_opciones`). `pregunta`: el
@@ -302,15 +289,6 @@ class Recuperador:
                     etapas[f"opcion_{nombre}_denso"] = [c for c, _ in self.denso.buscar_vector(vq, cfg.por_opcion)]
                     listas.append(etapas[f"opcion_{nombre}_denso"])
             t["opciones"] = time.perf_counter() - t0
-        if cfg.cupo_sentencia:
-            t0 = time.perf_counter()
-            q = pregunta or consulta
-            vq = (v if q == consulta else self.denso.vector(q)) if self.denso else None
-            secciones = self._secciones_citadas(consulta, q, vq)
-            if secciones:
-                forzados += [c for c in secciones if c not in forzados]
-                etapas["forzados"] = forzados
-            t["sentencia_citada"] = time.perf_counter() - t0
         if cfg.en_citadas:
             t0 = time.perf_counter()
             # Las normas se toman de la consulta completa (también las que nombran las opciones); dentro
@@ -325,25 +303,6 @@ class Recuperador:
                     etapas[f"citada_{did}_{nombre}"] = lista
                     listas.append(lista)
             t["citadas"] = time.perf_counter() - t0
-        if expansion.strip():
-            t0 = time.perf_counter()
-            n = cfg.expansion_n
-            nuevas = {"expansion_citas": chunks_citados(expansion, self.almacen) if cfg.usar_citas else []}
-            if self.denso:
-                ve = self.denso.vector(expansion)
-                nuevas["expansion_denso"] = [c for c, _ in self.denso.buscar_vector(ve, n)]
-                if self.denso_normas:
-                    nuevas["expansion_denso_normas"] = [c for c, _ in self.denso_normas.buscar_vector(ve, n)]
-            if cfg.expansion_bm25:
-                if self.bm25:
-                    nuevas["expansion_bm25"] = [c for c, _ in self.bm25.buscar(expansion, n)]
-                if self.bm25_normas:
-                    nuevas["expansion_bm25_normas"] = [c for c, _ in self.bm25_normas.buscar(expansion, n)]
-            for nombre, lista in nuevas.items():
-                if lista:
-                    etapas[nombre] = lista
-                    listas.append(lista)
-            t["expansion"] = time.perf_counter() - t0
         if cfg.solo_opciones and opciones:
             t0 = time.perf_counter()
             q = "\n".join(str(o) for _, o in sorted(opciones.items()))
@@ -447,42 +406,25 @@ class Recuperador:
             self._pos[nombre] = {c: i for i, c in enumerate(ids)}
         return self._pos[nombre]
 
-    def _dentro_de(self, did: str, consulta: str, v, n: int | None = None, todo: bool = False) -> dict[str, list[str]]:
-        """Los `n` (por defecto `en_citadas`) mejores chunks del documento `did` para la consulta, con BM25
-        (máscara sobre el índice) y con el denso exacto (producto punto con los vectores de ese documento).
-        `todo`: sobre los índices completos (sentencias) en vez de los de normas."""
+    def _dentro_de(self, did: str, consulta: str, v) -> dict[str, list[str]]:
+        """Los `en_citadas` mejores chunks de la norma `did` para la consulta, con BM25 (máscara sobre
+        el índice de normas) y con el denso exacto (producto punto con los vectores de esa norma)."""
         import numpy as np
-        n, out = (n or self.cfg.en_citadas), {}
-        bm25, denso = (self.bm25, self.denso) if todo else (self.bm25_normas, self.denso_normas)
-        sufijo = "_todo" if todo else ""
+        n, out = self.cfg.en_citadas, {}
         chunks = [c["chunk_id"] for c in self.almacen.por("doc_id", did)]
-        if bm25:
-            pos = self._posiciones("bm25" + sufijo, bm25.ids)
+        if self.bm25_normas:
+            pos = self._posiciones("bm25", self.bm25_normas.ids)
             idx = [pos[c] for c in chunks if c in pos]
             if idx:
-                out["bm25"] = [c for c, _ in bm25.buscar(consulta, min(n, len(idx)), mascara=idx)]
-        if denso and v is not None:
-            pos = self._posiciones("denso" + sufijo, denso.ids)
+                out["bm25"] = [c for c, _ in self.bm25_normas.buscar(consulta, min(n, len(idx)), mascara=idx)]
+        if self.denso_normas and v is not None:
+            pos = self._posiciones("denso", self.denso_normas.ids)
             pares = [(c, pos[c]) for c in chunks if c in pos]
             if pares:
-                m = np.stack([denso.indice.reconstruct(p) for _, p in pares])
+                m = np.stack([self.denso_normas.indice.reconstruct(p) for _, p in pares])
                 s = np.round(m @ v[0], 4)
                 orden = sorted(zip((c for c, _ in pares), s.tolist()), key=lambda p: (-p[1], p[0]))
                 out["denso"] = [c for c, _ in orden[:n]]
-        return out
-
-    def _secciones_citadas(self, consulta: str, pregunta: str, v_pregunta) -> list[str]:
-        """Sentencias que la pregunta cita expresamente (máximo 2): su ficha y sus `cupo_sentencia`
-        secciones más pertinentes para la pregunta (RRF de BM25 y denso dentro de la sentencia)."""
-        sentencias = [d for d in sorted(documentos_citados(consulta)) if d.startswith("jurisprudencia_")][:2]
-        out = []
-        for did in sentencias:
-            ficha = f"{did}/ficha"
-            if self.almacen.get([ficha]):
-                out.append(ficha)
-            listas = self._dentro_de(did, pregunta, v_pregunta, n=10, todo=True)
-            orden = [c for c, _ in rrf(list(listas.values())) if c != ficha]
-            out += orden[:self.cfg.cupo_sentencia]
         return out
 
     def _citas_seguidas(self, top: list[str]) -> list[str]:

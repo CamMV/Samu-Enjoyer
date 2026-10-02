@@ -46,8 +46,6 @@ class QuestionState(BaseModel):
 
     # --- Recuperación ---
     queries_generadas: List[str] = Field(default_factory=list)
-    expansion: str = Field(default="", description="Figuras y normas candidatas para buscar (expansion_tool); "
-                                                   "solo semiabiertas y abiertas, nunca la ve el escritor")
     pasajes_recuperados: List[CanonicalPassage] = Field(default_factory=list)
 
     # --- Salida y evaluación ---

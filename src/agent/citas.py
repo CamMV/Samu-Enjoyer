@@ -149,24 +149,6 @@ def sin_encabezados(borrador: dict) -> dict:
     return limpiar(borrador)
 
 
-def es_alta(complejidad: str | None) -> bool:
-    return (complejidad or "").strip().lower() in ("alta", "high")
-
-
-def oraciones_para(complejidad: str | None) -> int:
-    """Oraciones de `respuesta` según la complejidad del ítem. En la muestra, la respuesta esperada de
-    las semiabiertas de complejidad alta tiene una mediana de 116 palabras y 5 oraciones; las de baja y
-    media, de 32 y 64 palabras. El esquema admite de 3 a 5 oraciones."""
-    if es_alta(complejidad):
-        return 5
-    # Media: la esperada tiene ~64 palabras y con 3 oraciones (~40) quedaba corta; en v8sj y v9, las
-    # respuestas con menos del 60 % de las palabras de la esperada promediaron 0,42 en RAGAS y las de largo
-    # parecido, 0,55.
-    if (complejidad or "").strip().lower() in ("media", "medium"):
-        return 4
-    return MAX_ORACIONES_RESPUESTA
-
-
 def respuesta_concisa(borrador: dict, max_oraciones: int = None) -> dict:
     """Semiabiertas: las citas entre paréntesis de `respuesta` pasan a `referencia_legal` y la respuesta
     queda en sus primeras `max_oraciones` oraciones (el esquema pide de 3 a 5)."""

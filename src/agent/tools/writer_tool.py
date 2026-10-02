@@ -52,36 +52,15 @@ _SYSTEM_BASE = (
     "ningún ID que no esté en los pasajes. No presentes como vigente una norma marcada derogada o "
     "transitoria. Afirma el contenido jurídico de forma directa: nunca hables de los pasajes ni del "
     "contexto (nada de 'según los pasajes', 'los pasajes mencionan', 'es importante señalar'). "
-    # Solo sentencias: con normas, una opción puede traer el año errado y aun así ser la correcta (pregunta 58,
-    # "Ley 1564 de 2002" por la de 2012), y esta regla la hacía descartar.
-    "Si la pregunta nombra una sentencia, responde con los pasajes de esa misma sentencia (verifica el "
-    "número y el año en el encabezado del pasaje) y no con otra de número parecido. "
     "Si los pasajes no bastan para responder, devuelve {\"abstencion\": true}. "
     "Responde SOLO con un objeto JSON válido, sin texto adicional."
 )
 
-# Análisis previo por opción en las cerradas (apagado): cada elemento de cada opción contra los pasajes,
-# antes de justificar. Con la regla adicional "si varias tienen respaldo, la más completa", v10 dio 12/15:
-# la 128 pasó de B a A (la lista más larga, con un elemento sin respaldo) y la 617 se perdió. Sin esa
-# regla, a medir con ANALISIS_OPCIONES=1. `analisis_opciones` no va a la entrega (salida.normalizar).
-ANALISIS_OPCIONES = os.environ.get("ANALISIS_OPCIONES", "0") == "1"
-_ANALISIS_OPCIONES = ('"analisis_opciones" (objeto con cada letra como llave: para cada elemento o afirmación '
-                      'de esa opción, qué dicen los pasajes, citando IDs canónicos; escribe "sin respaldo" si '
-                      'ningún pasaje lo menciona), ')
-# Regla estricta para opciones que son listas (REGLA_LISTAS=1), en dos pasos: primero se descarta toda opción
-# con algún elemento sin respaldo; solo entre las que quedan, la más completa. La versión floja ("si varias
-# tienen respaldo, la más completa") empujaba a la lista más larga aunque tuviera un elemento sin respaldo.
-REGLA_LISTAS = os.environ.get("REGLA_LISTAS", "0") == "1"
-_REGLA_LISTAS = (" Si las opciones son listas de sujetos, requisitos o elementos: (1) descarta toda opción que "
-                 "tenga AL MENOS UN elemento que ningún pasaje respalde; (2) entre las opciones que quedan, elige "
-                 "la más completa.")
-
 _FORMATO_INSTRUCCIONES = {
     "multiple_choice": (
         # La justificación va ANTES de la letra: el modelo escribe en orden y, con la letra primero,
-        # elegía antes de razonar (pregunta 671: razonaba la C y había respondido B). El análisis previo por
-        # opción se agrega con ANALISIS_OPCIONES=1 (ver _ANALISIS_OPCIONES).
-        'Devuelve JSON con las llaves, en este orden: {analisis}"justificacion" (primero razona con los pasajes '
+        # elegía antes de razonar (pregunta 671: razonaba la C y había respondido B).
+        'Devuelve JSON con las llaves, en este orden: "justificacion" (primero razona con los pasajes '
         'qué opción es correcta y por qué, citando IDs canónicos), "respuesta_correcta" (la letra de '
         'la opción que tu justificación respalda), "descarte_opciones" (objeto con la letra de cada '
         'opción incorrecta y una razón breve), "abstencion" (boolean). Si una opción nombra una norma '
@@ -92,11 +71,11 @@ _FORMATO_INSTRUCCIONES = {
     # RAGAS cuenta como error toda afirmación que no esté en la respuesta esperada, aunque sea cierta:
     # respuestas cortas y directas, sin describir los pasajes (ver src/agent/citas.py).
     "semi_open": (
-        'Devuelve JSON con las llaves: "respuesta" (con la extensión que se indica al final: la PRIMERA '
-        'oración responde directamente la pregunta —sí o no, la norma, la autoridad, la definición, el '
-        'plazo o el sentido del fallo—; las demás dan el fundamento, citando IDs canónicos; nada que la '
-        'pregunta no pida), "palabras_clave" (lista de strings), "referencia_legal" (IDs/normas citadas), '
-        '"abstencion" (boolean).'
+        'Devuelve JSON con las llaves: "respuesta" (exactamente 3 oraciones breves, máximo 70 palabras: '
+        'la PRIMERA responde directamente la pregunta —sí o no, la norma, la autoridad, la definición, el '
+        'plazo o el sentido del fallo—; las otras dos dan solo el fundamento esencial, citando IDs '
+        'canónicos; nada que la pregunta no pida), "palabras_clave" (lista de strings), "referencia_legal" '
+        '(IDs/normas citadas), "abstencion" (boolean).'
     ),
     "open_ended": (
         'Devuelve JSON con las llaves, todas de tipo texto corrido (nunca listas ni objetos): '
@@ -212,45 +191,24 @@ _GUIA_SUBTAREA = (
     (r"interpretaci", "di qué resulta de leer las normas en conjunto"),
 )
 _VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
-# Preguntas de sí o no por su forma. En v8sj y v9, cuando la esperada empezaba con "Sí"/"No" y la
-# nuestra también, RAGAS daba 0,53; cuando no, 0,21.
-_SI_NO = re.compile(r"(?:^|[.?]\s*)¿\s*(?:se\s+)?(?:puede|pueden|podr[ií]a|es|son|existe|existen|procede|proceden|"
-                    r"tiene|tienen|debe|deben|hay|est[aá]|est[aá]n|cabe|constituye|requiere|aplica|resulta|"
-                    r"configura|vulnera|viola|opera|implica)\b", re.I)
 
 
-def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str], complejidad: Optional[str] = None) -> str:
-    """Instrucción para la primera oración y la extensión de una semiabierta, según la pregunta, su
-    sub-tarea y su complejidad (las de complejidad alta esperan ~5 oraciones; ver citas.oraciones_para)."""
+def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
+    """Instrucción para la primera oración de una semiabierta, según la pregunta y su sub-tarea."""
     if _VERDADERO_FALSO.search(pregunta or ""):
         guia = "empieza con 'La afirmación es verdadera' o 'La afirmación es falsa' y da la razón"
     else:
         sub = (sub_tarea or "").lower()
         guia = next((g for rx, g in _GUIA_SUBTAREA if re.search(rx, sub)),
                     "responde directamente lo que se pregunta")
-        if _SI_NO.search(pregunta or ""):
-            guia = f"empieza con 'Sí' o 'No' y, en la misma oración, {guia}"
-    nivel = (complejidad or "").strip().lower()
-    if nivel in ("alta", "high"):
-        extension = ("EXTENSIÓN: 5 oraciones, máximo 130 palabras; después de la primera, la regla jurídica, las "
-                     "normas o sentencias que la fundamentan y su aplicación a lo que se pregunta.")
-    elif nivel in ("media", "medium"):
-        extension = ("EXTENSIÓN: 4 oraciones, máximo 90 palabras; después de la primera, la regla jurídica y los "
-                     "elementos concretos que pide la pregunta (requisitos, plazos, autoridad o efectos).")
-    else:
-        extension = "EXTENSIÓN: exactamente 3 oraciones breves, máximo 70 palabras; las dos últimas, solo el fundamento esencial."
     return (f"PRIMERA ORACIÓN (sub-tarea: {sub_tarea or 'sin dato'}): {guia}, retomando los términos de la "
-            f"pregunta. {extension}")
+            "pregunta. Las dos oraciones siguientes, solo el fundamento esencial.")
 
 
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
-    instrucciones = _FORMATO_INSTRUCCIONES[flags["formato"]].replace(
-        "{analisis}", _ANALISIS_OPCIONES if ANALISIS_OPCIONES else "")
-    if flags["formato"] == "multiple_choice" and REGLA_LISTAS:
-        instrucciones += _REGLA_LISTAS
-    system = f"{_SYSTEM_BASE}\n{instrucciones}"
+    system = f"{_SYSTEM_BASE}\n{_FORMATO_INSTRUCCIONES[flags['formato']]}"
     bloques = []
     for p, texto in zip(pasajes, textos_para_prompt(pasajes)):
         vig = p.metadatos.get("vigencia", "desconocida")
@@ -264,7 +222,7 @@ def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
     if calculo:
         partes.insert(-1, calculo)
     if flags.get("formato") == "semi_open":
-        partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea"), flags.get("complejidad")))
+        partes.append(guia_primera_oracion(pregunta, flags.get("sub_tarea")))
     if opciones:
         partes.append("OPCIONES:\n" + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     return system, "\n\n".join(partes)
@@ -403,8 +361,8 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
                 borrador["abstencion"] = False
         # Respaldo: una cerrada sin letra vale 0 seguro (y el esquema la rechaza). Si ni el escritor ni el
         # verificador dieron una letra válida, se elige la opción con más respaldo léxico en los pasajes
-        # (el mismo criterio del escritor simulado), determinista. En una variante de prueba, la 748 quedó
-        # sin letra.
+        # (el mismo criterio del escritor simulado), determinista. No cambia ningún prompt: solo actúa
+        # cuando falta la letra (pasó en una variante de prueba con la 748).
         if str(borrador.get("respuesta_correcta") or "").strip().upper()[:1] not in opciones:
             respaldo = mock_write_legal_response(pregunta, flags, pasajes, opciones)["respuesta_correcta"]
             print(f"   AVISO: cerrada sin letra; se usa la de más respaldo léxico ({respaldo})", file=sys.stderr, flush=True)
@@ -441,18 +399,6 @@ def con_letra_de_la_justificacion(borrador: dict, opciones: dict) -> dict:
     razonamiento = _sin_anuncios(str(borrador.get("justificacion") or ""))
     if not razonamiento:
         return borrador
-    # El análisis por opción va con el TEXTO de cada opción, no con su letra: el verificador decide por el
-    # contenido y no se ancla en una letra anunciada.
-    analisis = borrador.get("analisis_opciones")
-    if isinstance(analisis, dict):
-        lineas = []
-        for letra, v in sorted(analisis.items()):
-            texto = v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
-            opcion = opciones.get(str(letra).strip().upper()[:1])
-            if opcion and texto.strip():
-                lineas.append(f"- Sobre «{opcion}»: {_sin_anuncios(texto) or texto}")
-        if lineas:
-            razonamiento = "ANÁLISIS DE CADA OPCIÓN:\n" + "\n".join(lineas) + f"\n\nCONCLUSIÓN: {razonamiento}"
     user = (f"RAZONAMIENTO:\n{razonamiento}\n\nOPCIONES:\n"
             + "\n".join(f"{k}. {v}" for k, v in sorted(opciones.items())))
     esquema = {"type": "object", "properties": {"conclusion": {"type": "string"},
