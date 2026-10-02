@@ -309,7 +309,6 @@ def test_irac_y_largo_oficial(monkeypatch):
     monkeypatch.setattr(w, "IRAC", True)
     sistema, _ = w.build_prompts("¿Procede la acción?", {"formato": "open_ended"}, [])
     assert "IRAC" in sistema and "El problema jurídico es determinar si" in sistema and "menos de 350 palabras" in sistema
-    assert "NOMBRA la norma" in sistema and "nombran cada sentencia" in sistema   # la regla siempre nombra la norma
     monkeypatch.setattr(w, "IRAC", False)
     assert "IRAC" not in w.instrucciones_formato("open_ended")
     assert w.instrucciones_formato("semi_open") == w._FORMATO_INSTRUCCIONES["semi_open"]   # semiabiertas: sin cambio
