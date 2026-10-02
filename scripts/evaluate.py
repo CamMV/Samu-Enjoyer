@@ -324,8 +324,14 @@ def score_ragas(subs: dict[int, dict], key: dict[int, dict], judged: list[int],
         extra_body={"reasoning": JUEZ_REASONING}))
     emb = LangchainEmbeddingsWrapper(HuggingFaceEmbeddings(model_name=JUEZ_ENCODER))
 
+    # RAGAS_TIMEOUT (segundos por llamada al juez) solo para mediciones propias; sin definir queda
+    # el límite por defecto de RAGAS (180 s), igual que el evaluador oficial.
+    extra = {}
+    if os.environ.get("RAGAS_TIMEOUT"):
+        from ragas.run_config import RunConfig
+        extra["run_config"] = RunConfig(timeout=int(os.environ["RAGAS_TIMEOUT"]))
     res = ragas_evaluate(Dataset.from_dict(rows), metrics=[answer_correctness],
-                         llm=llm, embeddings=emb)
+                         llm=llm, embeddings=emb, **extra)
     serie = res.to_pandas()["answer_correctness"]
     fallidos = int(serie.isna().sum())
     vals = list(serie.fillna(0.0))
