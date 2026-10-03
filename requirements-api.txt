@@ -1,0 +1,4 @@
+# Back local de la interfaz (src/api/server.py). Además de requirements.txt (+ requirements-rag.txt
+# y requirements-agent.txt para el modo real).
+fastapi>=0.115
+uvicorn>=0.30

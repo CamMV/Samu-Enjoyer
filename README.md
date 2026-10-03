@@ -75,87 +75,110 @@ preguntas, o divergencia en la verificación en vivo del sábado.
 
 ## Arquitectura del sistema
 
-Flujo agéntico con máximo **dos ciclos** por pregunta: entrada y ruteo →
-orquestador → recuperación híbrida con reranker → escritura → validación
-determinista de fuentes → (juez opcional, apagado en la entrega).
+Un solo agente atiende dos entradas: el lote de preguntas (`batch_runner` →
+`submissions.jsonl`) y la interfaz gráfica (React → API local FastAPI). Las
+dos usan el mismo agente, con la misma configuración, y sacan la respuesta de
+`LegalAgent.to_submission`. Por pregunta: flags → consulta determinista →
+recuperación híbrida con reranker → escritura con Qwen3-8B → validación
+determinista de fuentes → post-procesado determinista → registro del esquema
+oficial. Un solo ciclo: el juez y su segundo ciclo existen en el código, pero
+la entrega no los usa (ver [LLM as judge](#llm-as-judge)).
 
 ```mermaid
 flowchart TB
-    subgraph L1["1 · Entrada y ruteo"]
-        A["Input: pregunta del .jsonl o consulta desde la UI"] --> B["Preprocesamiento: normaliza texto y tildes"]
-        B --> C["Identificador de flags: lee formato/area/complejidad/sub_tarea del item; infiere solo si faltan (UI) + normas citadas (regex)"]
+    subgraph L0["0 · Entradas"]
+        UI["Interfaz — frontend/ (Vite + React 19 + TS), puerto 3000"] -->|"/api/* (proxy de Vite)"| API["API local — src/api/server.py (FastAPI, 127.0.0.1:8000) · una pregunta a la vez"]
+        BATCH["batch_runner — data/*.jsonl -> submissions.jsonl (+ validación de esquema)"]
+        API -->|"GET /api/documentos/{doc_id}"| DOCS[("corpus/md o chunks.sqlite")]
+    end
+
+    subgraph L1["1 · Entrada y ruteo (LangGraph, sin LLM)"]
+        A["Item: pregunta (+ opciones) · la API separa A) … D) del texto libre"] --> C["Flags: formato, área, sub_tarea, complejidad — del item; inferidos solo si faltan"]
         C --> D{"¿Formato?"}
+        D -->|cerrada| E["Consulta = pregunta + opciones A–D"]
+        D -->|semiabierta / abierta| F["Consulta = la pregunta tal cual (sin reescritura con LLM)"]
     end
 
-    subgraph L2["2 · Orquestador — LangGraph · escritor Qwen3-8B, T=0"]
-        MEM[("Memoria de corto plazo: flags, consultas, pasajes, borrador, ciclo — se reinicia por pregunta")]
-        D -->|cerrada| E["Consulta cerrada: pregunta + opciones A/B/C/D en una sola búsqueda — sin LLM, sin reescritura"]
-        D -->|semiabierta / abierta| F["Rewriter query: reformula con términos jurídicos y propone normas candidatas"]
-        F --> W["Agente de escritura: redacta solo con los 10 pasajes · JSON guiado"]
-        W --> RESP["Responde: JSON + pasajes_recuperados (citados primero)"]
-    end
-
-    subgraph L3["3 · Tools y subagentes"]
-        RULES[["Restricciones: T=0, claves JSON fijas, límites de extensión, solo se cita lo recuperado"]]
-        VAL["Valida fuentes: cada cita -> ID canónico, ¿está en los 10 pasajes? — determinista, sin LLM"]
-        JUDGE["LLM as judge — Gemma 4 E4B, servidor aparte: ¿responde la sub_tarea? ¿cada afirmación tiene pasaje? · en cerradas vota a ciegas"]
-        SEARCH["Subagente de búsqueda de citas: suprime del borrador las citas fuera de los 10 pasajes — sin LLM (agregar pasajes: apagado)"]
-    end
-
-    subgraph L4["4 · Sistema de recuperación híbrida"]
-        BM25["BM25 — bm25s, raíces Snowball · top-100"]
-        DENSE["Densa — Qwen3-Embedding-0.6B en HNSW SQ8 · top-100"]
-        LOOKUP["Lookup exacto — citas expresas de la pregunta"]
-        NORMAS["Lista de normas — BM25 + HNSW solo sobre normas · top-50 cada uno"]
-        RRF["Unificación RRF k=60: fusiona por posición, no por puntaje normalizado"]
-        RERANK["Reranker — bge-reranker-v2-m3 sobre 150 -> castigo por tipo y vigencia, topes por documento, sin casi duplicados -> top-10 pasajes"]
+    subgraph L2["2 · Recuperación híbrida — src/knowledge/hybrid_search.py · determinista"]
+        SIG["Siglas: SIC -> SIC (Superintendencia de Industria y Comercio), ~45 fijas"]
+        LOOKUP["Citas expresas de la pregunta (lookup exacto) + decreto del SMLMV si hay montos en pesos"]
+        BM25["BM25 todo (bm25s, raíces Snowball) · top-100 — solo cerradas"]
+        DENSE["HNSW todo (Qwen3-Embedding-0.6B, SQ8) · top-100"]
+        NORMAS["Lista de normas: BM25 + HNSW solo sobre normas · 50 + 50"]
+        RRF["RRF k=60"]
+        RERANK["bge-reranker-v2-m3 sobre 150 -> castigo por tipo y vigencia, máx. 4 sentencias y 3 pasajes por documento, sin casi duplicados, 1.º de BM25 normas asegurado en cerradas"]
+        TOP["10 pasajes con ID canónico (doc_id/art_N), desempate por chunk_id"]
+        SIG --> BM25 & DENSE & NORMAS
+        LOOKUP --> RRF
         BM25 --> RRF
         DENSE --> RRF
-        LOOKUP --> RRF
         NORMAS --> RRF
-        RRF --> RERANK
+        RRF --> RERANK --> TOP
     end
 
-    subgraph L5["5 · Corpus e índice — offline"]
-        CORP["Corpus: PDF/HTML/DOC — Senado, Presidencia, relatorías CC/CSJ/CE, DIAN, Función Pública, Cancillería, Colpensiones"]
-        MD["Conversión a Markdown: conserva libro, título, capítulo, artículo"]
-        CHUNK["Chunking por artículo: sentencias en ficha + ventanas por sección + metadatos + ID canónico (codigo_general_proceso/art_42)"]
-        FILT["Filtro + manifest: quita texto del banco, corpus_manifest.json, CORPUS.md"]
-        LEX["Rama léxica: normalización, raíces Snowball, sin quitar stopwords, ids normativos en un token"]
-        DEN["Rama densa: texto original sin stem + prefijo del encoder"]
-        IBM25["Índice BM25 — bm25s (todo y solo normas)"]
-        IEMB["Embeddings Qwen3-Embedding-0.6B (dim 1024) -> FAISS HNSW SQ8, M=32, efSearch=256"]
-        FREEZE["Índice congelado: zip + SHA-256 + LICENSE — verify_indices lo comprueba"]
-        CORP --> MD --> CHUNK --> FILT
-        FILT --> LEX --> IBM25
-        FILT --> DEN --> IEMB
-        IBM25 --> FREEZE
-        IEMB --> FREEZE
+    subgraph L3["3 · Escritura — Qwen3-8B Q4_K_M en llama.cpp (T=0, top_k=1, seed 42, cache_prompt off, sin razonamiento)"]
+        W["Escritor: solo los 10 pasajes, citas [doc_id/art_N], JSON del formato"]
+        WMC["Cerradas: justificación antes de la letra · calculadora de montos en SMLMV · 2.ª llamada elige la letra del razonamiento (anclada al respaldo léxico) · respaldo si queda sin letra"]
+        WSO["Semiabiertas: 1.ª oración responde según la forma de la pregunta · 5 oraciones en complejidad alta"]
+        WOE["Abiertas: IRAC dentro de marco_normativo / analisis / jurisprudencia / conclusion"]
+        W --- WMC & WSO & WOE
     end
 
-    E --> BM25
-    F --> BM25
-    RERANK --> W
+    subgraph L4["4 · Validación y salida (deterministas, sin LLM)"]
+        VAL["Valida fuentes: cada cita contra los 10 pasajes"]
+        SEARCH["Subagente de citas: suprime las que no están (agregar pasajes: apagado)"]
+        POST["to_submission: tipos del esquema · citas legibles para el evaluador · sin meta-texto · poda de oraciones accesorias · fuentes en abiertas · normas, sentencias y leyes de los pasajes consultados · topes 150/500 palabras"]
+        OUT["Registro de submissions.jsonl · la API agrega chunk_id, encabezado, vigencia, opciones y el borrador con IDs canónicos"]
+        JUDGE["LLM as judge (Gemma 4 E4B) + 2.º ciclo — solo con --juez, apagado en la entrega"]
+        VAL -->|cita fuera de los pasajes| SEARCH --> VAL
+        VAL --> POST --> OUT
+        VAL -.-> JUDGE -.-> POST
+    end
+
+    subgraph L5["5 · Corpus e índice — offline, congelado"]
+        CORP["31.037 documentos oficiales (Senado, SUIN, relatorías CC/CSJ/CE, DIAN, SIC…) + 9 fuentes agregadas el 3/oct"]
+        MD["Markdown con front-matter (tipo, número, año, vigencia) · OCR donde hace falta"]
+        CHUNK["Chunking: un chunk por artículo; sentencias en ficha + ventanas · chunks.sqlite (2.211.359)"]
+        IDX["BM25 (todo y normas) + HNSW (todo y normas) · agregar_chunks: alta incremental sin recalcular lo existente"]
+        FREEZE["Zip congelado + SHA-256 + LICENSE · verify_indices"]
+        CORP --> MD --> CHUNK --> IDX --> FREEZE
+    end
+
+    API --> A
+    BATCH --> A
+    E --> SIG
+    F --> SIG
+    E --> LOOKUP
+    F --> LOOKUP
+    TOP --> W
     W --> VAL
-    VAL -->|cita no recuperada| SEARCH
-    SEARCH -->|supresión| VAL
-    VAL --> JUDGE
-    JUDGE -->|no aprueba -> nuevo ciclo, máx. 2| F
-    JUDGE -->|aprueba o ciclo 2| RESP
-    C -->|sin ninguna cita respaldada| ABST["Abstención: abstencion: true"]
-    FREEZE -.índices congelados.-> BM25
-    FREEZE -.-> DENSE
-    FREEZE -.-> LOOKUP
-    FREEZE -.-> SEARCH
+    OUT --> R1(["UI: JSON de POST /api/preguntar"])
+    OUT --> R2(["Lote: una línea de submissions.jsonl"])
+    TOP ~~~ CORP
 ```
 
-**Costo por pregunta (configuración de la entrega, sin juez):** 1 llamada de
-escritura (+1 de elección de letra en cerradas); con `--juez` (apagado, medido
-y descartado el 1/oct) se suman las llamadas del juez. Validación, flags, fusión RRF y búsqueda de citas son deterministas y
-no usan el LLM — presupuesto de referencia: ~22 s/pregunta sobre 992
-preguntas en 6 horas. El escritor corre en *llama.cpp* con peticiones
-secuenciales (mismo motor en la A40 y en el portátil de la verificación en
-vivo); la recuperación toma ~1 s por pregunta en la A40.
+El corpus y el índice (sección 5) se construyen offline y alimentan la
+recuperación (sección 2) y el visor de documentos de la interfaz.
+
+### Cambios frente a la arquitectura inicial
+
+| Pieza | Diseño inicial | Arquitectura actual (entrega) | Por qué |
+|---|---|---|---|
+| Interfaz | Por definir (`interfaz/`) | `frontend/` (Vite + React) + API local `src/api/server.py` | Misma ruta de código que el lote: lo que muestra la UI es lo que se entregaría |
+| Reescritura de consulta | LLM propone términos y normas candidatas | La pregunta tal cual (+ opciones en cerradas) y siglas expandidas por diccionario | El LLM inventaba normas: recall_docs 0,881 → 0,798; además los pasajes dependerían del LLM en la verificación en vivo |
+| BM25 | En todos los formatos | Solo en cerradas; texto libre solo con HNSW (+ lista de normas) | En lenguaje natural BM25 trae pasajes que comparten palabras pero no tema |
+| Recuperación, ajustes | RRF + reranker | + siglas, decreto del SMLMV con montos en pesos, filtro de casi duplicados, 1.º de BM25 de normas asegurado en cerradas | recall_docs@10 0,809 → 0,858 |
+| Juez y ciclos | Gemma 4 E4B, hasta 2 ciclos | Apagado (`--juez` lo enciende) | Sin juez: RAGAS 0,485 contra 0,469, cerradas 13/15 contra 12/15 y la mitad del tiempo |
+| Cerradas | Letra y justificación en una llamada | Justificación primero, letra elegida en una 2.ª llamada y anclada al respaldo léxico; respaldo determinista si no hay letra; nunca se abstienen | La letra no salía del propio razonamiento; abstenerse vale menos que responder |
+| Abiertas | Campos libres | IRAC dentro de los 4 campos del esquema | Requisito de los organizadores (2/oct) |
+| Salida | Borrador del LLM | Post-procesado determinista (`src/agent/citas.py`): citas legibles, fuentes de los pasajes, poda, topes de palabras | El evaluador no reconoce `[doc_id/art_N]`; citación 16,73 → 18,37 sin citas sin respaldo |
+| Determinismo | T=0 | + `cache_prompt: false` y `-np 1` | Con la caché de prompts dos corridas daban 0/50 respuestas idénticas |
+| Índice | Reconstrucción completa | Alta incremental (`agregar_chunks`): 9 fuentes del 3/oct sin recalcular lo existente | Documentos citados por el test que no estaban en el corpus |
+
+**Costo por pregunta (configuración de la entrega):** 1 llamada de escritura
+(+1 de elección de letra en cerradas). Validación, flags, fusión y búsqueda de
+citas no usan el LLM. ~1 s de recuperación y ~6-7 s por pregunta en la RTX
+4090 (8,9 s en la A40); el LLM corre en llama.cpp con peticiones secuenciales.
 
 **Por qué también recuperan las preguntas cerradas.** Sin pasajes
 recuperados, cualquier norma citada en `justificacion` vale como máximo 0,5
@@ -166,37 +189,40 @@ opciones B, C y D.
 **Por qué no hay memoria entre preguntas.** El jurado regenera preguntas
 sueltas en la verificación en vivo; una respuesta que dependiera de turnos
 anteriores no sería reproducible, lo que es causal de descalificación. La
-memoria de conversación, si se implementa, vive solo en la interfaz.
+interfaz guarda el historial de chats solo en el navegador y manda cada
+pregunta sola al back.
 
 ## Decisiones de arquitectura
 
 | Componente | Elección | Motivo |
 |---|---|---|
-| Decoder | `Qwen/Qwen3-8B` GGUF Q4_K_M en llama.cpp (T=0, top_k=1, semilla fija, contexto 32k, sin modo de razonamiento) | Modelo abierto ≤ 8B; mismo motor y mismo archivo en la A40 y en el portátil |
+| Decoder | `Qwen/Qwen3-8B` GGUF Q4_K_M en llama.cpp (T=0, top_k=1, semilla fija, contexto 32k, `cache_prompt: false`, `-np 1`, sin modo de razonamiento) | Modelo abierto ≤ 8B; con la caché de prompts la salida dependía de la pregunta anterior. El modo de razonamiento bajó RAGAS (0,441 contra 0,470) y duplicó el tiempo |
 | Encoder | `Qwen/Qwen3-Embedding-0.6B` (dim 1024) | Ganador del banco de pruebas: mejor recall de documentos y mejor orden que `bge-m3` y `e5-large-instruct` |
 | Léxico | BM25 (`bm25s`) con raíces Snowball, sin quitar stopwords, ids normativos y sentencias en un token | El vector de "artículo 42" y "artículo 24" es casi idéntico; BM25 resuelve identificadores numéricos. Sin raíces rinde menos |
-| Recuperación | Híbrida: citas expresas de la pregunta + BM25 (100) + HNSW (100) + lista de normas (BM25 y HNSW solo sobre normas, 50 + 50), fusión RRF k=60 | La lista de normas evita que las sentencias (~86 % de los chunks) entierren códigos y Constitución |
+| Recuperación | Híbrida: siglas expandidas + citas expresas de la pregunta + BM25 (100, solo cerradas) + HNSW (100) + lista de normas (BM25 y HNSW solo sobre normas, 50 + 50), fusión RRF k=60 | La lista de normas evita que las sentencias (~86 % de los chunks) entierren códigos y Constitución; en texto libre BM25 trae pasajes de otro tema |
 | Reranker | `BAAI/bge-reranker-v2-m3` (fp16) sobre los 150 primeros de la fusión | `Qwen3-Reranker-0.6B` fue peor y 4,5× más lento |
-| Selección final | Castigo por tipo (preámbulo, notas, ventana de sentencia, anexo) y por vigencia (derogada 0,15), +0,1 a normas de prioridad alta, máximo 4 sentencias y 3 pasajes por documento, sin casi duplicados (≥ 70 % de texto repetido) → 10 pasajes | recall_docs@10 0,439 → 0,809; el evaluador solo cuenta los 10 primeros pasajes |
+| Selección final | Castigo por tipo (preámbulo, notas, ventana de sentencia, anexo) y por vigencia (derogada 0,15), +0,1 a normas de prioridad alta, máximo 4 sentencias y 3 pasajes por documento, sin casi duplicados (≥ 70 % de texto repetido) → 10 pasajes | recall_docs@10 0,439 → 0,858; el evaluador solo cuenta los 10 primeros pasajes |
 | Segmentación | Un chunk por artículo (partes reunidas al entregar); sentencias en ficha + ventanas de ~1.700 caracteres por sección | Exigido por el paso 1 y el anexo B.2 del enunciado |
-| Índice vectorial | FAISS `IndexHNSWSQ` 8 bits (M=32, efConstruction=200, efSearch=256) | 2.210.629 chunks: un índice exacto no cabe en el portátil |
+| Índice vectorial | FAISS `IndexHNSWSQ` 8 bits (M=32, efConstruction=200, efSearch=256) | 2.211.359 chunks (2.210.629 + 730 de las 9 fuentes del 3/oct, agregados con `agregar_chunks` sin recalcular lo existente): un índice exacto no cabe en el portátil |
 | Orquestación | LangGraph (`StateGraph` en `src/agent/graph.py`), sin checkpointer ni ramas paralelas | Sin memoria entre preguntas: cada respuesta se reproduce sola |
+| Post-procesado | Determinista (`src/agent/citas.py`, `src/agent/salida.py`): tipos del esquema, citas `[doc_id/art_N]` → "artículo N del …", normas y sentencias de los pasajes consultados, poda de oraciones accesorias, topes de palabras | El evaluador no reconoce los IDs canónicos; citación 16,73 → 18,37 sin citas sin respaldo |
+| Interfaz | `frontend/` (Vite + React) contra la API local `src/api/server.py` (FastAPI) | El back arma el agente igual que `batch_runner` y responde con `to_submission`: la UI muestra lo mismo que se entrega |
 | Validación de citas | Determinista: ID canónico `<doc_id>/art_<N>` contra los 10 `pasajes_recuperados`; la cita ausente se suprime | El evaluador no mira el corpus, mira esos 10 pasajes |
 | Juez (opcional, `--juez`, **apagado en la entrega**) | Gemma 4 E4B en Ollama, servidor distinto del escritor; en cerradas vota a ciegas | Con la URL del escritor juzgaría el mismo Qwen (llama.cpp ignora el campo `model`) |
-| Abstención | `abstencion: true` cuando ninguna cita queda respaldada, o cuando el LLM no responde (con `--juez`, también si el juez declara que los pasajes no bastan) | Vale más que citar sin respaldo (sección 6.1 del enunciado) |
+| Abstención | Solo en texto libre: `abstencion: true` cuando ninguna cita queda respaldada, o cuando el LLM no responde; las cerradas siempre llevan letra (regla de los organizadores) (con `--juez`, también si el juez declara que los pasajes no bastan) | Vale más que citar sin respaldo (sección 6.1 del enunciado) |
 | Ciclos del juez (solo con `--juez`) | Máximo 2 | Presupuesto de tiempo: 992 preguntas / 6 horas |
 
 ### Recuperación sobre las 50 preguntas de muestra (corpus completo)
 
 | Métrica @10 | Sin ajustes | Configuración final |
 |---|---|---|
-| recall_citas | 0,862 | **0,919** |
-| recall_docs | 0,439 | **0,809** |
-| MRR | 0,236 | **0,419** |
-| nDCG | 0,314 | **0,561** |
+| recall_citas | 0,862 | **0,931** |
+| recall_docs | 0,439 | **0,858** |
+| MRR | 0,236 | **0,423** |
+| nDCG | 0,314 | **0,577** |
 
 Por formato (recall_citas / recall_docs): cerradas 0,962 / 0,808, semiabiertas
-0,965 / 0,819, abiertas 0,5 / 0,5 (5 preguntas). Comparaciones completas en
+0,986 / 0,944, abiertas 0,5 / 0,5 (5 preguntas). Comparaciones completas en
 `evaluation/retrieval_benchmark/results/` (`comparacion_banco_normas_fichas.md`
 para la selección de modelos y `comparacion.md` para el corpus completo).
 
@@ -227,11 +253,12 @@ Samu-Enjoyer/
 ├── informe/
 │   ├── main.tex               # fuente del informe técnico
 │   └── INFORME_TECNICO.pdf    # máximo 3 páginas
-├── interfaz/                  # interfaz gráfica (identidad Software Colombia)
+├── frontend/                  # interfaz gráfica (Vite + React + TypeScript)
 ├── src/                       # pipeline reproducible
 │   ├── ingest/                 # paso 1 — ingesta y conversión a Markdown
-│   ├── knowledge/              # paso 2 — chunking, BM25, HNSW, búsqueda híbrida, reranker
-│   └── agent/                  # paso 3-4 — grafo LangGraph, rewriter, escritura, validación, juez
+│   ├── knowledge/              # paso 2 — chunking, BM25, HNSW, búsqueda híbrida, reranker, agregar_chunks
+│   ├── agent/                  # paso 3-4 — grafo LangGraph, escritura, validación, post-procesado, juez (apagado)
+│   └── api/                    # back local de la interfaz (FastAPI)
 ├── evaluation/
 │   └── retrieval_benchmark/    # banco de pruebas de recuperación y sus resultados
 └── scripts/                    # material oficial del reto (evaluate.py, citations.py)
@@ -414,12 +441,31 @@ no es el JSON esperado, el borrador se conserva sin reintento.
 ## Interfaz gráfica
 
 Permite formular una pregunta jurídica y ver la respuesta junto con los
-pasajes recuperados y las normas citadas. Diseño inspirado en la identidad
-visual de Software Colombia.
+pasajes recuperados y las normas citadas: las citas del borrador se numeran y
+abren su pasaje, y cada pasaje abre el documento completo del corpus con el
+fragmento resaltado. Front en `frontend/` (detalles y contrato en
+`frontend/README.md`); back en `src/api/server.py`.
 
 ```bash
-# por completar: comando de arranque de interfaz/
+# 1. LLM en el puerto 8010 (el 8000 es del back)
+llama-server -m Qwen3-8B-Q4_K_M.gguf --host 127.0.0.1 --port 8010 -c 32768 -np 1 --jinja --temp 0 --top-k 1 --seed 42 -ngl 99
+# 2. Back: carga índices, reranker y embedder (~1-2 min) y escucha en 127.0.0.1:8000
+pip install -r requirements-api.txt
+LLM_BASE_URL=http://127.0.0.1:8010/v1 python -m src.api.server     # --mock: sin índices ni LLM
+# 3. Front (Node 18+): VITE_USE_MOCK=0 en frontend/.env
+cd frontend && cp .env.example .env && npm install && npm run dev   # http://localhost:3000
 ```
+
+| Endpoint | Qué hace |
+|---|---|
+| `GET /api/salud` | Modo (`real`/`mock`), URL del LLM, si hay `chunks.sqlite` y si hay una pregunta en curso |
+| `POST /api/preguntar` | `{"pregunta": "…"}` (opcionales: `id`, `formato`, `opciones`, flags) → registro de `submissions.jsonl` + `chunk_id`, encabezado y vigencia de cada pasaje, `opciones`, `borrador` con IDs canónicos y `latencia_ms`. Separa las opciones `A) … D)` escritas en el texto |
+| `GET /api/documentos/{doc_id}` | Front-matter y Markdown de `corpus/md/<doc_id>.md` o, si no está, el documento armado con sus chunks |
+
+El back atiende una pregunta a la vez (como `batch_runner`, con `-np 1`).
+Un item del banco enviado con su `id`, `formato` y `opciones` pasa por el
+mismo código que su línea de `submissions.jsonl` (la verificación en vivo
+oficial se hace igual con `batch_runner`, sección 00 de `CLAUDE.md`).
 
 ## Verificación en vivo
 
@@ -431,8 +477,8 @@ no se modifica después.
 ## Limitaciones conocidas
 
 1. **Preguntas abiertas:** son casos que no nombran la norma; el recall de la
-   recuperación cae a 0,5 / 0,5 (5 preguntas en la muestra). Depende del
-   reescritor de consultas, aún sin medir.
+   recuperación cae a 0,5 / 0,5 (5 preguntas en la muestra). La reescritura de
+   la consulta con el LLM se probó y se descartó (inventaba normas).
 2. **Dispersión jurisprudencial:** las ventanas de sentencias son ~86 % de los
    chunks y muchas repiten el mismo párrafo. Se contiene con la lista de normas,
    el tope de 4 sentencias y el filtro de casi duplicados, que son reglas fijas.

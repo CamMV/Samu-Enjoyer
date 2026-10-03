@@ -1,15 +1,20 @@
 /**
- * ─── CONTRATO CON EL BACK LOCAL (borrador: los endpoints aún no existen) ────────────────────────
+ * ─── CONTRATO CON EL BACK LOCAL (implementado en src/api/server.py) ─────────────────────────────
+ *
+ * GET  /api/salud            200 → { ok, modo: "real" | "mock", llm, chunks_sqlite, ocupado }
  *
  * POST /api/preguntar        body: { "pregunta": "texto libre" }
+ *   Opcionales: id, formato, opciones, area, tema, complejidad, sub_tarea (un item del banco tal cual).
+ *   Sin `opciones`, el back separa las de una cerrada escrita en el texto ("… A) … B) … C) … D) …").
  *   200 → RespuestaAgente: el registro de LegalAgent.to_submission (schema/submission.schema.json)
- *         con los pasajes enriquecidos (chunk_id, titulo, vigencia… salen de CanonicalPassage).
- *         `borrador` (opcional) = los mismos campos antes de reescribir las citas, con los IDs canónicos
- *         [doc_id/art_N]: si llega, el front numera las citas y las enlaza a sus pasajes.
- *   4xx/5xx → { "detail": "mensaje" }
+ *         con los pasajes enriquecidos (chunk_id, titulo, vigencia, tipo_norma), `opciones` en las
+ *         cerradas, `latencia_ms` y `borrador` = los mismos campos antes de reescribir las citas, con
+ *         los IDs canónicos [doc_id/art_N]: el front numera las citas y las enlaza a sus pasajes.
+ *   422 → body inválido · 500 → el agente falló. Errores: { "detail": "mensaje" }
  *
  * GET /api/documentos/{doc_id}
- *   200 → Documento (front-matter + Markdown del .md del corpus)   404 → doc_id desconocido
+ *   200 → Documento (front-matter + Markdown de corpus/md/<doc_id>.md; si no está, sus chunks en orden)
+ *   404 → doc_id desconocido
  *
  * El front valida con tolerancia: solo `formato` es obligatorio; lo que no llegue no se muestra.
  */

@@ -5,7 +5,7 @@ export type * from "./types";
 
 /** Modo demo salvo VITE_USE_MOCK=0 (ver .env.example). */
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== "0";
-const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:8000";
+const BACK_URL = import.meta.env.VITE_BACK_URL || "http://127.0.0.1:8000";
 
 const FORMATOS: Formato[] = ["multiple_choice", "semi_open", "open_ended"];
 const TEXTOS: (keyof CamposRespuesta)[] = [

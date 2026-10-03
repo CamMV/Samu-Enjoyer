@@ -19,18 +19,36 @@ npm run dev               # http://localhost:3000
 npm run build             # verificación de tipos + dist/
 ```
 
+### Con el agente real
+
+Tres procesos en la misma máquina (desde la raíz del repo, con el entorno de Python activado):
+
+```bash
+# 1. LLM (puerto 8010; NO usar el 8000, que es el del back)
+llama-server -m Qwen3-8B-Q4_K_M.gguf --host 127.0.0.1 --port 8010 -c 32768 -np 1 --jinja --temp 0 --top-k 1 --seed 42 -ngl 99
+# 2. Back (carga índices, reranker y embedder: ~1-2 min; escucha en 127.0.0.1:8000)
+pip install -r requirements-api.txt
+LLM_BASE_URL=http://127.0.0.1:8010/v1 python -m src.api.server        # --mock: sin índices ni LLM
+# 3. Front, con VITE_USE_MOCK=0 en frontend/.env
+cd frontend && npm run dev
+```
+
+`GET http://127.0.0.1:8000/api/salud` dice si el back está listo y en qué modo. El back atiende una pregunta a la vez (como `batch_runner`), con la misma configuración de la entrega.
+
 | Variable | Por defecto | Qué hace |
 |---|---|---|
 | `VITE_USE_MOCK` | `1` | `1`: respuestas, pasajes y documento de ejemplo (`src/api/mock.ts`). `0`: pide al back local. |
-| `VITE_BACK_URL` | `http://localhost:8000` | Back al que Vite reenvía `/api/*` (proxy en `vite.config.ts`, sin CORS). |
+| `VITE_BACK_URL` | `http://127.0.0.1:8000` | Back al que Vite reenvía `/api/*` (proxy en `vite.config.ts`, sin CORS). |
 
 En modo demo la cabecera muestra "Modo demo". El mock elige el formato por la pregunta: con opciones `A)`…`D)` es cerrada; un caso ("sufre", más de 90 caracteres) es abierta; el resto, semiabierta.
 
-## Contrato con el back (borrador; los endpoints aún no existen)
+## Contrato con el back (`src/api/server.py`)
 
-Definido en `src/api/types.ts`. Se puede implementar sobre `LegalAgent.run` + `LegalAgent.to_submission` (`src/agent/agent.py`).
+Definido en `src/api/types.ts` e implementado en `src/api/server.py` sobre `LegalAgent.run` + `LegalAgent.to_submission` (`src/agent/agent.py`), con el agente que arma `batch_runner.crear_agente`.
 
-**`POST /api/preguntar`** — body `{ "pregunta": "texto libre" }`. Respuesta `200`: el registro de `to_submission` (forma de `schema/submission.schema.json`) más estos campos opcionales:
+**`GET /api/salud`** — `{ ok, modo, llm, chunks_sqlite, ocupado }`.
+
+**`POST /api/preguntar`** — body `{ "pregunta": "texto libre" }`; opcionales `id`, `formato`, `opciones`, `area`, `tema`, `complejidad`, `sub_tarea` (para mandar un item del banco tal cual). Sin `opciones`, el back separa las de una cerrada escrita en el texto (`… A) … B) … C) … D) …`, también `(A)` o `A.`); si no las encuentra, el formato lo infiere el agente. Respuesta `200`: el registro de `to_submission` (forma de `schema/submission.schema.json`) más estos campos opcionales:
 
 ```jsonc
 {
@@ -46,9 +64,9 @@ Definido en `src/api/types.ts`. Se puede implementar sobre `LegalAgent.run` + `L
 }
 ```
 
-`chunk_id`, `titulo`, `vigencia` y `tipo_norma` salen de `CanonicalPassage.id` y `.metadatos`. También se acepta `id` en lugar de `chunk_id` y `metadatos.vigencia`. Errores: `4xx/5xx` con `{ "detail": "mensaje" }`; el front lo muestra en el chat.
+`chunk_id` es `CanonicalPassage.id`; `titulo` es la primera línea del pasaje (su encabezado citable); `vigencia` y `tipo_norma` salen de `corpus/chunks/chunks.sqlite`. También se acepta `id` en lugar de `chunk_id` y `metadatos.vigencia`. Errores: `4xx/5xx` con `{ "detail": "mensaje" }`; el front lo muestra en el chat.
 
-**`GET /api/documentos/{doc_id}`** — `200`: `{ doc_id, titulo?, tipo_norma?, numero?, anio?, vigencia?, fuente?, markdown }` (front-matter y cuerpo del `.md` del corpus); `404` si no existe. El front lo guarda en caché por `doc_id` durante la sesión. Si el pasaje trae `inicio`, se usa como pista para ubicarlo cuando su texto aparece más de una vez en el documento.
+**`GET /api/documentos/{doc_id}`** — `200`: `{ doc_id, titulo?, tipo_norma?, numero?, anio?, vigencia?, fuente?, markdown }` (front-matter y cuerpo de `corpus/md/<doc_id>.md`; si esa carpeta no está, como en el zip del índice, el documento se arma con sus chunks de `chunks.sqlite` en orden); `404` si no existe. El front lo guarda en caché por `doc_id` durante la sesión. Si el pasaje trae `inicio`, se usa como pista para ubicarlo cuando su texto aparece más de una vez en el documento.
 
 ## Estructura
 
