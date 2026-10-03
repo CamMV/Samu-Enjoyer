@@ -12,7 +12,7 @@ en local y sin red: el agente no llama a ningún servicio externo.
 
 | Recurso | Enlace | Tamaño | Licencia |
 |---|---|---|---|
-| Corpus procesado e índice (`samu_enjoyer_corpus_indice.zip`) | PENDIENTE | ~4,59 GB (≈15 GB descomprimido) | CC BY 4.0 |
+| Corpus procesado e índice (`corpus_Samu_Enjoyer.zip`) | [Google Drive](https://drive.google.com/file/d/1iKjA3GjzCf_R0Kvj8hmp8XBG_XR8bsR9/view?usp=sharing) | ~4,3 GB (≈15 GB descomprimido) | CC BY 4.0 |
 
 El comprimido se descomprime **en la raíz del repositorio** y deja todo bajo `corpus/`:
 
@@ -25,6 +25,15 @@ El detalle del corpus está en [`CORPUS.md`](CORPUS.md) y el inventario por docu
 [`corpus_manifest.json`](corpus_manifest.json).
 
 El enlace permanece activo hasta el **2 de noviembre de 2026** (treinta días después del evento).
+
+## Video
+
+| Recurso | Enlace | Duración |
+|---|---|---|
+| Video de presentación | [YouTube](https://youtu.be/ZzU1PA0CcVg) | ≤ 5 min |
+
+Expone la arquitectura, las decisiones sobre el corpus, el sistema funcionando de extremo a extremo con
+sus pasajes recuperados y las limitaciones identificadas.
 
 ## Arquitectura
 
@@ -88,11 +97,11 @@ pip install -r requirements.txt
 
 ### 2. Corpus e índice
 
-Descargar `samu_enjoyer_corpus_indice.zip` desde la sección [Corpus e índice](#corpus-e-índice),
+Descargar `corpus_Samu_Enjoyer.zip` desde la sección [Corpus e índice](#corpus-e-índice),
 descomprimirlo en la raíz del repositorio (deja todo bajo `corpus/`) y verificarlo:
 
 ```bash
-unzip samu_enjoyer_corpus_indice.zip -d .
+unzip corpus_Samu_Enjoyer.zip -d .
 python -m src.knowledge.verify_indices            # debe terminar en TODO CORRECTO
 ```
 
@@ -206,7 +215,7 @@ Los mismos pasos, a mano:
 pip install torch --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 
-# 2. Índice: descomprimir samu_enjoyer_corpus_indice.zip en la raíz y verificarlo
+# 2. Índice: descomprimir corpus_Samu_Enjoyer.zip en la raíz y verificarlo
 python -m src.knowledge.verify_indices            # debe terminar en TODO CORRECTO
 
 # 3. Servidor local del LLM (Qwen3-8B GGUF Q4_K_M) en localhost:8010; dejarlo corriendo
@@ -234,8 +243,8 @@ el LLM con 32k de contexto, y el resto el reranker y el embedder. En GPUs de ≤
 `RAG_DEVICE_DENSO=cpu` (embedder en CPU, reranker en GPU); los pasajes salen idénticos.
 
 **Tiempo estimado:**
-- 50 preguntas de muestra: ~8,9 s por pregunta en una A40 (~7 min); ~6-7 s en la RTX 4090.
-- 992 preguntas: ~2 h en la RTX 4090.
+- 50 preguntas de muestra: ~8,9 s por pregunta en una A40 (~7 min); ~4 s en la RTX 4090 (~3-4 min).
+- 992 preguntas: 1,1 h en la RTX 4090 (4,0 s por pregunta en promedio, medido en la corrida de la entrega).
 - Arranque: ~1-2 min (carga de índices, reranker y embedder).
 
 **Reconstruir el índice desde cero** (opcional; horas de GPU):

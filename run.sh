@@ -45,7 +45,7 @@ esac
 # .env (si existe) para CORPUS_URL, GGUF, LLAMA_SERVER, RAG_DEVICE_DENSO, etc.
 if [[ -f .env ]]; then set -a; source .env; set +a; fi
 
-CORPUS_URL="${CORPUS_URL:-PENDIENTE}"   # reemplazar PENDIENTE por el enlace público del zip
+CORPUS_URL="${CORPUS_URL:-https://drive.google.com/file/d/1iKjA3GjzCf_R0Kvj8hmp8XBG_XR8bsR9/view?usp=sharing}"
 GGUF="${GGUF:-modelos/Qwen3-8B-Q4_K_M.gguf}"
 LLAMA_SERVER="${LLAMA_SERVER:-llama-server}"
 LLM_PORT="${LLM_PORT:-8010}"
@@ -75,11 +75,11 @@ faltan_indices() {
 }
 if faltan_indices; then
   if [[ "$CORPUS_URL" == "PENDIENTE" ]]; then
-    echo "Falta corpus/ y no hay CORPUS_URL. Descargar samu_enjoyer_corpus_indice.zip (README," >&2
+    echo "Falta corpus/ y no hay CORPUS_URL. Descargar corpus_Samu_Enjoyer.zip (README," >&2
     echo "sección 'Corpus e índice') y descomprimirlo en la raíz, o correr: CORPUS_URL=<enlace> bash run.sh" >&2
     exit 1
   fi
-  ZIP=modelos/samu_enjoyer_corpus_indice.zip
+  ZIP=modelos/corpus_Samu_Enjoyer.zip
   if [[ ! -f "$ZIP" ]]; then
     if [[ "$CORPUS_URL" == *drive.google.com* ]]; then
       "$PY" -m pip install -q gdown
