@@ -180,8 +180,26 @@ En la interfaz, `VITE_USE_MOCK=1` muestra respuestas de ejemplo sin back.
 
 ## Reproducción
 
-Todo corre en local y sin red, una vez instaladas las dependencias, descargado el GGUF y descomprimido
-el índice. Pasos desde la raíz del repositorio (Python 3.12):
+**Comando único** (desde la raíz del repositorio, con Python 3.12, torch con CUDA y `llama-server` de
+llama.cpp en el `PATH`):
+
+```bash
+bash run.sh                  # las 50 de muestra + evaluador oficial -> logs/submissions_sample.jsonl
+bash run.sh --split test     # las 992 del test -> logs/submissions_test.jsonl
+```
+
+`run.sh` hace solo lo que falte:
+1. instala `requirements.txt`;
+2. descarga y descomprime el corpus e índice (`CORPUS_URL`) si no está `corpus/`;
+3. descarga el GGUF de Qwen3-8B a `modelos/`;
+4. arranca `llama-server` con la configuración de la entrega (T=0, `-np 1`, contexto 32k) y lo apaga al
+   terminar;
+5. corre el agente y, en la muestra, `scripts/evaluate.py`.
+
+No sobrescribe `submissions.jsonl`. Las variables `CORPUS_URL`, `GGUF`, `LLAMA_SERVER`, `LLM_PORT`,
+`NGL` y `SIN_PIP` se pueden ajustar (ver `bash run.sh --help`).
+
+Los mismos pasos, a mano:
 
 ```bash
 # 1. Dependencias (en GPU, primero torch con CUDA)
@@ -195,7 +213,7 @@ python -m src.knowledge.verify_indices            # debe terminar en TODO CORREC
 llama-server -m Qwen3-8B-Q4_K_M.gguf --host 127.0.0.1 --port 8010 -c 32768 -np 1 \
              --jinja --temp 0 --top-k 1 --seed 42 -ngl 99
 
-# 4. Inferencia sobre las 992 preguntas (comando único de la entrega)
+# 4. Inferencia sobre las 992 preguntas
 LLM_BASE_URL=http://127.0.0.1:8010/v1 \
 python -m src.agent.batch_runner --entrada data/test_992.jsonl --salida submissions.jsonl
 ```
