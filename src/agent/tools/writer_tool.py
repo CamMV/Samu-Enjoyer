@@ -350,6 +350,51 @@ def extension_por_complejidad(complejidad: Optional[str]) -> str:
             "pregunta no pida.")
 
 
+# Cita primero (CITA_PRIMERO=1, apagado; ronda 2, agente D): en texto libre, un llamado previo al mismo Qwen
+# copia de los pasajes 2-4 frases textuales que responden la pregunta, y el escritor las recibe destacadas
+# antes de la PREGUNTA (los pasajes no cambian). Los modelos pequeños fallan sobre todo por ignorar el
+# contexto (LLMQuoter; arXiv 2603.11513). Solo se usan las frases que aparecen literalmente en un pasaje;
+# si el llamado falla o ninguna se verifica, el prompt queda igual. Temperatura 0: determinista.
+CITA_PRIMERO = os.environ.get("CITA_PRIMERO", "0") == "1"
+_SYSTEM_EVIDENCIA = (
+    "Eres un asistente jurídico. Recibes PASAJES del ordenamiento colombiano y una PREGUNTA. Copia LITERALMENTE, "
+    "sin cambiar ni una palabra, de 2 a 4 frases de los pasajes que respondan directamente la pregunta (la regla, "
+    "la definición, el requisito o la decisión que se pide). Cada frase debe ser un fragmento continuo de un solo "
+    "pasaje, de máximo 60 palabras. Devuelve SOLO un objeto JSON con la llave \"frases\": lista de objetos con "
+    "\"pasaje\" (el id entre corchetes) y \"texto\" (la frase copiada)."
+)
+
+
+def _normal(t: str) -> str:
+    return " ".join(str(t).split()).lower()
+
+
+def evidencia_clave(pregunta: str, pasajes: list[CanonicalPassage]) -> str:
+    """Bloque "EVIDENCIA CLAVE" con las frases verificadas, o "" si no hay ninguna."""
+    textos = textos_para_prompt(pasajes)
+    user = ("PASAJES:\n" + "\n\n".join(f"[{p.id}]\n{t}" for p, t in zip(pasajes, textos))
+            + f"\n\nPREGUNTA: {pregunta}")
+    esquema = {"type": "object", "properties": {"frases": {"type": "array", "maxItems": 4, "items": {
+        "type": "object", "properties": {"pasaje": {"type": "string"}, "texto": {"type": "string"}},
+        "required": ["pasaje", "texto"]}}}, "required": ["frases"]}
+    try:
+        frases = _parsear_json(_llamar_llm(_SYSTEM_EVIDENCIA, user, esquema)).get("frases") or []
+    except (requests.exceptions.RequestException, ValueError, AttributeError):
+        return ""
+    por_id = {p.id: _normal(t) for p, t in zip(pasajes, textos)}
+    validas = []
+    for f in frases[:4]:
+        if not isinstance(f, dict):
+            continue
+        pid, texto = str(f.get("pasaje", "")).strip("[] "), " ".join(str(f.get("texto", "")).split())
+        if len(texto.split()) >= 5 and pid in por_id and _normal(texto) in por_id[pid] and texto not in validas:
+            validas.append((pid, texto))
+    if not validas:
+        return ""
+    return ("EVIDENCIA CLAVE (frases textuales de los pasajes que responden la pregunta; apóyate en ellas, sobre todo "
+            "en la primera oración):\n" + "\n".join(f"- [{pid}] \"{t}\"" for pid, t in validas))
+
+
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
                   opciones: Optional[dict] = None) -> tuple[str, str]:
     """Construye (system_prompt, user_prompt)."""
@@ -523,6 +568,11 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
         return _abstencion(formato)
     system, user = build_prompts(pregunta, flags, pasajes, opciones)
     cerrada = formato == "multiple_choice" and bool(opciones)
+    if CITA_PRIMERO and formato in ("semi_open", "open_ended"):
+        bloque = evidencia_clave(pregunta, pasajes)
+        if bloque:
+            antes, _, despues = user.rpartition("\n\nPREGUNTA: ")  # el último: un pasaje podría traer ese texto
+            user = f"{antes}\n\n{bloque}\n\nPREGUNTA: {despues}"
     try:
         salida = _llamar_llm(system, user)
     except requests.exceptions.RequestException as e:  # conexión caída, timeout, HTTP error

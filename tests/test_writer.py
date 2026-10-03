@@ -360,3 +360,26 @@ def test_largo_solo_en_alta_y_primera_oracion_segun_forma(monkeypatch):
     monkeypatch.setattr(w, "PRIMERA_SEGUN_FORMA", True)
     assert "nombra directamente la norma y el artículo" in w.guia_primera_oracion(q, "Existencia normativa")
     assert "di si existe" in w.guia_primera_oracion("¿Existe alguna norma sobre acoso laboral?", "Existencia normativa")
+
+
+def test_cita_primero_solo_usa_frases_literales(monkeypatch):
+    llamadas = []
+
+    def llm(system, user, esquema=None):
+        llamadas.append(user)
+        if esquema is not None:
+            return ('{"frases": [{"pasaje": "codigo_general_proceso/art_25", "texto": "Son de mínima cuantía cuando '
+                    'versen sobre pretensiones patrimoniales"}, {"pasaje": "codigo_general_proceso/art_25", '
+                    '"texto": "Frase inventada que no está en ningún pasaje"}]}')
+        return '{"respuesta": "Es de mínima cuantía.", "palabras_clave": ["cuantía"], "referencia_legal": "CGP"}'
+
+    monkeypatch.setattr(writer_tool, "_llamar_llm", llm)
+    monkeypatch.setattr(writer_tool, "CITA_PRIMERO", True)
+    writer_tool.write_legal_response("¿Qué es la mínima cuantía?", {"formato": "semi_open"}, [ART25])
+    prompt = llamadas[-1]
+    assert "EVIDENCIA CLAVE" in prompt and "Son de mínima cuantía cuando versen" in prompt
+    assert "inventada" not in prompt and prompt.index("EVIDENCIA CLAVE") < prompt.rindex("PREGUNTA:")
+    llamadas.clear()
+    monkeypatch.setattr(writer_tool, "CITA_PRIMERO", False)
+    writer_tool.write_legal_response("¿Qué es la mínima cuantía?", {"formato": "semi_open"}, [ART25])
+    assert len(llamadas) == 1 and "EVIDENCIA CLAVE" not in llamadas[0]
