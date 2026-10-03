@@ -225,6 +225,7 @@ def test_largo_segun_complejidad(monkeypatch):
     monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", False)
     assert w.extension_por_complejidad("high") == "" and w.oraciones_semiabierta("high") is None
     monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", True)
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD_NIVELES", {"alta", "media"})
     assert "5 oraciones" in w.extension_por_complejidad("high") and w.oraciones_semiabierta("alta") == 5
     assert "4 oraciones" in w.extension_por_complejidad("medium") and w.oraciones_semiabierta("media") == 4
     assert w.extension_por_complejidad("low") == "" and w.oraciones_semiabierta("baja") is None

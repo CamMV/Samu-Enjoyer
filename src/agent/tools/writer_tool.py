@@ -194,7 +194,7 @@ _GUIA_SUBTAREA = (
 # Existencia normativa preguntada como "¿Cuál/Qué norma…?" (PRIMERA_SEGUN_FORMA=1, apagado; ronda 2, agente F):
 # con la guía general la 280 respondió "Sí, existe el artículo…" sin decir cuál (0,66); las versiones que
 # nombraban el artículo en la primera oración dieron 0,98-0,99.
-PRIMERA_SEGUN_FORMA = os.environ.get("PRIMERA_SEGUN_FORMA", "0") == "1"
+PRIMERA_SEGUN_FORMA = os.environ.get("PRIMERA_SEGUN_FORMA", "1") == "1"
 _PREGUNTA_CUAL = re.compile(r"^\W*(?:cu[aá]l(?:es)?|qu[eé])\b", re.I)
 _VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
 
@@ -306,11 +306,11 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
 # En la muestra, la respuesta esperada tiene una mediana de 116 palabras en complejidad alta, 66 en media
 # y 32 en baja; con 3 oraciones respondemos ~40 en todas, y en alta el RAGAS medio era 0,357 contra 0,547
 # en baja y 0,644 en media (v8sj): faltan afirmaciones de la esperada. Baja queda como está.
-LARGO_COMPLEJIDAD = os.environ.get("LARGO_COMPLEJIDAD", "0") == "1"
+LARGO_COMPLEJIDAD = os.environ.get("LARGO_COMPLEJIDAD", "1") == "1"
 # Niveles a los que aplica (ronda 2, agente F): en los pares de la muestra, quitar oraciones sube RAGAS en baja
 # y media (+0,10 por ítem) y lo baja en alta (−0,04). LARGO_COMPLEJIDAD_NIVELES=alta alarga solo las de alta
 # (con v16, alta 0,405 -> 0,438). El valor por defecto conserva el comportamiento de v16.
-LARGO_COMPLEJIDAD_NIVELES = set(os.environ.get("LARGO_COMPLEJIDAD_NIVELES", "alta,media").split(","))
+LARGO_COMPLEJIDAD_NIVELES = set(os.environ.get("LARGO_COMPLEJIDAD_NIVELES", "alta").split(","))
 _EXTENSION = {
     "alta": (5, 120, "después de la primera, la regla jurídica, las normas o sentencias que la fundamentan, "
                      "sus requisitos o excepciones relevantes y su aplicación a lo que se pregunta"),
@@ -596,7 +596,7 @@ if not TOLERAR_ANIO:
 # pasajes el escritor dio la misma letra en las dos máquinas en 15/15, y las diferencias eran del verificador.
 # Con el anclaje, el cambio de letra solo se acepta si el razonamiento respalda léxicamente la opción nueva más
 # que la del escritor ("minimo": basta con que la nueva tenga algún respaldo). No cambia ninguna llamada al LLM.
-ANCLAR_LETRA = os.environ.get("ANCLAR_LETRA", "0")
+ANCLAR_LETRA = os.environ.get("ANCLAR_LETRA", "1")
 
 
 def respaldo_en_texto(texto: str, opcion: str) -> float:
