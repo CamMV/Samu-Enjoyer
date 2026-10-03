@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Callable, List, Optional
 
@@ -134,12 +135,24 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
                               Config(lideres=int(os.environ.get("RAG_LIDERES", "1"))),
                               dispositivo_denso=os.environ.get("RAG_DEVICE_DENSO") or None)
 
+    # RAG_HYDE=1 (texto libre): una respuesta hipotética del mismo Qwen trae artículos de norma que sustituyen
+    # hasta 2 pasajes débiles (Recuperador.sustituir_debiles). Determinista: depende del LLM a temperatura 0.
+    hyde = os.environ.get("RAG_HYDE", "0") == "1"
+
     def hook(consulta) -> List[CanonicalPassage]:
         """`consulta`: dict con "pregunta" (y "opciones" en las cerradas) o texto libre."""
         if isinstance(consulta, dict):
             resultado = recuperador.buscar_item(consulta)
+            pasajes = resultado.pasajes
+            if hyde and not consulta.get("opciones"):
+                antes = [p["chunk_id"] for p in pasajes]
+                pasajes = recuperador.sustituir_debiles(pasajes, consulta_de(consulta),
+                                                        writer_tool.hipotesis_busqueda(consulta.get("pregunta", "")))
+                nuevos = [p["chunk_id"] for p in pasajes if p["chunk_id"] not in antes]
+                if nuevos:
+                    print(f"   hipótesis: entran {nuevos}", file=sys.stderr, flush=True)
         else:
-            resultado = recuperador.buscar(consulta)
+            pasajes = recuperador.buscar(consulta).pasajes
         return [
             CanonicalPassage(
                 id=p["chunk_id"],
@@ -147,7 +160,7 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
                 score=p.get("score"),
                 metadatos={k: v for k, v in p.items() if k not in ("chunk_id", "texto", "score")},
             )
-            for p in resultado.pasajes
+            for p in pasajes
         ]
 
     # Subagente de búsqueda de citas: mismo chunks.sqlite del recuperador, sin cargar nada más.

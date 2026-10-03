@@ -138,6 +138,17 @@ class Config:
     # el agente pasa de D a C (las dos erradas; v15 42,90/50 igual que v14). Apagada: sin beneficio y con
     # evidencia de un solo caso.
     sin_instrucciones: bool = False
+    # Respuesta hipotética (HyDE dual, `Recuperador.sustituir_debiles`; la activa el agente con RAG_HYDE=1,
+    # solo en texto libre). Ronda 2, agente G: en preguntas de caso el reranker puntúa ~0 la norma objetivo
+    # contra la pregunta y ~0,9 contra una respuesta hipotética del LLM. Hasta `hipotesis_max` pasajes
+    # débiles (puntaje < `hipotesis_debil` contra la pregunta) se sustituyen por artículos de norma que la
+    # hipótesis trae (HNSW y BM25 de normas, `hipotesis_k` cada uno) y que el reranker puntúa ≥ `hipotesis_tau`
+    # contra ella. El texto de la hipótesis nunca va al escritor (inventa artículos). Simulado sobre v22:
+    # cambia 6 de 35 y trae la Ley 1581 a la 679 sin sacar ningún pasaje objetivo.
+    hipotesis_debil: float = 0.15
+    hipotesis_tau: float = 0.8
+    hipotesis_max: int = 2
+    hipotesis_k: int = 50
     # BM25 de normas también en semiabiertas y abiertas: `bm25_solo_cerradas` apaga los dos BM25 en texto
     # libre; con esto vuelve solo la lista de normas (276.958 artículos, sin ventanas de sentencias, que
     # eran las que metían pasajes con palabras comunes pero sin tema). Medido (2/oct, A40): peor, semiabiertas
@@ -527,19 +538,73 @@ class Recuperador:
             tomar(cid, s)
         elegidos.sort(key=lambda p: (-p[1], p[0]))
 
-        out = []
-        for cid, s in elegidos:
-            d = datos[cid]
-            texto, pid, inicio, fin = d["texto"], cid, d.get("inicio"), d.get("fin")
-            if cfg.expandir_articulo and d["tipo_chunk"] == "parte_articulo":
-                texto, pid = self._articulo_completo(d), d["articulo_id"]
-                # El rango del artículo completo: del inicio de la primera parte al fin de la última.
-                partes = [c for c in self.almacen.por("articulo_id", d["articulo_id"])
-                          if c["tipo_chunk"] == "parte_articulo" and c.get("inicio") is not None]
-                if partes:
-                    inicio, fin = min(c["inicio"] for c in partes), max(c["fin"] for c in partes)
-            out.append({"doc_id": d["doc_id"], "chunk_id": pid, "texto": texto, "score": s,
-                        "inicio": inicio, "fin": fin, "tipo_chunk": d["tipo_chunk"]})
+        return [self._pasaje(cid, s, datos[cid]) for cid, s in elegidos]
+
+    def _pasaje(self, cid: str, s: float, d: dict) -> dict:
+        texto, pid, inicio, fin = d["texto"], cid, d.get("inicio"), d.get("fin")
+        if self.cfg.expandir_articulo and d["tipo_chunk"] == "parte_articulo":
+            texto, pid = self._articulo_completo(d), d["articulo_id"]
+            # El rango del artículo completo: del inicio de la primera parte al fin de la última.
+            partes = [c for c in self.almacen.por("articulo_id", d["articulo_id"])
+                      if c["tipo_chunk"] == "parte_articulo" and c.get("inicio") is not None]
+            if partes:
+                inicio, fin = min(c["inicio"] for c in partes), max(c["fin"] for c in partes)
+        return {"doc_id": d["doc_id"], "chunk_id": pid, "texto": texto, "score": s,
+                "inicio": inicio, "fin": fin, "tipo_chunk": d["tipo_chunk"]}
+
+    def _ajuste(self, s: float, d: dict) -> float:
+        """Los mismos ajustes de tipo, vigencia y prioridad que `buscar` aplica tras el reranker."""
+        cfg = self.cfg
+        if d.get("derogado") or d.get("vigencia") == "derogada":
+            s -= cfg.penal_derogado
+        if d.get("prioridad") == "baja":
+            s -= cfg.penal_prioridad_baja
+        s -= cfg.penal_tipo.get(d["tipo_chunk"], 0.0)
+        if d.get("prioridad") == "alta" and not es_sentencia(d):
+            s += cfg.bonus_prioridad_alta
+        return round(s, 4)
+
+    def sustituir_debiles(self, pasajes: list[dict], consulta: str, hipotesis: str) -> list[dict]:
+        """HyDE dual (ver `Config.hipotesis_*`): cambia hasta `hipotesis_max` pasajes débiles por artículos
+        de norma que la respuesta hipotética trae y el reranker respalda contra ella. Determinista."""
+        cfg = self.cfg
+        if not hipotesis or not self.reranker or not (self.denso_normas or self.bm25_normas):
+            return pasajes
+        debiles = sorted((p for p in pasajes if p["score"] < cfg.hipotesis_debil),
+                         key=lambda p: (p["score"], p["chunk_id"]))
+        if not debiles:
+            return pasajes
+        consulta = con_siglas(consulta) if cfg.siglas else consulta
+        hipotesis = con_siglas(hipotesis) if cfg.siglas else hipotesis
+        elegidos = {p["chunk_id"].split("#")[0] for p in pasajes}
+        cands = []
+        if self.denso_normas:
+            v = (self.denso or self.denso_normas).vector(hipotesis)  # el mismo embedder que en `buscar`
+            cands += [c for c, _ in self.denso_normas.buscar_vector(v, cfg.hipotesis_k)]
+        if self.bm25_normas:
+            cands += [c for c, _ in self.bm25_normas.buscar(hipotesis, cfg.hipotesis_k)]
+        cands = [c for c in dict.fromkeys(cands) if c.split("#")[0] not in elegidos]
+        datos = self.almacen.get(cands)
+        cands = [c for c in cands if c in datos and datos[c]["tipo_chunk"] in ("articulo", "parte_articulo")
+                 and (datos[c].get("articulo_id") or c) not in elegidos]
+        if not cands:
+            return pasajes
+        textos = [datos[c]["texto"] for c in cands]
+        con_h = {c: self._ajuste(s, datos[c]) for c, s in zip(cands, self.reranker.puntuar(hipotesis, textos))}
+        con_q = {c: self._ajuste(s, datos[c]) for c, s in zip(cands, self.reranker.puntuar(consulta, textos))}
+        out, nuevos = list(pasajes), 0
+        for c in sorted(cands, key=lambda c: (-con_h[c], c)):
+            if not debiles or nuevos >= cfg.hipotesis_max or con_h[c] < cfg.hipotesis_tau:
+                break
+            d = datos[c]
+            unidad = d.get("articulo_id") or c
+            if unidad in elegidos or sum(p["doc_id"] == d["doc_id"] for p in out) >= cfg.max_por_doc:
+                continue
+            out.remove(debiles.pop(0))
+            out.append(self._pasaje(c, con_q[c], d))
+            elegidos.add(unidad)
+            nuevos += 1
+        out.sort(key=lambda p: (-p["score"], p["chunk_id"]))
         return out
 
     def _articulo_completo(self, d: dict) -> str:

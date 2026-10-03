@@ -392,7 +392,7 @@ PENSAR = os.environ.get("PENSAR", "0") == "1"
 PENSAR_MAX_TOKENS = int(os.environ.get("PENSAR_MAX_TOKENS", "6000"))
 
 
-def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
+def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None, max_tokens: Optional[int] = None) -> str:
     """POST al Qwen3-8B local (modelo abierto). Lanza `requests.exceptions.RequestException`
     si falla la conexión, hay timeout o el servidor responde con error HTTP.
 
@@ -411,6 +411,8 @@ def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
         # idénticas (42,90 contra 38,96 de 50). Cada pregunta se calcula siempre completa: reproducible.
         "cache_prompt": False,
     }
+    if max_tokens:
+        payload["max_tokens"] = max_tokens
     if pensar:
         # Con decodificación codiciosa el razonamiento puede repetirse sin fin: tope de tokens y una
         # penalización de presencia leve (llama.cpp la aplica sobre los últimos 64 tokens; determinista).
@@ -432,6 +434,27 @@ def _parsear_json(texto: str) -> dict:
     if not m:
         raise ValueError("La salida del LLM no contiene JSON")
     return json.loads(m.group(0))
+
+
+# --- Respuesta hipotética para buscar (RAG_HYDE=1; ver Config.hipotesis_* en src/knowledge/hybrid_search.py) ---
+# Solo se usa como consulta de búsqueda en texto libre; nunca llega al escritor ni a la entrega.
+_SYSTEM_HIPOTESIS = "Eres un abogado colombiano. Respondes en español, con el vocabulario técnico del derecho colombiano."
+_USER_HIPOTESIS = (
+    "Escribe un párrafo breve (máximo 4 oraciones, sin listas ni títulos) que responda la pregunta como lo "
+    "diría el texto de la norma o de la jurisprudencia colombiana aplicable. Nombra la figura jurídica precisa "
+    "(acción, recurso, contrato, derecho, delito o requisito) y la ley o código y el artículo que la regulan. "
+    "No repitas los hechos del caso.\n\nPregunta: {pregunta}"
+)
+
+
+def hipotesis_busqueda(pregunta: str) -> str:
+    """Párrafo hipotético del mismo Qwen (sin pasajes, temperatura 0, máx. 220 tokens); "" si falla."""
+    try:
+        return _llamar_llm(_SYSTEM_HIPOTESIS, _USER_HIPOTESIS.format(pregunta=(pregunta or "").strip()),
+                           max_tokens=220).strip()
+    except requests.exceptions.RequestException as e:
+        print(f"   AVISO: sin respuesta hipotética ({type(e).__name__}); búsqueda normal", file=sys.stderr, flush=True)
+        return ""
 
 
 # --- Fallback / mock -------------------------------------------------------

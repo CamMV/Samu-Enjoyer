@@ -194,3 +194,46 @@ def test_sin_instrucciones_de_examen():
     assert "Resolución No. 368 de 2014" in limpio and "consulta previa puede configurar el vicio" in limpio
     assert "lea con" not in limpio and "responda" not in limpio and "Pregunta jurídica" not in limpio
     assert sin_instrucciones("¿Qué pregunta debe responder el testigo?") == "¿Qué pregunta debe responder el testigo?"
+
+
+def test_hipotesis_sustituye_solo_pasajes_debiles():
+    """RAG_HYDE: un artículo que la hipótesis trae y el reranker respalda (≥ tau) entra en lugar del pasaje
+    más débil (< 0,15); nunca saca uno fuerte ni entra uno que solo la pregunta respalda o que no es artículo."""
+    from src.knowledge.hybrid_search import Config, Recuperador
+
+    datos = {
+        "ley_1581_2012/art_5": {"doc_id": "ley_1581_2012", "tipo_chunk": "articulo", "texto": "datos sensibles"},
+        "ley_1581_2012/notas#1": {"doc_id": "ley_1581_2012", "tipo_chunk": "notas", "texto": "datos sensibles nota"},
+        "ley_9_1979/art_1": {"doc_id": "ley_9_1979", "tipo_chunk": "articulo", "texto": "otra cosa"},
+    }
+
+    class Almacen:
+        def get(self, ids):
+            return {c: datos[c] for c in ids if c in datos}
+
+    class Reranker:
+        def puntuar(self, q, textos):
+            return [(0.95 if "sensibles" in t else 0.2) if q.startswith("HIP") else 0.3 for t in textos]
+
+    class Normas:
+        def buscar(self, q, k):
+            return [(c, 1.0) for c in datos]
+
+        def buscar_vector(self, v, k):
+            return [(c, 1.0) for c in datos]
+
+        def vector(self, q):
+            return None
+
+    r = Recuperador.__new__(Recuperador)
+    r.cfg, r.almacen, r.reranker = Config(), Almacen(), Reranker()
+    r.denso = r.denso_normas = r.bm25_normas = Normas()
+    base = [{"doc_id": "constitucion", "chunk_id": "constitucion/art_15", "texto": "x", "score": 0.9},
+            {"doc_id": "ley_x", "chunk_id": "ley_x/art_2", "texto": "x", "score": 0.05},
+            {"doc_id": "ley_y", "chunk_id": "ley_y/art_3", "texto": "x", "score": 0.10}]
+    out = r.sustituir_debiles(base, "pregunta", "HIP datos sensibles")
+    ids = [p["chunk_id"] for p in out]
+    assert "ley_1581_2012/art_5" in ids and "ley_x/art_2" not in ids          # el más débil sale
+    assert "constitucion/art_15" in ids and "ley_y/art_3" in ids              # el fuerte y el 2.º débil quedan
+    assert "ley_1581_2012/notas#1" not in ids and "ley_9_1979/art_1" not in ids  # nota y bajo tau no entran
+    assert r.sustituir_debiles(base, "pregunta", "") == base                 # sin hipótesis, igual
