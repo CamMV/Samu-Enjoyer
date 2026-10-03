@@ -8,8 +8,8 @@
 %   bash:
 %     pdflatex main.tex && pdflatex main.tex && cp main.pdf INFORME_TECNICO.pdf
 %
-% Celdas que faltan: buscar PENDIENTE_EVALUATE. Se llenan con
-%   python scripts/evaluate.py --submission logs/sample.jsonl --split sample
+% Cifras de la Tabla de resultados: bash run.sh (o scripts/evaluate.py --split sample) con la
+% configuración de la entrega (v27, la que generó submissions.jsonl).
 \documentclass[10pt,twocolumn,letterpaper]{article}
 
 \usepackage[utf8]{inputenc}
@@ -35,8 +35,6 @@
 \setlist{itemsep=3pt,topsep=3pt,parsep=0pt,leftmargin=*}
 
 \newcommand{\cod}[1]{\texttt{#1}}
-% Celda pendiente: se ve como "---" en el PDF y se encuentra con grep en el fuente.
-\newcommand{\pend}{---}
 
 \title{\vspace{-1.0cm}\Large\bfseries Informe técnico --- Samu-Enjoyer\\[3pt]
   \large\mdseries RAG agéntico de derecho colombiano con modelos abiertos pequeños}
@@ -61,20 +59,28 @@ Suprema y el Consejo de Estado, DIAN, Función Pública, Cancillería y Colpensi
 \textbf{31.037 quedaron procesados (99,6\,\%)}, 24,86~GB de originales; las 117 fallas
 son documentos que la fuente oficial ya no entrega. Cada documento se convirtió a Markdown
 con metadatos (\cod{tipo\_norma}, \cod{numero}, \cod{anio}, \cod{vigencia}); las capas de
-texto ilegibles se releyeron con OCR. La segmentación produjo \textbf{2.210.629 chunks}:
-276.958 de normas (un artículo por chunk), 23.954 fichas de sentencias y 1.909.717
-ventanas de sentencias.
+texto ilegibles se releyeron con OCR. La segmentación produjo 2.210.629 chunks: 276.958
+de normas (un artículo por chunk), 23.954 fichas de sentencias y 1.909.717 ventanas de
+sentencias. El 3 de octubre, con autorización de los organizadores, se agregaron 9
+fuentes oficiales que cita el test y no estaban (Resolución 368 de 2014, Ley 99 de 1993,
+Decreto 4302 de 2008, tres sentencias T y tres del Consejo de Estado): 730 chunks
+agregados al final de los índices sin recalcular lo existente, para un total de
+\textbf{2.211.359 chunks}.
 
 \textbf{En línea.} El flujo es un \cod{StateGraph} de LangGraph, sin memoria entre
 preguntas y sin ramas paralelas:
 \cod{entrada} $\to$ \cod{consulta\_cerrada} | \cod{reescribir\_consulta} $\to$
 \cod{recuperar} $\to$ \cod{escribir} $\to$ \cod{validar\_fuentes} $\leftrightarrow$
-\cod{buscar\_citas} $\to$ \cod{juzgar} $\to$ \cod{finalizar}.
-Las cerradas buscan con la pregunta más sus cuatro opciones, sin LLM; las semiabiertas
-y abiertas pasan por un reescritor de consulta. El escritor redacta solo con los diez
-pasajes, un validador determinista revisa las citas y un juez (otro modelo) puede pedir
-un segundo y último ciclo con nueva búsqueda. Ninguna llamada sale de la máquina: los
-modelos se sirven en \cod{localhost} y el trazado externo está apagado.
+\cod{buscar\_citas} $\to$ \cod{finalizar}.
+La consulta no pasa por el LLM: las cerradas buscan con la pregunta más sus cuatro
+opciones y el texto libre con la pregunta tal cual, con las siglas jurídicas expandidas
+por un diccionario fijo (``SIC'' $\to$ ``Superintendencia de Industria y Comercio'').
+El escritor redacta solo con los diez pasajes, un validador determinista revisa las
+citas y un post-proceso determinista ajusta la salida al esquema oficial. Un ciclo por
+pregunta: el juez y su segundo ciclo existen en el código, pero la entrega no los usa
+(sección~4). Ninguna llamada sale de la máquina: los modelos se sirven en
+\cod{localhost}. La interfaz gráfica (React y una API local con FastAPI) usa el mismo
+agente, así que muestra lo mismo que se entrega.
 
 % ---------------------------------------------------------------------------
 \section{Selección de encoder y decoder}
@@ -133,28 +139,29 @@ bge-m3 (0,874 / 0,679) y e5-large-instruct (0,911 / 0,667) \\
 Decoder & \cod{Qwen/Qwen3-8B}, GGUF Q4\_K\_M en llama.cpp &
 Abierto, dentro del límite de 8B; el mismo motor y el mismo archivo corren en el
 servidor de referencia y en el portátil de la verificación en vivo. &
-Modo de razonamiento de Qwen3: no es replicable en CPU ($\approx$2 tokens/s) \\
+Modo de razonamiento de Qwen3: RAGAS 0,441 contra 0,470 sin razonamiento (misma fecha) y el doble de tiempo \\
 Reranker & \cod{BAAI/bge-reranker-v2-m3} (fp16) sobre 150 candidatos &
 Sube el recall de citas de 0,841 a 0,898 en el banco; 0,66~s por pregunta en el corpus
 completo. &
 Qwen3-Reranker-0.6B: peor (0,833 / 0,654) y 4,5$\times$ más lento \\
-Juez & Gemma 4 E4B en Ollama, servidor aparte &
-Un modelo abierto distinto del escritor: llama.cpp ignora el campo \cod{model}, así que
-con la misma URL Qwen se juzgaba a sí mismo. &
-Qwen3-8B como juez de sus propios borradores \\
+Juez & Gemma 4 E4B en Ollama, \textbf{apagado en la entrega} &
+Medido y descartado: sin juez, RAGAS 0,485 contra 0,469, cerradas 13/15 contra 12/15 y
+la mitad del tiempo (sección~4). &
+Qwen3-8B como juez de sus propios borradores (llama.cpp ignora el campo \cod{model}) \\
 \bottomrule
 \end{tabularx}
 \end{table*}
 
 \textbf{Configuración de inferencia.} Cuantización de 4 bits (Q4\_K\_M), contexto de
-32.768 tokens, temperatura 0, \cod{top\_k}~=~1, semilla fija, sin modo de razonamiento y
-peticiones secuenciales. Los diez pasajes comparten un presupuesto de 85.000 caracteres:
-los que caben van completos y solo se recortan los gigantes; en la muestra, 45 de 50
-preguntas entran sin recorte y el prompt más largo mide 25.318 tokens. La recuperación
-toma $\approx$1~s por pregunta en el servidor de referencia y 6,4~s en un portátil de
-consumo (RTX~3050~Ti de 4~GB, encoder en CPU y reranker en GPU), con los mismos pasajes
-y las mismas métricas: el sistema se reproduce en el hardware de la verificación en vivo
-sin degradar resultados. % Tiempo total por pregunta con el LLM: sin medir en la configuración final.
+32.768 tokens, temperatura 0, \cod{top\_k}~=~1, semilla 42, sin modo de razonamiento,
+una petición a la vez (\cod{-np 1}) y sin caché de prompts (\cod{cache\_prompt:
+false}): con la caché, la salida dependía de la pregunta anterior y dos corridas daban
+0 de 50 respuestas idénticas; sin ella, dos corridas son idénticas. Los diez pasajes
+comparten un presupuesto de 85.000 caracteres: los que caben van completos y solo se
+recortan los gigantes; si aun así el prompt excede el contexto, se reintenta una vez con
+el presupuesto reducido en proporción (1 de 992 preguntas). Las 992 preguntas del test
+corrieron en una RTX~4090 de 24~GB en 1,1~h, \textbf{4,0~s por pregunta} en promedio,
+en la misma máquina de la verificación en vivo.
 
 % ---------------------------------------------------------------------------
 \section{Estrategia de recuperación}
@@ -168,10 +175,13 @@ $\approx$1.700 caracteres por sección. El identificador canónico es
 \textbf{Búsqueda híbrida.} Cinco listas entran a una fusión RRF ($k=60$): las citas
 expresas de la pregunta (búsqueda exacta por identificador), BM25 (\cod{bm25s}, raíces
 Snowball, sin quitar \emph{stopwords}, identificadores normativos en un solo token; 100
-candidatos), HNSW denso ($M=32$, \cod{efSearch}~=~256; 100 candidatos) y una
+candidatos; solo en cerradas, porque en lenguaje natural trae pasajes que comparten
+palabras pero no tema), HNSW denso ($M=32$, \cod{efSearch}~=~256; 100 candidatos) y una
 \emph{lista de normas}: BM25 y HNSW sobre solo los 276.958 chunks de normas, 50
 candidatos cada uno. Esta lista existe porque las sentencias son el 86\,\% del corpus y
-dejaban los códigos y la Constitución en las posiciones 100 a 900.
+dejaban los códigos y la Constitución en las posiciones 100 a 900. Si la pregunta trae
+un monto en pesos, entra el decreto vigente del salario mínimo (los umbrales legales
+están en SMLMV); en las cerradas, el primero de BM25 de normas tiene lugar asegurado.
 
 \textbf{Reordenamiento y selección.} El reranker puntúa los 150 primeros de la fusión.
 Después se castiga por tipo (preámbulo 0,2; notas 0,15; ventana de sentencia 0,1; anexo
@@ -196,18 +206,19 @@ Sin ajustes (\cod{base})                 & 0,862 & 0,439 & 0,236 & 0,314 \\
 + castigos, prioridad y topes            & 0,862 & 0,667 & 0,294 & 0,421 \\
 + 150 al reranker, castigo ventanas      & 0,898 & 0,764 & 0,380 & 0,520 \\
 + lista de normas (50 + 50)              & 0,919 & 0,785 & 0,416 & 0,552 \\
-\textbf{+ sin casi duplicados (final)}   & \textbf{0,919} & \textbf{0,809} & \textbf{0,419} & \textbf{0,561} \\
++ sin casi duplicados                    & 0,919 & 0,809 & 0,419 & 0,561 \\
+\textbf{+ BM25 solo cerradas (final)} & \textbf{0,931} & \textbf{0,858} & \textbf{0,423} & \textbf{0,577} \\
 \midrule
-\multicolumn{5}{@{}l}{\emph{Por formato (R-c / R-d, antes del filtro de duplicados)}}\\
+\multicolumn{5}{@{}l}{\emph{Por formato, configuración final (R-c / R-d)}}\\
 \multicolumn{5}{@{}l}{Cerradas (15): 0,962 / 0,808}\\
-\multicolumn{5}{@{}l}{Semiabiertas (30): 0,965 / 0,819}\\
+\multicolumn{5}{@{}l}{Semiabiertas (30): 0,986 / 0,944}\\
 \multicolumn{5}{@{}l}{Abiertas (5): 0,500 / 0,500}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 La Tabla~\ref{tab:recuperacion} muestra el recorrido. El recall de documentos casi se
-duplica (0,439 a 0,809): es el techo de citas del agente, porque el validador solo
+duplica (0,439 a 0,858): es el techo de citas del agente, porque el validador solo
 acepta citas de documentos presentes en los diez pasajes. Se probaron y descartaron,
 con datos: una búsqueda por cada opción en las cerradas (recall de documentos 0,772),
 el seguimiento de las normas citadas por los primeros resultados (sin cambio), más
@@ -229,13 +240,23 @@ General del Proceso (Ley 1564 de 2012)''). Con los pasajes reales de las 50 preg
 \textbf{401 de 410 citas quedan reconocidas y respaldadas}; las 9 restantes son
 sentencias de la Corte Suprema sin cita reconocible en su propio texto.
 
-\textbf{Abstención.} Se declara \cod{abstencion: true} cuando ninguna cita queda
-respaldada, cuando el juez indica que los pasajes no bastan, o cuando el LLM no responde
-en el tiempo límite; nunca se entrega una respuesta simulada. El juez revisa si el
-borrador responde la subtarea y si cada afirmación tiene soporte. En las cerradas vota a
-ciegas con los mismos pasajes: si su letra difiere de la del escritor hay un segundo
-ciclo con nueva búsqueda y, si la diferencia persiste, queda la respuesta del escritor;
-una discrepancia nunca fuerza la abstención.
+Además, se agregan al fundamento las normas y sentencias de los pasajes consultados y
+las leyes y códigos que esos pasajes mencionan: quedan respaldadas y salen de la
+búsqueda determinista. La citación subió de 16,73 a 18,37 puntos sin ninguna cita sin
+respaldo.
+
+\textbf{Abstención.} En texto libre se declara \cod{abstencion: true} cuando ninguna
+cita queda respaldada o cuando el LLM no responde en el tiempo límite; nunca se entrega
+una respuesta simulada. Las cerradas siempre llevan letra (regla de los organizadores):
+la justificación se escribe antes que la letra, una segunda llamada elige la letra que
+respalda ese razonamiento y, si no queda una válida, se toma la opción con más respaldo
+léxico en los pasajes. En el test hubo 5 abstenciones, todas en semiabiertas.
+
+\textbf{Juez descartado.} Un juez (Gemma 4 E4B) revisaba si el borrador respondía la
+subtarea y si cada afirmación tenía soporte, con un segundo ciclo de búsqueda. Medido
+con el mismo código: sin juez, RAGAS 0,485 contra 0,469, cerradas 13/15 contra 12/15 (en
+una rechazó un borrador correcto y el segundo ciclo lo dañó) y 8,9~s contra 15,8~s por
+pregunta. Sin él, además, los pasajes dependen solo de la búsqueda determinista.
 
 % ---------------------------------------------------------------------------
 \section{Resultados sobre las preguntas de muestra}
@@ -248,37 +269,44 @@ una discrepancia nunca fuerza la abstención.
 \toprule
 Componente & Puntos & Posibles \\
 \midrule
-Exactitud en cerradas   & \pend & 20 \\ % PENDIENTE_EVALUATE %
-Calidad de citación     & \pend & 20 \\ % PENDIENTE_EVALUATE %
-Abstención calibrada    & \pend & 10 \\ % PENDIENTE_EVALUATE %
+Exactitud en cerradas (13/15) & 17,33 & 20 \\
+Calidad de citación           & 18,37 & 20 \\
+Abstención calibrada          &  9,07 & 10 \\
 \midrule
-\textbf{Total automático sin RAGAS} & \textbf{\pend} & \textbf{50} \\ % PENDIENTE_EVALUATE %
+Subtotal sin RAGAS & 44,77 & 50 \\
+Corrección en texto libre (RAGAS 0,442) & 13,26 & 30 \\
+\midrule
+\textbf{Total automático} & \textbf{58,03} & \textbf{80} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-% PENDIENTE_EVALUATE: quitar este párrafo cuando la Tabla de resultados tenga cifras.
-La Tabla~\ref{tab:resultados} se llena con la corrida final del evaluador oficial. Los
-datos disponibles son de pruebas anteriores. En una prueba temprana del agente, el
-escritor acertó \textbf{11 de 15 cerradas}. Antes, con un corpus reducido de 291
-documentos, el mismo Qwen3-8B pasó de 9 a 12 cerradas correctas al darle pasajes, y las
-normas citadas que no existen bajaron de 21 de 80 a 0 de 91.
+La Tabla~\ref{tab:resultados} es la configuración de la entrega (la que generó
+\cod{submissions.jsonl}); las cifras deterministas son iguales en la A40 y en la RTX
+4090. RAGAS, con el juez oficial, dio \textbf{0,442}, por debajo de la referencia
+(0,451). Una versión anterior (v14) midió 0,470; la diferencia (0,028) está en el
+límite de la variación del juez entre corridas ($\pm$0,02--0,03), así que no se puede
+atribuir con certeza a los cambios posteriores. Recorrido de la parte determinista: 35,99 en una versión temprana del agente, 42,90 con siglas y
+sin caché de prompts, y 44,77 con las fuentes de los pasajes en el fundamento. Sobre el
+test: 992 registros válidos contra el esquema y las 290 cerradas con letra.
 
-\textbf{Errores más frecuentes.} De las 4 cerradas falladas, ninguna es de
-razonamiento: dos piden un dato que no está en ningún pasaje (el valor del salario
-mínimo para una cuantía; una opción con el término ``Fintech''), una es de recuperación
-(no llega el CPACA) y una tiene la clave errada (cita una ``Ley 1564 de 2002'' que no
-existe). Un error de formato sí se corrigió: con la letra antes de la justificación el
-modelo elegía antes de razonar; ahora el prompt pide primero la justificación.
+\textbf{Errores más frecuentes.} Quedan 2 cerradas falladas y ninguna se resuelve sin
+sobreajustar: en la 128 el corpus no respalda la opción con ``Fintech'' en leasing, y en
+la 748 el art.~137 del CPACA (falsa motivación) no llega al top-10. Se corrigieron dos
+que antes fallaban: una pregunta que nombra la SIC por su sigla (ahora la expande y trae
+el art.~24 del CGP) y una cuantía en pesos (ahora entra el decreto del salario mínimo y
+una calculadora determinista convierte el monto). En texto libre, las respuestas con
+puntaje casi nulo son de contenido: búsqueda de otro tema, respuesta fuera del corpus o
+razonamiento del 8B con los pasajes correctos.
 
 % ---------------------------------------------------------------------------
 \section{Limitaciones}
 
 \begin{enumerate}
 \item \textbf{Preguntas abiertas.} Son casos que no nombran la norma: el recall cae a
-0,500 / 0,500 contra $\approx$0,96 / 0,81 en los otros formatos. Son solo 5 preguntas en
-la muestra, así que la cifra es poco precisa, y el reescritor de consultas que debe
-cubrir este caso no está medido.
+0,500 / 0,500 contra $\approx$0,97 / 0,90 en los otros formatos. Son solo 5 preguntas en
+la muestra, así que la cifra es poco precisa. La reescritura de la consulta con el LLM
+se probó y se descartó: inventaba normas y bajó el recall de documentos de 0,881 a 0,798.
 \item \textbf{Dispersión jurisprudencial.} Las ventanas de sentencias son el 86\,\% de
 los chunks y muchas copian el mismo párrafo. La lista de normas, el tope de 4 sentencias
 y el filtro de duplicados lo contienen, pero son reglas fijas: una pregunta que necesite
@@ -287,17 +315,18 @@ tratan como normas y no siempre producen una cita reconocible (9 de 410).
 \item \textbf{Ajuste sobre 50 preguntas.} Castigos, topes y umbrales se eligieron con la
 misma muestra con que se reportan; el desempeño en las 992 preguntas ciegas puede ser
 menor.
-\item \textbf{Datos que el corpus no trae en forma útil.} Valores anuales (salario
-mínimo, UVT) no siempre llegan a los diez pasajes, y 117 documentos no se pudieron
-descargar de la fuente oficial.
+\item \textbf{Lo que no está en el corpus no se puede citar.} 117 documentos no están
+en la fuente oficial (90 de la Corte Suprema) y algunas providencias que cita el test no
+se consiguieron en fuente oficial.
 \item \textbf{Determinismo del decoder.} Los pasajes son idénticos entre máquinas, pero
-el texto generado en GPU (nodo de cómputo) y en CPU (portátil) puede diferir aun con
-temperatura 0;
-falta la comparación de normas citadas entre ambas.
+el texto generado puede cambiar con el hardware aun con temperatura 0: algunas cerradas
+en el límite cambian de letra. Por eso la corrida del test y la verificación en vivo se
+hacen en la misma máquina.
 \item \textbf{Pasajes gigantes.} En 5 de 50 preguntas un solo artículo con anexos
-supera el contexto y se recorta.
-\item \textbf{Sin medir.} El voto del juez en las cerradas y el juez Gemma no tienen
-todavía resultados sobre la muestra.
+supera el presupuesto y se recorta; el modelo puede no ver la parte pertinente.
+\item \textbf{RAGAS limitado por el contenido.} Cambios de forma (largo, ejemplos de
+estilo, oraciones sustantivas, modo de razonamiento) no superaron la configuración
+final; lo que falta depende de la búsqueda, del corpus y del razonamiento del 8B.
 \end{enumerate}
 
 \end{document}

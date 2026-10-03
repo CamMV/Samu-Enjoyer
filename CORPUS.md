@@ -212,7 +212,7 @@ y el agente.
 | 2026-10-02 | v16 | 31.028 | 2.210.629 | 17,33 | 18,37 | 9,07 | 44,77 | — | Fuentes de los pasajes (sentencias y leyes mencionadas) al final de la respuesta |
 | 2026-10-02 | v22 | 31.028 | 2.210.629 | 17,33 | 17,55 | 9,07 | 43,95 | ~14,07 (0,469) | Abiertas en formato IRAC (requisito de los organizadores) |
 | 2026-10-03 | **v26** | 31.028 | 2.210.629 | **17,33** | **18,37** | **9,07** | **44,77** | ~14,2 (~0,474) | Configuración de la entrega (anclaje de la letra, poda de oraciones accesorias, fuentes compactas en abiertas); misma cifra en la A40 y en la RTX 4090 |
-| 2026-10-03 | v26 + 9 fuentes | 31.037 | 2.211.359 | | | | | | Índice con las 9 fuentes del test (ninguna de las 50 de muestra las cita) |
+| 2026-10-03 | **v27 (final)** | 31.037 | 2.211.359 | **17,33** | **18,37** | **9,07** | **44,77** | **13,26 (0,442)** | Índice con las 9 fuentes del test (ninguna de las 50 de muestra las cita), citas del Consejo de Estado por número de expediente y reintento cuando el prompt excede el contexto. Genera `submissions.jsonl`. **Total automático: 58,03 / 80** |
 
 \* Medición con 600 s de límite por llamada al juez. Con el límite oficial de 180 s, la misma versión dio 0,455. El juez varía ~0,02-0,03 entre corridas.
 

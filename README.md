@@ -247,8 +247,9 @@ el LLM con 32k de contexto, y el resto el reranker y el embedder. En GPUs de ≤
 
 ## Resultados sobre las preguntas de muestra
 
-Configuración de la entrega (v27, la misma que generó `submissions.jsonl`), métricas deterministas de
-`scripts/evaluate.py` sobre `sample_50`. Las cifras son iguales en la A40 y en la RTX 4090:
+Configuración de la entrega (v27, la misma que generó `submissions.jsonl`), `scripts/evaluate.py` sobre
+`sample_50` (RAGAS con `--ragas` y el juez oficial). Las cifras deterministas son iguales en la A40 y en
+la RTX 4090:
 
 | Componente | Puntos | Posibles |
 |---|---:|---:|
@@ -256,7 +257,8 @@ Configuración de la entrega (v27, la misma que generó `submissions.jsonl`), m�
 | Calidad de citación | 18,37 | 20 |
 | Abstención calibrada | 9,07 | 10 |
 | **Subtotal determinista** | **44,77** | **50** |
-| Corrección en texto libre (RAGAS, juez oficial) | ~14,2 (~0,474; referencia 0,451) | 30 |
+| Corrección en texto libre (RAGAS 0,4419, juez oficial; referencia 0,451) | 13,26 | 30 |
+| **Total automático** | **58,03** | **80** |
 
 ## Interfaz gráfica
 
