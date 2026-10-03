@@ -5,6 +5,61 @@ El valor del reto reside en la fidelidad jurídica y en el corpus: **cada respue
 
 ---
 
+## 00. RTX 4090, SÁBADO 3/OCT: QUÉ HACER HOY (leer antes que todo lo demás)
+
+**Situación.** No hay servidor ni git en esta máquina. El código llegó como zip (`Samu-Enjoyer_4090.zip`: rama `main`, commit `982559e`, más este CLAUDE.md y la carpeta `_paquete_test992/`). La carpeta `corpus/` de esta máquina ya tiene el índice anterior (2.210.629 chunks) y la corrida de prueba v26 dio aquí **44,77/50** sin RAGAS, con 13/15 en cerradas (`entregables/pruebas_4090.jsonl`). Responder SIEMPRE en español. No hacer commits. No correr RAGAS sin preguntar (saldo limitado). Nada de APIs o modelos cerrados; el agente no accede a internet.
+
+**Configuración de la entrega = v26, encendida por defecto en el código** (no hace falta ninguna variable): `ANCLAR_LETRA`, `PODA_ACCESORIAS`, `FUENTES_ABIERTAS`, `CITA_RESPUESTA`, `LARGO_COMPLEJIDAD` (solo complejidad alta) y `PRIMERA_SEGUN_FORMA`, más todo lo de v22 (siglas, fuentes ampliadas, IRAC en abiertas). Medido: A40 44,77/50 + RAGAS ~0,474 ≈ 59/80. `CITA_PRIMERO` y `RAG_HYDE` NO van (apagados; el segundo ni siquiera está en `main`).
+
+**Corpus descongelado (autorizado por los organizadores el 3/oct).** Se escanearon las 992 preguntas del test buscando normas y providencias citadas que no estuvieran en el corpus. Se agregan 9 fuentes oficiales (solo la norma o la providencia; nunca preguntas ni respuestas del test, que es causal de descalificación):
+- `resolucion_368_2014`, MinAmbiente, relleno El Carrasco (OCR del PDF oficial): bloque de 23 preguntas (721-752, 17 cerradas).
+- `ley_99_1993` (SINA), que apoya ese bloque.
+- `decreto_4302_2008` (licencias obligatorias): pregunta 1106.
+- Sentencias `jurisprudencia_t-426_2003` (113), `jurisprudencia_t-617_2010` (821) y `jurisprudencia_t-254_2006` (929).
+- Consejo de Estado, Sección Cuarta: `jurisprudencia_ce-11001-03-27-000-2020-00027-00_2022` (exp. 25406; 659 y 990), `jurisprudencia_ce-25000-23-37-000-2019-00417-01_2023` (exp. 27113; 992 y 993) y `jurisprudencia_ce-11001-03-27-000-2022-00036-00_2024` (exp. 26644; 136).
+
+En total son 730 chunks, 226 de ellos de normas. `data/corpus_targets.json` ya los trae, para que las citas expresas se reconozcan. La SU-279 de 2019 y la SU-488 de 2011 no existen en la relatoría: son la T-279 de 2019 y la T-488 de 2011, que ya estaban en el corpus. No se consiguieron en fuente oficial: CSJ exp. 2001-00847 (19/oct/2011), CSJ exp. 2001-00900 (9/feb/2011), CSJ laboral rad. 34223 y CE Sección Tercera 28/feb/2020 (culpa in contraendo).
+
+### Pasos (en orden; desde la raíz del repo, con el entorno de Python activado)
+
+0. **Ubicación.** El zip se descomprime SOBRE la carpeta del repo que ya tiene `corpus/` (`unzip -o Samu-Enjoyer_4090.zip -d <repo>`): reemplaza el código y no toca `corpus/`. Comprobar con `ls corpus/chunks corpus/indices`, que debe mostrar `chunks.sqlite`, `bm25_todo`, `bm25_normas`, `qwen3-emb-0.6b_todo` y `qwen3-emb-0.6b_normas`. El LLM es `llama-server -m <ruta>/Qwen3-8B-Q4_K_M.gguf --host 127.0.0.1 --port 8010 -c 32768 -np 1 --jinja --temp 0 --top-k 1 --seed 42 -ngl 99` y `LLM_BASE_URL=http://127.0.0.1:8010/v1` (en `.env` o en el comando). No usar `-np` > 1.
+
+1. **Copia de seguridad** (~12 GB): `mkdir -p ~/respaldo_corpus && cp -r corpus/chunks corpus/indices ~/respaldo_corpus/`. Para restaurar si algo sale mal: `rm -rf corpus/chunks corpus/indices && cp -r ~/respaldo_corpus/chunks ~/respaldo_corpus/indices corpus/`.
+
+2. **Agregar los 9 documentos a la base y al HNSW**, sin recalcular nada de lo existente: `python -m src.knowledge.agregar_chunks --nuevos _paquete_test992/chunks_test992 --device cuda`. Debe imprimir `== base: 730 chunks nuevos`, `qwen3-emb-0.6b_todo: 730 vectores nuevos (2211359 en total)`, `qwen3-emb-0.6b_normas: 226 vectores nuevos (277184 en total)` y escribir `corpus/chunks/chunks.jsonl` (2.211.359 líneas, en el orden del HNSW; tarda unos minutos). Se puede relanzar: solo hace lo que falta.
+   - Qué hace: inserta en `chunks.sqlite` y actualiza `resumen.json`; agrega los vectores nuevos al final de los dos HNSW (con un solo hilo de FAISS: determinista) y sus ids al final de `ids.json`. Probado el 3/oct sobre una copia del HNSW de normas: el Decreto 4302 sale 1.º en una búsqueda sobre su tema.
+   - Si falla por memoria de GPU, usar `--device cpu` (son solo 730 textos).
+
+3. **Reconstruir BM25** (necesita ~30-40 GB de RAM; en el servidor tardaba ~6 min el de todo y ~1 min el de normas): `python -m src.knowledge.bm25_store --seleccion todo && python -m src.knowledge.bm25_store --seleccion normas`. BM25 no admite agregar documentos (el IDF y el largo medio cambian), por eso se rehace completo desde `chunks.jsonl`.
+
+4. **Verificar**: `python -m src.knowledge.verify_indices`. Lo que importa:
+   - todo tiene 2.211.359 ids, igual que `chunks.sqlite`;
+   - BM25 y HNSW tienen los mismos ids en el mismo orden (en todo y en normas);
+   - normas no trae sentencias;
+   - los `hnsw.faiss` tienen el `ntotal` correcto.
+
+   Fallas esperadas y aceptables: la del "ganador" (el banco de búsqueda se midió con el conteo anterior) y la de archivos de resultados o logs que no estén en esta máquina (`logs/diagnostico_fallos.log`, `evaluation/.../results`).
+
+5. **Prueba de humo de la búsqueda**: `python -c "from src.agent.agent import get_real_retriever as g; h=g(); print([p.id for p in h({'pregunta':'La Resolución No. 368 de 2014 expedida por el Ministerio de Ambiente y Desarrollo Sostenible es un acto administrativo:','opciones':{'A':'De trámite y complejo','B':'Particular y de fondo','C':'Ninguna de las anteriores','D':'Simple y preparatorio'}})])"`. Deben salir pasajes de `resolucion_368_2014`.
+
+6. **Las 50 de muestra con el índice nuevo** (comparar contra 44,77 de `entregables/pruebas_4090.jsonl`): `python -m src.agent.batch_runner --salida entregables/v26_reindex.jsonl > logs/v26_reindex.log 2>&1`, y luego `python scripts/evaluate.py --submission entregables/v26_reindex.jsonl --split sample` (sin `--ragas`).
+   - Lo esperado es casi igual: ninguna de las 50 cita estos documentos, pero los chunks nuevos compiten en la búsqueda.
+   - Si baja de forma clara (por ejemplo, pierde una cerrada o más de ~1 punto), avisar al usuario antes de seguir. La decisión de volver al índice anterior (paso 1) es suya.
+
+7. **Las 992.** Poner las preguntas en `data/test_992.jsonl` (el usuario tiene el archivo `test_992.jsonl`). Correr en `tmux`: `python -m src.agent.batch_runner --entrada data/test_992.jsonl --salida submissions.jsonl > logs/test992.log 2>&1`. Se estima ~6-7 s por pregunta, ~2 h. Al terminar:
+   - comprobar que tenga 992 líneas, con ids únicos;
+   - que toda cerrada traiga letra (`respuesta_correcta` no vacía);
+   - y validar el esquema con la función oficial: `python -c "import sys,json; sys.path.insert(0,'scripts'); from evaluate import validate; from common import read_jsonl; from pathlib import Path; s=read_jsonl(Path('submissions.jsonl')); ids={json.loads(l)['id'] for l in open('data/test_992.jsonl',encoding='utf-8')}; p=validate(s,ids); print(len(s),'registros', len(p),'problemas', p[:10])"`.
+
+   `submissions.jsonl` se entrega tal cual: no editar respuestas a mano (causal de descalificación).
+
+8. **Verificación en vivo** (2-3 preguntas, ≤10 min): mismo código, mismo índice y mismo `llama-server` que en el paso 7, sin cambiar nada después de la corrida. Regenerar con `python -m src.agent.batch_runner --entrada <archivo con las preguntas pedidas> --salida /tmp/vivo.jsonl` y comparar normas citadas y pasajes con `submissions.jsonl`.
+
+9. **Zip del corpus para la entrega** (entregable 5): `python -m src.knowledge.package_index --manifest _paquete_test992/corpus_manifest.json --auditoria _paquete_test992/auditoria.json --salida ~/samu_enjoyer_corpus_indice.zip`. Ese manifiesto ya trae los 9 documentos nuevos con fuente, URL y fecha. Subirlo a Drive con enlace público y ponerlo en la sección "Corpus e índice" del README; en `CORPUS.md`, anotar las 9 fuentes agregadas el 3/oct y por qué.
+   - `_paquete_test992/md_test992/` trae los 9 `.md`. Si en esta máquina existe `corpus/md/`, copiarlos ahí para que el corpus quede reconstruible.
+
+---
+
 ## 0. ESTADO ACTUAL (2/oct/2026, tarde; entrega congelada) — leer primero
 
 - **Fechas:** viernes 2/oct 17:00 reporte de avance; sábado 3/oct corrida de las 992 preguntas, entrega del repositorio y verificación en vivo (3 preguntas, límite 10 min).
