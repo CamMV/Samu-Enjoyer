@@ -318,3 +318,45 @@ def test_irac_y_largo_oficial(monkeypatch):
     assert "entre 120 y 150" in w.extension_por_complejidad("low") and w.oraciones_semiabierta("low") == 5
     _, user = w.build_prompts("¿Qué es?", {"formato": "semi_open", "complejidad": "low"}, [])
     assert "entre 120 y 150" in user
+
+
+def test_anclaje_bloquea_saltos_a_opciones_sin_respaldo(monkeypatch):
+    """ANCLAR_LETRA=1: el verificador no puede llevar la letra a una opción que el razonamiento respalda menos
+    (la 647 en la RTX 4090: de B a "(a) y (b)"), pero sí corregir cuando la nueva tiene más respaldo (528)."""
+    opciones = {"A": "(a) y (b) ", "B": " El apoyo intelectual, moral yafectivo en forma recíproca ",
+                "C": "Ninguna de las anteriores. ", "D": "Un deber de asistencia "}
+    escritor = ('{"justificacion": "El deber de ayuda mutua implica brindarse apoyo económico y también apoyo moral '
+                'y afectivo recíproco [codigo_general_proceso/art_25].", "respuesta_correcta": "B", '
+                '"descarte_opciones": {"A": "No.", "C": "No.", "D": "No."}, "abstencion": false}')
+    monkeypatch.setattr(writer_tool, "_llamar_llm", lambda s, u, esquema=None: (
+        escritor if esquema is None else '{"conclusion": "Ambas.", "letra": "A"}'))
+    monkeypatch.setattr(writer_tool, "ELEGIR_LETRA", True)
+    monkeypatch.setattr(writer_tool, "ANCLAR_LETRA", "0")
+    assert writer_tool.write_legal_response("Ayuda", {"formato": "multiple_choice"}, [ART25], opciones)[
+        "respuesta_correcta"] == "A"
+    monkeypatch.setattr(writer_tool, "ANCLAR_LETRA", "1")
+    assert writer_tool.write_legal_response("Ayuda", {"formato": "multiple_choice"}, [ART25], opciones)[
+        "respuesta_correcta"] == "B"
+    # La corrección de la cuantía (razona "mínima", anuncia D) se sigue aceptando con el anclaje.
+    monkeypatch.setattr(writer_tool, "_llamar_llm", lambda s, u, esquema=None: (
+        '{"justificacion": "Con 21,07 salarios mínimos no se exceden 40 [codigo_general_proceso/art_25], así que es '
+        'de mínima cuantía. Por lo tanto, la opción correcta es D.", "respuesta_correcta": "D", '
+        '"descarte_opciones": {}, "abstencion": false}' if esquema is None else '{"conclusion": "Mínima.", "letra": "C"}'))
+    assert writer_tool.write_legal_response("¿Cuantía?", {"formato": "multiple_choice"}, [ART25], CUANTIA)[
+        "respuesta_correcta"] == "C"
+
+
+def test_largo_solo_en_alta_y_primera_oracion_segun_forma(monkeypatch):
+    w = writer_tool
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD", True)
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD_NIVELES", {"alta"})
+    assert w.oraciones_semiabierta("alta") == 5 and w.oraciones_semiabierta("media") is None
+    assert w.extension_por_complejidad("media") == ""
+    monkeypatch.setattr(w, "LARGO_COMPLEJIDAD_NIVELES", {"alta", "media"})
+    assert w.oraciones_semiabierta("media") == 4
+    q = "¿Cuál es el artículo del código penal que define los requisitos de la condena?"
+    monkeypatch.setattr(w, "PRIMERA_SEGUN_FORMA", False)
+    assert "sí o no" in w.guia_primera_oracion(q, "Existencia normativa").replace("(sí o no)", "sí o no")
+    monkeypatch.setattr(w, "PRIMERA_SEGUN_FORMA", True)
+    assert "nombra directamente la norma y el artículo" in w.guia_primera_oracion(q, "Existencia normativa")
+    assert "di si existe" in w.guia_primera_oracion("¿Existe alguna norma sobre acoso laboral?", "Existencia normativa")

@@ -191,6 +191,11 @@ _GUIA_SUBTAREA = (
     (r"ponderaci", "di qué principio o derecho prevalece en el caso y por qué"),
     (r"interpretaci", "di qué resulta de leer las normas en conjunto"),
 )
+# Existencia normativa preguntada como "¿Cuál/Qué norma…?" (PRIMERA_SEGUN_FORMA=1, apagado; ronda 2, agente F):
+# con la guía general la 280 respondió "Sí, existe el artículo…" sin decir cuál (0,66); las versiones que
+# nombraban el artículo en la primera oración dieron 0,98-0,99.
+PRIMERA_SEGUN_FORMA = os.environ.get("PRIMERA_SEGUN_FORMA", "0") == "1"
+_PREGUNTA_CUAL = re.compile(r"^\W*(?:cu[aá]l(?:es)?|qu[eé])\b", re.I)
 _VERDADERO_FALSO = re.compile(r"\b(falsa|falso)\s+o\s+verdader|\bverdader[ao]\s+o\s+fals", re.I)
 
 
@@ -287,6 +292,8 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
         sub = (sub_tarea or "").lower()
         guia = next((g for rx, g in _GUIA_SUBTAREA if re.search(rx, sub)),
                     "responde directamente lo que se pregunta")
+        if PRIMERA_SEGUN_FORMA and re.search(r"existencia normativa", sub) and _PREGUNTA_CUAL.search(pregunta or ""):
+            guia = "nombra directamente la norma y el artículo que se piden (tipo, número, año y artículo), sin empezar con sí o no"
     siguientes = ("Las dos oraciones siguientes completan la respuesta con el contenido sustantivo que la pregunta "
                   "pide (requisitos, condiciones, efectos, excepciones o la razón jurídica); sin contexto, antecedentes, "
                   "fechas ni normas que no respondan la pregunta." if ORACIONES_SUSTANTIVAS
@@ -300,6 +307,10 @@ def guia_primera_oracion(pregunta: str, sub_tarea: Optional[str]) -> str:
 # y 32 en baja; con 3 oraciones respondemos ~40 en todas, y en alta el RAGAS medio era 0,357 contra 0,547
 # en baja y 0,644 en media (v8sj): faltan afirmaciones de la esperada. Baja queda como está.
 LARGO_COMPLEJIDAD = os.environ.get("LARGO_COMPLEJIDAD", "0") == "1"
+# Niveles a los que aplica (ronda 2, agente F): en los pares de la muestra, quitar oraciones sube RAGAS en baja
+# y media (+0,10 por ítem) y lo baja en alta (−0,04). LARGO_COMPLEJIDAD_NIVELES=alta alarga solo las de alta
+# (con v16, alta 0,405 -> 0,438). El valor por defecto conserva el comportamiento de v16.
+LARGO_COMPLEJIDAD_NIVELES = set(os.environ.get("LARGO_COMPLEJIDAD_NIVELES", "alta,media").split(","))
 _EXTENSION = {
     "alta": (5, 120, "después de la primera, la regla jurídica, las normas o sentencias que la fundamentan, "
                      "sus requisitos o excepciones relevantes y su aplicación a lo que se pregunta"),
@@ -312,11 +323,16 @@ def nivel_complejidad(complejidad: Optional[str]) -> str:
     return {"high": "alta", "medium": "media", "low": "baja"}.get(c, c)
 
 
+def _aplica_largo(complejidad: Optional[str]) -> bool:
+    nivel = nivel_complejidad(complejidad)
+    return LARGO_COMPLEJIDAD and nivel in _EXTENSION and nivel in LARGO_COMPLEJIDAD_NIVELES
+
+
 def oraciones_semiabierta(complejidad: Optional[str]) -> Optional[int]:
     """Oraciones de `respuesta` para `respuesta_concisa` (None = el valor por defecto)."""
     if LARGO_OFICIAL:
         return 5
-    if not LARGO_COMPLEJIDAD or nivel_complejidad(complejidad) not in _EXTENSION:
+    if not _aplica_largo(complejidad):
         return None
     return _EXTENSION[nivel_complejidad(complejidad)][0]
 
@@ -326,7 +342,7 @@ def extension_por_complejidad(complejidad: Optional[str]) -> str:
         return ("EXTENSIÓN (prevalece sobre la indicada arriba): \"respuesta\" de 5 oraciones, entre 120 y 150 "
                 "palabras; después de la primera, la regla jurídica, las normas o sentencias que la fundamentan, sus "
                 "requisitos o excepciones relevantes y su aplicación a lo que se pregunta. Nada que la pregunta no pida.")
-    if not LARGO_COMPLEJIDAD or nivel_complejidad(complejidad) not in _EXTENSION:
+    if not _aplica_largo(complejidad):
         return ""
     n, palabras, contenido = _EXTENSION[nivel_complejidad(complejidad)]
     return (f"EXTENSIÓN (prevalece sobre la indicada arriba; pregunta de complejidad {nivel_complejidad(complejidad)}): "
@@ -532,7 +548,7 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
         if borrador["abstencion"] and letra in opciones:
             borrador["abstencion"] = False
         if ELEGIR_LETRA and (not borrador["abstencion"] or borrador.get("justificacion")):
-            borrador = con_letra_de_la_justificacion(borrador, opciones)
+            borrador = con_letra_de_la_justificacion(borrador, opciones, pasajes)
             if str(borrador.get("respuesta_correcta") or "").strip().upper()[:1] in opciones:
                 borrador["abstencion"] = False
         # Respaldo: una cerrada sin letra vale 0 seguro (y el esquema la rechaza). Si ni el escritor ni el
@@ -575,12 +591,26 @@ if not TOLERAR_ANIO:
         "como coincidencia.", "")
 
 
+# Anclaje del verificador (ANCLAR_LETRA=1, apagado; ronda 2, agente E). En la RTX 4090 el verificador cambió
+# la 647 de B (correcta) a A ("(a) y (b)", una opción sin contenido) y la 748 de D a C sin base: con los mismos
+# pasajes el escritor dio la misma letra en las dos máquinas en 15/15, y las diferencias eran del verificador.
+# Con el anclaje, el cambio de letra solo se acepta si el razonamiento respalda léxicamente la opción nueva más
+# que la del escritor ("minimo": basta con que la nueva tenga algún respaldo). No cambia ninguna llamada al LLM.
+ANCLAR_LETRA = os.environ.get("ANCLAR_LETRA", "0")
+
+
+def respaldo_en_texto(texto: str, opcion: str) -> float:
+    """Fracción de las palabras de contenido de la opción presentes en el texto (0 si no tiene, p. ej. "(a) y (b)")."""
+    t = _tokens(opcion)
+    return len(t & _tokens(texto)) / len(t) if t else 0.0
+
+
 def _sin_anuncios(texto: str) -> str:
     frases = re.split(r"(?<=[.;])\s+", texto or "")
     return " ".join(f for f in frases if not _ANUNCIA_LETRA.search(f)).strip()
 
 
-def con_letra_de_la_justificacion(borrador: dict, opciones: dict) -> dict:
+def con_letra_de_la_justificacion(borrador: dict, opciones: dict, pasajes: list = None) -> dict:
     """Corrige `respuesta_correcta` con la letra que respalda el razonamiento de la justificación.
     Si el segundo llamado falla, o el razonamiento queda vacío, el borrador no cambia."""
     letras = sorted(opciones)
@@ -599,6 +629,14 @@ def con_letra_de_la_justificacion(borrador: dict, opciones: dict) -> dict:
     anterior = str(borrador.get("respuesta_correcta") or "").strip().upper()[:1]
     if letra not in opciones or letra == anterior:
         return borrador
+    if ANCLAR_LETRA in ("1", "minimo") and anterior in opciones:
+        from src.agent.citas import borrador_con_citas_legibles  # citas solo importa schemas: sin ciclo
+        texto = borrador_con_citas_legibles({"t": razonamiento}, pasajes)["t"] if pasajes else razonamiento
+        nueva, vieja = respaldo_en_texto(texto, opciones[letra]), respaldo_en_texto(texto, opciones[anterior])
+        if (nueva <= vieja) if ANCLAR_LETRA == "1" else (nueva == 0):
+            print(f"   cambio de letra sin anclaje ({anterior} -> {letra}: {nueva:.2f} contra {vieja:.2f}); "
+                  f"queda {anterior}", file=sys.stderr, flush=True)
+            return borrador
     print(f"   letra corregida por el razonamiento: {anterior or '-'} -> {letra}", file=sys.stderr, flush=True)
     descartes = {k: v for k, v in (borrador.get("descarte_opciones") or {}).items() if k != letra}
     return {**borrador, "respuesta_correcta": letra, "descarte_opciones": descartes,
