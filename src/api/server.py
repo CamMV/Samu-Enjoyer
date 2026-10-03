@@ -1,10 +1,10 @@
-"""Back local de la interfaz (frontend/): expone el agente por HTTP.
+"""Back local de la interfaz (interfaz/): expone el agente por HTTP.
 
     python -m src.api.server                     # http://127.0.0.1:8000 (índices reales + LLM local)
     python -m src.api.server --mock              # pasajes y escritor simulados: sin índices ni LLM
     python -m src.api.server --port 8000 --host 127.0.0.1
 
-Endpoints (contrato en frontend/src/api/types.ts):
+Endpoints (contrato en interfaz/src/api/types.ts):
     GET  /api/salud                  estado: modo (real/mock), LLM configurado, corpus disponible
     POST /api/preguntar              {"pregunta": "..."} -> registro de submissions.jsonl + datos para la UI
     GET  /api/documentos/{doc_id}    documento completo del corpus (front-matter + Markdown)

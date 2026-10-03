@@ -1,4 +1,0 @@
-pydantic>=2.6.0
-requests>=2.31.0
-python-dotenv>=1.0.0
-langgraph==1.2.12      # versión fija: el jurado reproduce en un contenedor limpio

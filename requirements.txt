@@ -1,14 +1,41 @@
+# Dependencias de todo el sistema (Python 3.12).
+# En GPU, instalar antes torch con CUDA:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+# El juez de texto libre del evaluador oficial (evaluate.py --ragas) tiene sus propias
+# dependencias en scripts/requirements-evaluador.txt; no hacen falta para generar la entrega.
+
+# Base
 requests>=2.31
 urllib3>=2
-# conversión a Markdown (src/ingest)
+python-dotenv>=1.0.0
+jsonschema>=4.21        # batch_runner valida cada registro contra schema/submission.schema.json
+
+# Ingesta y conversión a Markdown (src/ingest)
 beautifulsoup4>=4.12
 lxml>=5
 pymupdf>=1.24
 python-docx>=1.1
-# tests
-pytest>=8
 # opcional, solo para --pdf:
 # playwright>=1.45
-# Fuera de pip (ver CLAUDE.md, "Conversión a Markdown"):
+# Fuera de pip:
 # - .doc -> Markdown necesita LibreOffice (soffice).
 # - PDF escaneados necesitan Tesseract con el modelo spa (conda install -c conda-forge tesseract).
+
+# Recuperación (chunking, BM25, HNSW, reranker)
+bm25s>=0.2.10
+PyStemmer>=2.2
+faiss-cpu>=1.8          # la búsqueda corre en CPU en todas las máquinas: mismo resultado
+sentence-transformers>=3.3
+transformers>=4.51      # Qwen3-Embedding y bge-reranker
+numpy>=1.26
+
+# Agente (src/agent)
+pydantic>=2.6.0
+langgraph==1.2.12       # versión fija: el jurado reproduce en un contenedor limpio
+
+# Back local de la interfaz (src/api)
+fastapi>=0.115
+uvicorn>=0.30
+
+# Pruebas
+pytest>=8

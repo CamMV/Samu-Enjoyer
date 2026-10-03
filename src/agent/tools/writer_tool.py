@@ -11,7 +11,7 @@ en abstención y el error se avisa en stderr: nunca se entrega una respuesta
 simulada como si fuera real. El escritor simulado (mock) solo se usa a pedido
 (`--mock` en batch_runner).
 
-Dependencias (ver requirements-agent.txt):
+Dependencias (ver requirements.txt):
     pydantic>=2.6.0      modelos CanonicalPassage / QuestionState
     requests>=2.31.0     cliente HTTP hacia el servidor local
     python-dotenv>=1.0.0 carga de variables desde un archivo .env
@@ -112,10 +112,10 @@ def cupos(longitudes: list[int], presupuesto: int = None) -> list[int]:
     return cupo
 
 
-def textos_para_prompt(pasajes: list[CanonicalPassage]) -> list[str]:
+def textos_para_prompt(pasajes: list[CanonicalPassage], presupuesto: int = None) -> list[str]:
     textos = [p.texto or "" for p in pasajes]
     salida = []
-    for texto, c in zip(textos, cupos([len(t) for t in textos])):
+    for texto, c in zip(textos, cupos([len(t) for t in textos], presupuesto)):
         salida.append(texto if c >= len(texto) else texto[:c].rsplit(" ", 1)[0] + " […recortado]")
     return salida
 
@@ -351,11 +351,12 @@ def extension_por_complejidad(complejidad: Optional[str]) -> str:
 
 
 def build_prompts(pregunta: str, flags: dict, pasajes: list[CanonicalPassage],
-                  opciones: Optional[dict] = None) -> tuple[str, str]:
-    """Construye (system_prompt, user_prompt)."""
+                  opciones: Optional[dict] = None, presupuesto: int = None) -> tuple[str, str]:
+    """Construye (system_prompt, user_prompt). `presupuesto`: caracteres para los pasajes (por defecto
+    MAX_CHARS_PASAJES)."""
     system = f"{_SYSTEM_BASE}\n{instrucciones_formato(flags['formato'])}"
     bloques = []
-    for p, texto in zip(pasajes, textos_para_prompt(pasajes)):
+    for p, texto in zip(pasajes, textos_para_prompt(pasajes, presupuesto)):
         vig = p.metadatos.get("vigencia", "desconocida")
         bloques.append(f"[{p.id}] (vigencia: {vig})\n{texto}")
     partes = [
@@ -424,6 +425,29 @@ def _llamar_llm(system: str, user: str, esquema: Optional[dict] = None) -> str:
         return resp.json()["choices"][0]["message"]["content"] or ""
     except (ValueError, KeyError, IndexError, TypeError) as e:
         raise requests.exceptions.RequestException(f"Respuesta del servidor con formato inesperado: {e}") from e
+
+
+# Prompt más largo que el contexto. MAX_CHARS_PASAJES supone ~3,6 caracteres por token, pero los anexos con
+# tablas y cifras rinden menos: en el test, la 245 (anexos de los decretos 780 de 2016 y 917 de 1999) dio
+# 37.496 tokens con 85.000 caracteres (~2,4 por token) y llama-server la rechazó (400); quedaba en abstención.
+# Ahora se reintenta una vez con el presupuesto reducido en proporción, dejando RESERVA_SALIDA tokens para la
+# respuesta. Solo actúa cuando el servidor rechaza por contexto: las demás preguntas no cambian.
+RESERVA_SALIDA = 4096
+
+
+def _exceso_de_contexto(e: requests.exceptions.HTTPError) -> Optional[tuple[int, int]]:
+    """(tokens del prompt, tamaño del contexto) si el servidor rechazó por contexto; si no, None."""
+    try:
+        err = e.response.json()["error"]
+        if err.get("type") == "exceed_context_size_error":
+            return int(err["n_prompt_tokens"]), int(err["n_ctx"])
+    except (AttributeError, ValueError, KeyError, TypeError):
+        pass
+    return None
+
+
+def _presupuesto_que_cabe(n_prompt: int, n_ctx: int) -> int:
+    return int(MAX_CHARS_PASAJES * (n_ctx - RESERVA_SALIDA) / n_prompt)
 
 
 def _parsear_json(texto: str) -> dict:
@@ -524,7 +548,17 @@ def write_legal_response(pregunta: str, flags: dict, pasajes: list[CanonicalPass
     system, user = build_prompts(pregunta, flags, pasajes, opciones)
     cerrada = formato == "multiple_choice" and bool(opciones)
     try:
-        salida = _llamar_llm(system, user)
+        try:
+            salida = _llamar_llm(system, user)
+        except requests.exceptions.HTTPError as e:
+            exceso = _exceso_de_contexto(e)
+            if not exceso:
+                raise
+            presupuesto = _presupuesto_que_cabe(*exceso)
+            print(f"   AVISO: el prompt ({exceso[0]} tokens) no cabe en el contexto ({exceso[1]}); se reintenta con "
+                  f"{presupuesto} caracteres de pasajes", file=sys.stderr, flush=True)
+            system, user = build_prompts(pregunta, flags, pasajes, opciones, presupuesto)
+            salida = _llamar_llm(system, user)
     except requests.exceptions.RequestException as e:  # conexión caída, timeout, HTTP error
         print(f"   AVISO: el LLM no respondió ({type(e).__name__}: {e}); "
               + ("cerrada con la opción de más respaldo léxico" if cerrada else "la pregunta queda en abstención"),

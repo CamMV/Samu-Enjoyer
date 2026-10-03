@@ -29,7 +29,7 @@ BLOQUE = 16 << 20
 
 def contenido(manifest: Path, auditoria: Path) -> list[tuple[Path, str]]:
     """(origen, ruta dentro del zip)."""
-    out = [(ROOT / "entregables" / "LICENSE_corpus_indice.txt", "corpus/LICENSE"),
+    out = [(ROOT / "LICENSE", "corpus/LICENSE"),
            (manifest, "corpus/corpus_manifest.json"),
            (auditoria, "corpus/auditoria_descarga.json"),
            (CHUNKS / "chunks.sqlite", "corpus/chunks/chunks.sqlite"),

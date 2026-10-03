@@ -22,7 +22,7 @@ from pathlib import Path
 from .bm25_store import IndiceBM25
 from .chunk_store import Almacen, es_sentencia
 from .vector_store import IndiceDenso
-from .citation_lookup import chunks_citados, documentos_citados
+from .citation_lookup import chunks_citados, documentos_citados, sentencias_por_expediente
 from .reranker import Reranker
 from .siglas import con_siglas, sin_instrucciones
 
@@ -130,6 +130,13 @@ class Config:
     # de la 58 y la 679; con el agente, la 58 pasa a la A citando el art. 24 (v14: 13/15, 42,90/50
     # contra 12/15 y 41,33 de v13). Activada.
     siglas: bool = True
+    # Sentencias del Consejo de Estado citadas por su número interno ("Exp. 25406"; ver
+    # citation_lookup.sentencias_por_expediente): además de su ficha (cita expresa), sus `en_expediente`
+    # chunks más parecidos a la consulta (denso exacto dentro de la sentencia) entran como lista extra en
+    # el RRF; el reranker y el tope por documento deciden. En esas sentencias la ficha es solo el
+    # encabezado (radicación, partes) y la búsqueda sobre todo el corpus no las encuentra por el número
+    # (test: 136, 659, 990, 992 y 993 respondían sin su sentencia). 0 = no se usa.
+    en_expediente: int = 10
     # Sin instrucciones de examen ("lea con atención cada pregunta y responda la siguiente pregunta",
     # "Pregunta jurídica:"; `sin_instrucciones` en src/knowledge/siglas.py): BM25 las toma como términos
     # de búsqueda. En la 748 traían artículos de interrogatorio de parte; sin ellas el art. 137 del
@@ -202,7 +209,7 @@ def _hermano(ruta: Path) -> Path:
 
 def config_de(perfil: str, **base) -> "Config":
     # Los perfiles sin "normas" o sin "dedup" se midieron sin esas opciones: así se siguen reproduciendo.
-    return Config(**{"normas": 0, "dedup": 0.0, "siglas": False, **base, **PERFILES[perfil]})
+    return Config(**{"normas": 0, "dedup": 0.0, "siglas": False, "en_expediente": 0, **base, **PERFILES[perfil]})
 
 
 @dataclass
@@ -278,6 +285,7 @@ class Recuperador:
         cfg, t, etapas = self.cfg, {}, {}
         t0 = time.perf_counter()
         citadas = chunks_citados(consulta, self.almacen) if cfg.usar_citas else []
+        por_expediente = sentencias_por_expediente(consulta) if cfg.en_expediente else []
         t["citas"] = time.perf_counter() - t0
         if cfg.sin_instrucciones:
             consulta = sin_instrucciones(consulta)
@@ -302,6 +310,9 @@ class Recuperador:
             etapas["denso"] = [c for c, _ in self.denso.buscar_vector(v, cfg.candidatos)]
             t["denso"] = time.perf_counter() - t0
             listas.append(etapas["denso"])
+            for did in por_expediente:
+                etapas[f"expediente_{did}"] = self._en_sentencia(did, v, cfg.en_expediente)
+                listas.append(etapas[f"expediente_{did}"])
         if self.bm25_normas or self.denso_normas:
             t0 = time.perf_counter()
             if self.bm25_normas and (usar_bm25 or cfg.bm25_normas_libre):
@@ -459,6 +470,19 @@ class Recuperador:
                 orden = sorted(zip((c for c, _ in pares), s.tolist()), key=lambda p: (-p[1], p[0]))
                 out["denso"] = [c for c, _ in orden[:n]]
         return out
+
+    def _en_sentencia(self, did: str, v, n: int) -> list[str]:
+        """Los `n` chunks de la sentencia `did` más parecidos a la consulta (producto punto exacto con sus
+        vectores del HNSW de todo; desempate por chunk_id)."""
+        import numpy as np
+        pos = self._posiciones("denso_todo", self.denso.ids)
+        pares = [(c["chunk_id"], pos[c["chunk_id"]]) for c in self.almacen.por("doc_id", did) if c["chunk_id"] in pos]
+        if not pares:
+            return []
+        m = np.stack([self.denso.indice.reconstruct(p) for _, p in pares])
+        s = np.round(m @ v[0], 4)
+        orden = sorted(zip((c for c, _ in pares), s.tolist()), key=lambda p: (-p[1], p[0]))
+        return [c for c, _ in orden[:n]]
 
     def _citas_seguidas(self, top: list[str]) -> list[str]:
         """Chunks de los artículos (o fichas) que más citan los pasajes `top`, en orden de cuántos

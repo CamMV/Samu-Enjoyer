@@ -1,9 +1,0 @@
-# Recuperación (chunking, BM25, HNSW, reranker, evaluador). Además de requirements.txt.
-# En el servidor (A40), instalar antes torch con CUDA:
-#   pip install torch --index-url https://download.pytorch.org/whl/cu124
-bm25s>=0.2.10
-PyStemmer>=2.2
-faiss-cpu>=1.8          # la búsqueda corre en CPU en las dos máquinas: mismo resultado
-sentence-transformers>=3.3
-transformers>=4.51      # Qwen3-Embedding y Qwen3-Reranker
-numpy>=1.26

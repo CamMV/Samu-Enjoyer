@@ -15,7 +15,7 @@ from src.agent.tools.citation_search_tool import Buscador, buscar_cita
 from src.agent.tools import writer_tool
 from src.agent.tools.writer_tool import oraciones_semiabierta
 
-# La recuperación depende de requirements-rag.txt (faiss, bm25s, torch); el agente debe poder
+# La recuperación depende de requirements.txt (faiss, bm25s, torch); el agente debe poder
 # importarse sin ellas.
 try:
     from src.knowledge.hybrid_search import Config, Recuperador, consulta_de
@@ -116,7 +116,7 @@ def get_real_retriever() -> Callable[[str], List[CanonicalPassage]]:
     reranker son los de la configuración por defecto. Lanza FileNotFoundError / ImportError
     si no hay con qué recuperar, para que el llamador decida el fallback."""
     if Recuperador is None:
-        raise ImportError("src.knowledge no disponible: instalar requirements-rag.txt")
+        raise ImportError("src.knowledge no disponible: instalar requirements.txt")
     indices = ROOT / "corpus" / "indices"
     # Ganador del banco de pruebas (evaluation/retrieval_benchmark): qwen3-emb-0.6b + BM25 con raíces
     # + bge-reranker-v2-m3 con el perfil "completo" (valores por defecto de Config).
