@@ -36,6 +36,3 @@ langgraph==1.2.12       # versión fija: el jurado reproduce en un contenedor li
 # Back local de la interfaz (src/api)
 fastapi>=0.115
 uvicorn>=0.30
-
-# Pruebas
-pytest>=8

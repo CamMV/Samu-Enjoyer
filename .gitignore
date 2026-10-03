@@ -11,3 +11,5 @@ logs/
 # Configuración por máquina y llaves (la plantilla versionada es .env.example)
 .env
 .vscode/
+# Modelos descargados por run.sh (GGUF de ~5 GB) y zip del corpus
+modelos/

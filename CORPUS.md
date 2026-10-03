@@ -10,7 +10,6 @@ Archivos que acompañan esta bitácora:
 | Archivo | Contenido |
 |---|---|
 | [`corpus_manifest.json`](corpus_manifest.json) | Un registro por documento indexado: `doc_id`, `titulo`, `fuente`, `url`, `fecha_consulta`, `areas`, `n_articulos`, `n_fragmentos`, `metodo_ingesta` y `sha256` del original. Todo `doc_id` de `submissions.jsonl` está aquí |
-| `corpus_inventario.csv` (raíz del repositorio) | El inventario del corpus base en tabla, para filtrar y ordenar |
 | `data/corpus_targets.json` (raíz del repositorio) | Los documentos objetivo con su criterio de inclusión, los excluidos y los no encontrados |
 
 ---
@@ -262,6 +261,7 @@ corpus/
 IDs en el mismo orden.
 
 **Reconstrucción desde las URL.** `data/corpus_targets.json` lista los documentos y sus URL.
-`python scraper/descargar.py iniciar` los descarga, `python -m src.ingest.convertir` los convierte, y
+`python scraper/descargar.py iniciar` los descarga (el `sha256` de cada original está en
+`corpus_manifest.json` para comprobarlos), `python -m src.ingest.convertir` los convierte, y
 `python -m src.knowledge.chunking`, `src.knowledge.bm25_store` y `src.knowledge.vector_store` arman el
 índice (ver `README.md`).

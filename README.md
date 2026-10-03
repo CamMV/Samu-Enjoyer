@@ -239,7 +239,8 @@ el LLM con 32k de contexto, y el resto el reranker y el embedder. En GPUs de ≤
 - Arranque: ~1-2 min (carga de índices, reranker y embedder).
 
 **Reconstruir el índice desde cero** (opcional; horas de GPU):
-1. `python scraper/descargar.py iniciar`
+1. `python scraper/descargar.py iniciar` (descarga los documentos de `data/corpus_targets.json` desde
+   sus URL oficiales a `corpus/raw/`)
 2. `python -m src.ingest.convertir`
 3. `python -m src.knowledge.chunking`
 4. `python -m src.knowledge.bm25_store --seleccion todo` (y `--seleccion normas`)
@@ -292,11 +293,10 @@ Samu-Enjoyer/
 │   └── arquitectura_final.html
 ├── interfaz/                  # interfaz gráfica (React + Vite)
 ├── src/                       # pipeline reproducible: ingest/, knowledge/, agent/, api/
+├── scraper/                   # descarga del corpus desde las URL oficiales
 ├── data/                      # sample_50.jsonl, test_992.jsonl, corpus_targets.json
 ├── schema/  scripts/          # material oficial del reto (esquema y evaluador)
-├── scraper/                   # descarga del corpus desde las URL oficiales
-├── evaluation/                # banco de pruebas de recuperación y sus resultados
-└── tests/
+└── evaluation/                # banco de pruebas de recuperación y sus resultados
 ```
 
 El corpus procesado y el índice no se versionan: se descargan desde la sección
