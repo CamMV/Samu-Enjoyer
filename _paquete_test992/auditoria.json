@@ -1,0 +1,679 @@
+{
+ "documentos_lista": 31157,
+ "estados": {
+  "ok": 31037,
+  "falla": 117,
+  "duplicado": 3
+ },
+ "archivos": 32348,
+ "gb": 24.86,
+ "fallas_por_fuente": {
+  "Consejo de Estado": 26,
+  "Corte Constitucional": 1,
+  "Corte Suprema de Justicia": 90
+ },
+ "fallas_por_motivo": {
+  "NoEncontrado": 117
+ },
+ "ausentes": [],
+ "fallas": [
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-37-000-2013-01107-01_2021",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2195074 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-33-000-2013-01143-01_2021",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2187366 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-76001-23-31-000-2002-04584-02_2021",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2179206 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-37-000-2012-00375-02_2020",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2167148 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-37-000-2013-00443-01_2020",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2163899 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-37-000-2013-00452-01_2019",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2143768 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-52001-33-31-004-2011-00617-01_2019",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2143767 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-33-000-2014-00826-01_2019",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2143766 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-66001-23-31-000-2010-00235-01_2018",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2119166 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-15-000-2002-02704-01_2018",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2109360 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-11001-03-26-000-2012-00018-00_2012",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2093770 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-73001-23-31-000-2009-00133-01_2019",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2095716 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-26-000-1997-03930-01_2013",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2084150 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-76001-23-31-000-1996-05208-01_2014",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2084127 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-27-000-2009-00235-01_2016",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2077590 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-25000-23-26-000-2000-00340-01_2014",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2020691 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-23001-23-31-000-2001-00278-01_2014",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2020579 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-25-000-1999-01063-01_2014",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2020563 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-52001-23-31-000-1996-07459-01_2013",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2020088 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-31-000-2001-00799-01_2013",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2015792 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-31-000-1996-00659-01_2013",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2015567 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-41001-33-31-004-2009-00030-01_2012",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2010859 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-25-000-1994-00020-01_2011",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2009071 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-19001-23-31-000-1999-00203-01_2011",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2009030 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-05001-23-26-000-1995-01286-01_2011",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2007492 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_ce-76001-23-25-000-1996-02231-01_2011",
+   "fuente": "Consejo de Estado - Relatoría",
+   "error": "NoEncontrado: https://servicios.consejodeestado.gov.co/WebRelatoria/FileReferenceServlet?corp=ce&ext=doc&file=2007476 no devolvió el documento"
+  },
+  {
+   "doc_id": "jurisprudencia_su-163_2023",
+   "fuente": "Corte Constitucional - Relatoría",
+   "error": "NoEncontrado: https://www.corteconstitucional.gov.co/relatoria/2023/SU163-23.htm no es una sentencia publicada"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-12846_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP12846-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3439_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3439-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-713_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP713-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-16227_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP16227-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1862_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1862-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-16558_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP16558-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-7600_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP7600-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-7266_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP7266-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-4318_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP4318-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-9792_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP9792-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-5395_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP5395-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-14842_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP14842-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3001_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3001-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-4321_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP4321-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-7265_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP7265-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2190_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2190-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-5748_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP5748-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-5281_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP5281-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-9216_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP9216-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-14843_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP14843-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1478_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1478-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3052_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3052-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-11648_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP11648-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2634_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2634-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-14844_2015",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP14844-2015 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-11144_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP11144-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-14190_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP14190-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-6713_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP6713-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2244_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2244-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3714_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3714-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-13448_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP13448-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-14215_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP14215-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-9106_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP9106-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-4607_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP4607-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-920_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP920-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3713_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3713-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3332_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3332-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-6411_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP6411-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-17350_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP17350-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2933_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2933-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-9105_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP9105-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-7570_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP7570-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1467_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1467-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-4994_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP4994-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-8737_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP8737-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-12229_2016",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP12229-2016 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-8053_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP8053-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-5279_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP5279-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-18954_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP18954-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-11306_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP11306-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3963_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3963-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1420_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1420-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-12846_2017",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP12846-2017 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1526_2018",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1526-2018 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2159_2018",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2159-2018 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1281_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1281-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1449_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1449-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1538_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1538-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-5508_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP5508-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1640_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1640-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1548_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1548-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3066_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3066-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1660_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1660-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1696_2019",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1696-2019 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2136_2020",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2136-2020 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-934_2020",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP934-2020 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-4374_2022",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP4374-2022 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-463_2023",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP463-2023 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2288_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2288-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-143_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP143-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2727_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2727-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-2484_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP2484-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3248_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3248-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1525_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1525-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-3245_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP3245-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-657_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP657-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-339_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP339-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-238_2025",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP238-2025 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-1118_2025",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP1118-2025 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sp-653_2025",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SP653-2025 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-679_2020",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL679-2020 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-464_2020",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL464-2020 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-893_2020",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL893-2020 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-1813_2023",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL1813-2023 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-1259_2023",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL1259-2023 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-572_2023",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL572-2023 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-1062_2023",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL1062-2023 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-1152_2023",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL1152-2023 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-705_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL705-2024 no aparece en consultaprovidencias"
+  },
+  {
+   "doc_id": "jurisprudencia_sl-676_2024",
+   "fuente": "Corte Suprema de Justicia - Relatoría",
+   "error": "NoEncontrado: SL676-2024 no aparece en consultaprovidencias"
+  }
+ ],
+ "danados": [],
+ "plantilla_incompleta": [
+  {
+   "doc_id": "decreto_663_1993",
+   "articulos": 350,
+   "faltan": [
+    "243"
+   ],
+   "cajas_vacias": 0,
+   "n_faltan": 1
+  },
+  {
+   "doc_id": "ley_294_1996",
+   "articulos": 31,
+   "faltan": [
+    "6"
+   ],
+   "cajas_vacias": 0,
+   "n_faltan": 1
+  },
+  {
+   "doc_id": "ley_734_2002",
+   "articulos": 292,
+   "faltan": [
+    "41",
+    "T I T U L O V",
+    "CAPITULO IC",
+    "42",
+    "43"
+   ],
+   "cajas_vacias": 0,
+   "n_faltan": 5
+  },
+  {
+   "doc_id": "acto_legislativo_1_1999",
+   "articulos": 2,
+   "faltan": [
+    "1",
+    "2"
+   ],
+   "cajas_vacias": 0,
+   "n_faltan": 2
+  },
+  {
+   "doc_id": "ley_701_2001",
+   "articulos": 63,
+   "faltan": [
+    "9*"
+   ],
+   "cajas_vacias": 0,
+   "n_faltan": 1
+  }
+ ],
+ "renombrados_doc_docx": 51,
+ "repetidos_mismo_contenido": [],
+ "marcados_duplicado": [
+  {
+   "doc_id": "jurisprudencia_sc-15644_2016",
+   "duplicado_de": "jurisprudencia_sc-15645_2016"
+  },
+  {
+   "doc_id": "jurisprudencia_sc-3107_2019",
+   "duplicado_de": "jurisprudencia_sc-3406_2019"
+  },
+  {
+   "doc_id": "jurisprudencia_sc-3416_2019",
+   "duplicado_de": "jurisprudencia_sc-3379_2019"
+  }
+ ],
+ "en_manifest_fuera_de_lista": [],
+ "archivos_sobrantes": 0,
+ "carpetas_huerfanas": [],
+ "arreglado": true
+}
