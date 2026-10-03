@@ -153,7 +153,7 @@ def sin_encabezados(borrador: dict) -> dict:
 # paréntesis de `respuesta`, la frase quedaba rota cuando la cita era el complemento: "…, según (artículo X)."
 # -> "…, según." (1089) o "existe el artículo (artículo 64 del Código Penal) del código penal" -> sin el 64
 # (280). Si la palabra anterior es una preposición o "artículo", la cita se queda en el texto sin paréntesis.
-CITA_RESPUESTA = os.environ.get("CITA_RESPUESTA", "0") == "1"
+CITA_RESPUESTA = os.environ.get("CITA_RESPUESTA", "1") == "1"
 _COLGANTE = re.compile(r"\b(según|conforme(?: a| con)?|de acuerdo con|en|de|del|por|mediante|a|al|artículo|"
                        r"es|son|establece|dispone|señala|consagra)\s*$", re.I)
 
@@ -336,7 +336,7 @@ def fuentes_ampliadas(ya_citado: str, pasajes: List[CanonicalPassage]) -> str:
 # "Adicionalmente/Además…" restan (agentes B y C, comparando versiones de una misma pregunta: −0,02 a −0,1 de
 # F1 por oración). No se borran: pasan a `referencia_legal`, así que la citación no cambia. Nunca la primera
 # oración, ni en complejidad alta, ni en sub-tareas donde esa información es la respuesta.
-PODA_ACCESORIAS = os.environ.get("PODA_ACCESORIAS", "0") == "1"
+PODA_ACCESORIAS = os.environ.get("PODA_ACCESORIAS", "1") == "1"
 _VIGENCIA = re.compile(r"\b(modificad[oa]s?|derogad[oa]s?|subrogad[oa]s?|adicionad[oa]s?|(in)?exequib\w*|"
                        r"declar(ó|ada|ado) (la )?(in)?exequib)", re.I)
 _ADITIVA = re.compile(r"^(Adicionalmente|Además|También|Asimismo|De igual (forma|manera))\b", re.I)
@@ -376,7 +376,7 @@ def sin_oraciones_accesorias(borrador: dict, pregunta: str, sub_tarea: str | Non
 # pasajes que el texto no nombra ya: "Fuentes consultadas: Ley 1562 de 2012; Sentencia SL-3385 de 2022." Solo
 # cuerpos (sin artículos), nombres cortos, como máximo 6, y cada una con respaldo en los pasajes. Simulado sobre
 # v22: citación 17,55 -> 18,37 con 14-34 palabras más por abierta (agente C).
-FUENTES_ABIERTAS = os.environ.get("FUENTES_ABIERTAS", "0") == "1"
+FUENTES_ABIERTAS = os.environ.get("FUENTES_ABIERTAS", "1") == "1"
 _CAMPOS_ABIERTA = ("marco_normativo", "analisis", "jurisprudencia", "conclusion")
 
 
